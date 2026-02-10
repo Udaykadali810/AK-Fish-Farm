@@ -1,0 +1,120 @@
+import React, { useState, useEffect } from 'react';
+import { Tag, Copy, CheckCircle2, Gift, Ticket, Droplets } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const Offers = () => {
+    const [copied, setCopied] = useState('');
+    const [offers, setOffers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchOffers();
+    }, []);
+
+    const fetchOffers = async () => {
+        try {
+            const res = await fetch('http://localhost:5000/api/admin/offers');
+            const data = await res.json();
+            setOffers(data);
+        } catch (err) {
+            console.error('Failed to fetch offers');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const copyToClipboard = (code) => {
+        navigator.clipboard.writeText(code);
+        setCopied(code);
+        setTimeout(() => setCopied(''), 3000);
+    };
+
+    return (
+        <div className="bg-bg-main min-h-screen pb-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+                <div className="text-center mb-20">
+                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-primary/10 text-primary rounded-full text-xs font-black uppercase tracking-[0.3em] mb-8">
+                        <Gift className="w-4 h-4" /> Exclusive Deals
+                    </div>
+                    <h1 className="text-5xl lg:text-8xl font-black text-dark dark:text-white mb-6 italic">Aquatic <span className="text-primary italic">Bundles</span></h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium max-w-xl mx-auto leading-relaxed">Save big on your next aquarium addition with our curated discount tokens.</p>
+                </div>
+
+                {loading ? (
+                    <div className="flex justify-center p-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {offers.map((offer, idx) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.1 }}
+                                viewport={{ once: true }}
+                                key={offer.id || idx}
+                                className="bg-white dark:bg-slate-900 rounded-[3.5rem] p-10 shadow-xl border-2 border-dashed border-primary/20 relative overflow-hidden group"
+                            >
+                                <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-1000"></div>
+                                <div className="absolute -bottom-10 -left-10 w-24 h-24 aquatic-gradient opacity-10 rounded-full blur-2xl"></div>
+
+                                <div className="flex items-start justify-between mb-10">
+                                    <div className="p-5 bg-accent/30 text-secondary rounded-2xl group-hover:rotate-12 transition-transform">
+                                        <Ticket className="w-10 h-10" />
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Discount</p>
+                                        <p className="text-4xl font-black text-primary italic">{offer.discount}</p>
+                                    </div>
+                                </div>
+
+                                <h3 className="text-2xl font-black text-dark dark:text-white mb-4 italic leading-tight">{offer.title}</h3>
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
+                                    Valid on all aquatic species and supplies. Limited time promotion.
+                                </p>
+
+                                {offer.code && (
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex-grow p-5 bg-gray-50 dark:bg-slate-800 rounded-3xl border border-gray-100 dark:border-gray-800 font-black text-2xl text-dark dark:text-white text-center tracking-[0.3em] border-dashed">
+                                            {offer.code}
+                                        </div>
+                                        <button
+                                            onClick={() => copyToClipboard(offer.code)}
+                                            className={`p-5 rounded-3xl transition-all shadow-xl flex items-center justify-center ${copied === offer.code ? 'bg-green-500 text-white' : 'bg-dark dark:bg-primary text-white hover:scale-105'}`}
+                                        >
+                                            {copied === offer.code ? <CheckCircle2 className="w-7 h-7" /> : <Copy className="w-7 h-7" />}
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div className="mt-8 flex justify-between items-center px-2">
+                                    <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Live Now
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Offer Banner */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="mt-24 p-12 lg:p-20 bg-dark text-white rounded-[4rem] relative overflow-hidden flex items-center justify-between"
+                >
+                    <Droplets className="absolute -left-20 -bottom-20 w-80 h-80 text-white/5" />
+                    <div className="relative z-10 max-w-2xl">
+                        <h2 className="text-4xl lg:text-6xl font-black italic mb-6">Bulk Aquarium <span className="text-primary italic">Setup?</span></h2>
+                        <p className="text-gray-400 text-lg font-medium leading-relaxed mb-10">We provide special pricing for new hobbyists and bulk institutional orders. Connect with our experts for a personalized quote.</p>
+                        <a href="/contact" className="px-12 py-5 bg-primary text-white rounded-[2rem] font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-primary/20 inline-block">Contact Wholesale</a>
+                    </div>
+                </motion.div>
+            </div>
+        </div>
+    );
+};
+
+export default Offers;
+
