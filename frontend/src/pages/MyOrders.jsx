@@ -16,10 +16,11 @@ const MyOrders = () => {
                 return;
             }
 
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
             try {
                 const orderData = await Promise.all(
                     historyIds.map(async (id) => {
-                        const res = await fetch(`http://localhost:5000/api/admin/orders/track/${id}`);
+                        const res = await fetch(`${baseUrl}/orders/track/${id}`);
                         if (res.ok) {
                             const data = await res.json();
                             return data ? { ...data, id } : null;

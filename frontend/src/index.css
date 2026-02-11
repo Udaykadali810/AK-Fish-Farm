@@ -7,8 +7,17 @@
   --secondary: #3a7bd5;
   --accent: #00f2fe;
   --dark: #000428;
+  --text-main: #1a202c;
+  --bg-main: #f0f9ff;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+}
+
+.dark {
   --text-main: #e0f2fe;
   --bg-main: #000428;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -16,21 +25,26 @@ body {
   background-color: var(--bg-main);
   color: var(--text-main);
   overflow-x: hidden;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 /* Glassmorphism utility */
 .glass-morphism {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-card {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 

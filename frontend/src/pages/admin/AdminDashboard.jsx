@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Package, CreditCard, MapPin, Tag, ShoppingBag,
+    Package, CreditCard, Tag, ShoppingBag,
     Lock, LogOut, LayoutDashboard, ChevronRight,
-    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu
+    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -12,10 +12,12 @@ const AdminDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [offers, setOffers] = useState([]);
     const [products, setProducts] = useState([]);
+    const [inquiries, setInquiries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newOrderAlert, setNewOrderAlert] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const lastOrderId = React.useRef(null);
+    const lastInquiryId = React.useRef(null);
     const navigate = useNavigate();
 
     const token = localStorage.getItem('adminToken');
@@ -35,10 +37,11 @@ const AdminDashboard = () => {
     const fetchData = async (firstLoad = false) => {
         if (firstLoad) setLoading(true);
         try {
-            const [ordersRes, offersRes, productsRes] = await Promise.all([
+            const [ordersRes, offersRes, productsRes, inquiriesRes] = await Promise.all([
                 apiFetch('/api/admin/orders'),
                 apiFetch('/api/admin/offers'),
-                apiFetch('/api/admin/products')
+                apiFetch('/api/admin/products'),
+                apiFetch('/api/inquiries')
             ]);
 
             // Notification Logic
@@ -54,6 +57,7 @@ const AdminDashboard = () => {
             setOrders(ordersRes);
             setOffers(offersRes);
             setProducts(productsRes);
+            setInquiries(inquiriesRes);
         } catch (err) {
             console.error(err);
         } finally {
@@ -119,6 +123,7 @@ const AdminDashboard = () => {
 
     const menuItems = [
         { id: 'orders', label: 'Orders', icon: <Package className="w-5 h-5" /> },
+        { id: 'inquiries', label: 'AI Leads', icon: <Bot className="w-5 h-5" /> },
         { id: 'payments', label: 'Payments', icon: <CreditCard className="w-5 h-5" /> },
         { id: 'track', label: 'Track Control', icon: <MapPin className="w-5 h-5" /> },
         { id: 'offers', label: 'Offers', icon: <Tag className="w-5 h-5" /> },
@@ -224,6 +229,7 @@ const AdminDashboard = () => {
                         transition={{ duration: 0.2 }}
                     >
                         {activeTab === 'orders' && <OrdersSection orders={orders} onUpdate={handleUpdateOrderStatus} onDelete={handleDeleteOrder} />}
+                        {activeTab === 'inquiries' && <InquiriesSection inquiries={inquiries} onRefresh={fetchData} apiFetch={apiFetch} />}
                         {activeTab === 'payments' && <PaymentsSection orders={orders} />}
                         {activeTab === 'track' && <TrackSection orders={orders} onUpdate={handleUpdateOrderStatus} />}
                         {activeTab === 'offers' && <OffersSection offers={offers} onRefresh={fetchData} apiFetch={apiFetch} />}
@@ -534,6 +540,82 @@ const PasswordSection = ({ apiFetch }) => {
                     {success && <p className="text-green-500 font-black text-xs uppercase animate-bounce mt-4">Security Credentials Synced!</p>}
                 </form>
             </div>
+        </div>
+    );
+};
+
+const InquiriesSection = ({ inquiries, onRefresh, apiFetch }) => {
+    const handleStatusUpdate = async (id, status) => {
+        await apiFetch(`/api/inquiries/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status })
+        });
+        onRefresh();
+    };
+
+    return (
+        <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left">
+                <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+                    <tr>
+                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Lead Name</th>
+                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Contact</th>
+                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">City</th>
+                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Fish Inquiry</th>
+                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Status</th>
+                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right whitespace-nowrap">Date</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+                    {inquiries.map(inquiry => (
+                        <tr key={inquiry.id} className="hover:bg-gray-50/30 transition-all font-bold align-top text-[10px]">
+                            <td className="p-6 whitespace-nowrap flex items-center gap-2">
+                                <User className="w-3 h-3 text-primary" /> {inquiry.name}
+                            </td>
+                            <td className="p-6 whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                    <Phone className="w-3 h-3 text-green-500" /> {inquiry.contactNumber}
+                                </div>
+                            </td>
+                            <td className="p-6 whitespace-nowrap">
+                                <div className="flex items-center gap-2">
+                                    <MapPin className="w-3 h-3 text-orange-500" /> {inquiry.city}
+                                </div>
+                            </td>
+                            <td className="p-6">
+                                <div className="flex items-start gap-2 max-w-xs">
+                                    <Fish className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
+                                    <span className="italic">{inquiry.fishEnquiry}</span>
+                                </div>
+                            </td>
+                            <td className="p-6">
+                                <select
+                                    value={inquiry.status}
+                                    onChange={(e) => handleStatusUpdate(inquiry.id, e.target.value)}
+                                    className={`w-full border-none rounded-lg text-[9px] font-black p-2 ${inquiry.status === 'Pending' ? 'bg-orange-100 text-orange-600' :
+                                        inquiry.status === 'Responded' ? 'bg-blue-100 text-blue-600' :
+                                            'bg-green-100 text-green-600'
+                                        }`}
+                                >
+                                    <option value="Pending">Pending</option>
+                                    <option value="Responded">Responded</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                            </td>
+                            <td className="p-6 text-right text-gray-400 whitespace-nowrap">
+                                {new Date(inquiry.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                            </td>
+                        </tr>
+                    ))}
+                    {inquiries.length === 0 && (
+                        <tr>
+                            <td colSpan="6" className="p-12 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                No inquiries captured yet.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 };

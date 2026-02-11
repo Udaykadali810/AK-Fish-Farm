@@ -101,7 +101,7 @@ const Cart = () => {
                 {/* Cart Items List */}
                 <div className="flex-grow space-y-8">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-4xl lg:text-7xl font-black text-white italic tracking-tighter uppercase">
+                        <h1 className="text-3xl sm:text-4xl lg:text-7xl font-black text-white italic tracking-tighter uppercase">
                             My <span className="text-primary italic">Collection</span>
                         </h1>
                         <span className="text-gray-500 font-black uppercase tracking-[0.3em] text-xs bg-white/5 px-6 py-3 rounded-2xl border border-white/5">{cart.length} species</span>
@@ -193,7 +193,7 @@ const Cart = () => {
                             {/* Coupon Application */}
                             <div className="space-y-4 py-8 border-y border-white/5 bg-white/[0.02] -mx-10 px-10">
                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block ml-1">Enter Coupon Code</label>
-                                <div className="flex gap-3">
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     <input
                                         type="text"
                                         value={couponCode}
@@ -203,7 +203,7 @@ const Cart = () => {
                                     />
                                     <button
                                         onClick={handleApplyCoupon}
-                                        className="px-8 bg-primary text-dark rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                                        className="px-8 py-4 sm:py-0 bg-primary text-dark rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                                     >
                                         Apply Coupon
                                     </button>
@@ -258,7 +258,7 @@ const Cart = () => {
                                     key={total}
                                     initial={{ scale: 1.2, color: '#00d2ff' }}
                                     animate={{ scale: 1, color: '#22c55e' }}
-                                    className="text-5xl font-black italic drop-shadow-[0_0_20px_rgba(34,197,94,0.4)] tracking-tighter"
+                                    className="text-4xl sm:text-5xl font-black italic drop-shadow-[0_0_20px_rgba(34,197,94,0.4)] tracking-tighter"
                                 >
                                     ₹{total}
                                 </motion.span>

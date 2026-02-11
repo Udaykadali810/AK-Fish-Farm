@@ -46,7 +46,8 @@ const Checkout = () => {
         setLoading(true);
 
         try {
-            const res = await fetch('http://localhost:5000/api/admin/orders', {
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${baseUrl}/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

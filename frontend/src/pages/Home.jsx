@@ -96,10 +96,10 @@ const Home = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: "circOut" }}
                 >
-                    <span className="inline-block px-6 py-2 glass-card rounded-full text-primary font-black uppercase text-[10px] tracking-[0.4em] mb-10 border border-primary/20">
+                    <span className="inline-block px-6 py-2 glass-card rounded-full text-primary font-black uppercase text-[8px] sm:text-[10px] tracking-[0.2em] sm:tracking-[0.4em] mb-10 border border-primary/20">
                         Welcome to AK Fish Farms
                     </span>
-                    <h1 className="text-6xl lg:text-9xl font-black text-white italic leading-tight mb-8">
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white italic leading-tight mb-8">
                         The <span className="text-primary italic drop-shadow-[0_0_20px_rgba(0,180,216,0.5)]">Aquatic</span><br />Standard
                     </h1>
                     <p className="text-gray-400 text-lg md:text-xl font-medium max-w-2xl mx-auto tracking-wide leading-relaxed">

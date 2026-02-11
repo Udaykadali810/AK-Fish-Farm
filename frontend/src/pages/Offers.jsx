@@ -13,7 +13,7 @@ const Offers = () => {
 
     const fetchOffers = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/admin/offers');
+            const res = await fetch('http://localhost:5000/api/offers');
             const data = await res.json();
             setOffers(data);
         } catch (err) {
@@ -36,7 +36,7 @@ const Offers = () => {
                     <div className="inline-flex items-center gap-2 px-6 py-2 bg-primary/10 text-primary rounded-full text-xs font-black uppercase tracking-[0.3em] mb-8">
                         <Gift className="w-4 h-4" /> Exclusive Deals
                     </div>
-                    <h1 className="text-5xl lg:text-8xl font-black text-dark dark:text-white mb-6 italic">Aquatic <span className="text-primary italic">Bundles</span></h1>
+                    <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-dark dark:text-white mb-6 italic transition-all">Aquatic <span className="text-primary italic">Bundles</span></h1>
                     <p className="text-gray-500 dark:text-gray-400 font-medium max-w-xl mx-auto leading-relaxed">Save big on your next aquarium addition with our curated discount tokens.</p>
                 </div>
 
@@ -75,7 +75,7 @@ const Offers = () => {
 
                                 {offer.code && (
                                     <div className="flex items-center gap-4">
-                                        <div className="flex-grow p-5 bg-gray-50 dark:bg-slate-800 rounded-3xl border border-gray-100 dark:border-gray-800 font-black text-2xl text-dark dark:text-white text-center tracking-[0.3em] border-dashed">
+                                        <div className="flex-grow p-5 bg-gray-50 dark:bg-slate-800 rounded-3xl border border-gray-100 dark:border-gray-800 font-black text-lg sm:text-2xl text-dark dark:text-white text-center tracking-[0.2em] sm:tracking-[0.3em] border-dashed truncate">
                                             {offer.code}
                                         </div>
                                         <button
@@ -102,13 +102,13 @@ const Offers = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="mt-24 p-12 lg:p-20 bg-dark text-white rounded-[4rem] relative overflow-hidden flex items-center justify-between"
+                    className="mt-24 p-8 sm:p-12 lg:p-20 bg-dark text-white rounded-[3rem] sm:rounded-[4rem] relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-12"
                 >
                     <Droplets className="absolute -left-20 -bottom-20 w-80 h-80 text-white/5" />
-                    <div className="relative z-10 max-w-2xl">
-                        <h2 className="text-4xl lg:text-6xl font-black italic mb-6">Bulk Aquarium <span className="text-primary italic">Setup?</span></h2>
-                        <p className="text-gray-400 text-lg font-medium leading-relaxed mb-10">We provide special pricing for new hobbyists and bulk institutional orders. Connect with our experts for a personalized quote.</p>
-                        <a href="/contact" className="px-12 py-5 bg-primary text-white rounded-[2rem] font-black text-xl hover:scale-105 transition-all shadow-2xl shadow-primary/20 inline-block">Contact Wholesale</a>
+                    <div className="relative z-10 max-w-2xl text-center lg:text-left">
+                        <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black italic mb-6">Bulk Aquarium <span className="text-primary italic">Setup?</span></h2>
+                        <p className="text-gray-400 text-base sm:text-lg font-medium leading-relaxed mb-10">We provide special pricing for new hobbyists and bulk institutional orders. Connect with our experts for a personalized quote.</p>
+                        <a href="/contact" className="px-10 sm:px-12 py-4 sm:py-5 bg-primary text-white rounded-[1.5rem] sm:rounded-[2rem] font-black text-lg sm:text-xl hover:scale-105 transition-all shadow-2xl shadow-primary/20 inline-block">Contact Wholesale</a>
                     </div>
                 </motion.div>
             </div>

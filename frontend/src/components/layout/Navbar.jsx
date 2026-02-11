@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Instagram, Facebook, ShoppingCart, MessageCircle, ShieldCheck } from 'lucide-react';
+import { Menu, X, Instagram, Facebook, ShoppingCart, MessageCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,7 @@ const Navbar = () => {
     const location = useLocation();
     const { cart } = useCart();
     const { user } = useAuth();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -80,6 +82,23 @@ const Navbar = () => {
                             )}
                         </Link>
 
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 bg-white/5 rounded-2xl border border-white/10 hover:border-primary/50 transition-all duration-500 text-text-main"
+                            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        >
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={isDarkMode ? 'dark' : 'light'}
+                                    initial={{ y: 10, opacity: 0, rotate: -45 }}
+                                    animate={{ y: 0, opacity: 1, rotate: 0 }}
+                                    exit={{ y: -10, opacity: 0, rotate: 45 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    {isDarkMode ? <Sun className="h-6 w-6 text-yellow-400" /> : <Moon className="h-6 w-6 text-primary" />}
+                                </motion.div>
+                            </AnimatePresence>
+                        </button>
                     </div>
 
                     {/* Mobile menu button */}
@@ -92,6 +111,9 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
+                        <button onClick={toggleTheme} className="p-2 text-text-main">
+                            {isDarkMode ? <Sun className="h-7 w-7 text-yellow-400" /> : <Moon className="h-7 w-7 text-primary" />}
+                        </button>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className="p-2 text-text-main hover:text-primary transition-colors focus:outline-none"

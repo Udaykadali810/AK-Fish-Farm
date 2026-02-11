@@ -16,7 +16,8 @@ const TrackOrder = () => {
         if (!trackingResult) setLoading(true);
 
         try {
-            const res = await fetch(`http://localhost:5000/api/admin/orders/track/${id.trim()}`);
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${baseUrl}/orders/track/${id.trim()}`);
             const data = await res.json();
             if (res.ok) {
                 setTrackingResult(data);
@@ -136,7 +137,7 @@ const TrackOrder = () => {
         <div className="max-w-6xl mx-auto px-4 py-24 min-h-screen">
             {/* Header Sec */}
             <div className="text-center mb-16">
-                <h1 className="text-5xl lg:text-8xl font-black text-white italic mb-6 tracking-tighter uppercase">
+                <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-white italic mb-6 tracking-tighter uppercase">
                     Track <span className="text-primary italic">Live</span>
                 </h1>
                 <div className="max-w-2xl mx-auto relative group">
@@ -145,11 +146,11 @@ const TrackOrder = () => {
                             type="text"
                             value={orderIdInput}
                             onChange={(e) => setOrderIdInput(e.target.value.toUpperCase())}
-                            placeholder="ENTER ORDER ID (AKF-XXXXX)"
-                            className="w-full py-7 px-12 rounded-[2.5rem] bg-white/5 border border-white/10 text-white font-black italic text-2xl focus:outline-none focus:border-primary/50 focus:ring-8 focus:ring-primary/10 transition-all placeholder:text-white/10 uppercase tracking-widest"
+                            placeholder="ORDER ID (AKF-XXXXX)"
+                            className="w-full py-5 sm:py-7 px-8 sm:px-12 rounded-[2rem] sm:rounded-[2.5rem] bg-white/5 border border-white/10 text-white font-black italic text-lg sm:text-2xl focus:outline-none focus:border-primary/50 focus:ring-8 focus:ring-primary/10 transition-all placeholder:text-white/10 uppercase tracking-widest"
                         />
-                        <button type="submit" className="absolute right-4 top-4 bottom-4 px-10 bg-primary text-dark rounded-[1.5rem] font-black uppercase text-xs tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
-                            <Search className="w-5 h-5" /> Track
+                        <button type="submit" className="absolute right-2 sm:right-4 top-2 sm:top-4 bottom-2 sm:top-4 px-6 sm:px-10 bg-primary text-dark rounded-[1.2rem] sm:rounded-[1.5rem] font-black uppercase text-[10px] sm:text-xs tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-2 sm:gap-3">
+                            <Search className="w-4 h-4 sm:w-5 h-5" /> Track
                         </button>
                     </form>
                 </div>
@@ -164,7 +165,7 @@ const TrackOrder = () => {
                         className="space-y-12"
                     >
                         {/* 3D Visualizer Card */}
-                        <div className="glass-card p-12 lg:p-20 rounded-[4rem] border border-white/10 bg-gradient-to-br from-white/5 to-transparent relative overflow-hidden flex flex-col items-center">
+                        <div className="glass-card p-8 lg:p-20 rounded-[3rem] sm:rounded-[4rem] border border-white/10 bg-gradient-to-br from-white/5 to-transparent relative overflow-hidden flex flex-col items-center">
                             <div className="absolute top-10 left-10">
                                 <span className="text-[10px] font-black text-primary/60 uppercase tracking-[0.5em] block mb-2">Live Animation</span>
                                 <div className="h-1 w-20 bg-primary rounded-full" />
@@ -210,20 +211,20 @@ const TrackOrder = () => {
                         {/* Order Details Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Detailed Info Card */}
-                            <div className="lg:col-span-2 glass-card p-12 rounded-[3.5rem] border border-white/10 bg-white/5">
+                            <div className="lg:col-span-2 glass-card p-8 sm:p-12 rounded-[3rem] sm:rounded-[3.5rem] border border-white/10 bg-white/5">
                                 <div className="flex justify-between items-start mb-12 border-b border-white/5 pb-8">
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Order Tracking Identity</p>
                                         <div className="flex items-center gap-4">
-                                            <h2 className="text-4xl lg:text-6xl font-black text-white italic">{orderIdInput}</h2>
+                                            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white italic">{orderIdInput}</h2>
                                             <button onClick={copyToClipboard} className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all">
-                                                {copied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-text-main" />}
+                                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-text-main" />}
                                             </button>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Amount</p>
-                                        <h2 className="text-4xl font-black text-primary italic">₹{trackingResult.total}</h2>
+                                        <h2 className="text-2xl sm:text-4xl font-black text-primary italic">₹{trackingResult.total}</h2>
                                     </div>
                                 </div>
 

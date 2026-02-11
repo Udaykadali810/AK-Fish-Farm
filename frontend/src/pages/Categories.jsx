@@ -18,7 +18,7 @@ const Categories = () => {
                         <div className="inline-flex items-center gap-2 px-6 py-2 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-10 border border-primary/20">
                             <Sparkles className="w-3 h-3" /> Browsing Taxonomy
                         </div>
-                        <h1 className="text-5xl lg:text-9xl font-black text-white mb-6 italic">Aquatic <span className="text-primary italic drop-shadow-[0_0_20px_rgba(0,180,216,0.3)]">Worlds</span></h1>
+                        <h1 className="text-4xl sm:text-6xl lg:text-9xl font-black text-white mb-6 italic">Aquatic <span className="text-primary italic drop-shadow-[0_0_20px_rgba(0,180,216,0.3)]">Worlds</span></h1>
                         <p className="text-gray-400 font-medium max-w-xl mx-auto leading-relaxed tracking-wide">
                             Every species we house is sorted into curated collections, reflecting the unique environments they thrive in.
                         </p>

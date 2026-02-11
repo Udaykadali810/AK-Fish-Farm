@@ -37,11 +37,11 @@ const Contact = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="relative z-10"
                 >
-                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-[0.3em] mb-8">
+                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-8">
                         <Droplets className="w-4 h-4" /> Get in Touch
                     </div>
-                    <h1 className="text-6xl lg:text-9xl font-black italic mb-6 leading-tight">Let's <span className="text-accent italic underline decoration-sky-300 decoration-wavy underline-offset-8">Talk.</span></h1>
-                    <p className="text-xl text-blue-100 max-w-2xl mx-auto font-medium">Questions about fish genetics, tank setup, or your order? We're here to guide your aquatic journey.</p>
+                    <h1 className="text-4xl sm:text-6xl lg:text-9xl font-black italic mb-6 leading-tight">Let's <span className="text-accent italic underline decoration-sky-300 decoration-wavy underline-offset-8">Talk.</span></h1>
+                    <p className="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto font-medium">Questions about fish genetics, tank setup, or your order? We're here to guide your aquatic journey.</p>
                 </motion.div>
             </div>
 
@@ -54,7 +54,7 @@ const Contact = () => {
                             { icon: <Phone className="w-8 h-8" />, label: "Call Us", value: "94920 45766 / 97053 53646", color: "bg-blue-50 dark:bg-blue-900/20 text-blue-600", link: "tel:+919492045766" },
                             { icon: <MessageCircle className="w-8 h-8" />, label: "WhatsApp", value: "+91 94920 45766", color: "bg-green-50 dark:bg-green-900/20 text-green-600", link: "https://wa.me/919492045766" },
                             { icon: <Instagram className="w-8 h-8" />, label: "Instagram", value: "@akfishfarms", color: "bg-purple-50 dark:bg-purple-900/20 text-purple-600", link: "https://www.instagram.com/akfishfarms/" },
-                            { icon: <MapPin className="w-8 h-8" />, label: "Location", value: "Palakoderu, Andhra Pradesh", color: "bg-orange-50 dark:bg-orange-900/20 text-orange-600", link: "https://www.google.com/maps/search/?api=1&query=Palakoderu+Andhra+Pradesh" }
+                            { icon: <MapPin className="w-8 h-8" />, label: "Location", value: "Palakoderu, Andhra Pradesh", color: "bg-orange-50 dark:bg-orange-900/20 text-orange-600", link: "https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6" }
                         ].map((item, i) => (
                             <motion.a
                                 whileHover={{ scale: 1.03, y: -5 }}
@@ -152,14 +152,14 @@ const Contact = () => {
                         <div className="inline-flex items-center gap-2 px-6 py-2 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-8">
                             <MapPin className="w-4 h-4" /> Visit Our Farm
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black text-dark dark:text-white mb-6 italic">Scan for <span className="text-primary italic">Live Location</span></h2>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-dark dark:text-white mb-6 italic">Scan for <span className="text-primary italic">Live Location</span></h2>
                         <p className="text-gray-500 dark:text-gray-400 font-medium max-w-xl mx-auto mb-12">
                             Planning a visit to AK Fish Farms? Scan the QR code below to get instant directions to our farm in Palakoderu, Andhra Pradesh.
                         </p>
 
                         <div className="relative p-8 bg-white rounded-[3rem] shadow-2xl border-4 border-primary/20 group">
                             <img
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://www.google.com/maps/search/?api=1&query=Palakoderu+Andhra+Pradesh"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6"
                                 alt="Location QR Code"
                                 className="w-64 h-64 grayscale group-hover:grayscale-0 transition-all duration-500"
                             />
@@ -172,7 +172,7 @@ const Contact = () => {
                         </div>
 
                         <a
-                            href="https://www.google.com/maps/search/?api=1&query=Palakoderu+Andhra+Pradesh"
+                            href="https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-12 group flex items-center gap-3 text-lg font-black text-dark dark:text-white hover:text-primary transition-colors"
