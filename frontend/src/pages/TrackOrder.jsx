@@ -16,8 +16,8 @@ const TrackOrder = () => {
         if (!trackingResult) setLoading(true);
 
         try {
-            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-            const res = await fetch(`${baseUrl}/orders/track/${id.trim()}`);
+            const baseUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${baseUrl}/api/orders/track/${id.trim()}`);
             const data = await res.json();
             if (res.ok) {
                 setTrackingResult(data);

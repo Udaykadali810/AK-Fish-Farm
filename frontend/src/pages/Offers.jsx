@@ -13,7 +13,8 @@ const Offers = () => {
 
     const fetchOffers = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/offers');
+            const baseUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${baseUrl}/api/offers`);
             const data = await res.json();
             setOffers(data);
         } catch (err) {

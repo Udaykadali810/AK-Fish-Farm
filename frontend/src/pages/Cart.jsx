@@ -15,7 +15,8 @@ const Cart = () => {
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/admin/offers');
+                const baseUrl = import.meta.env.VITE_API_URL || '';
+                const res = await fetch(`${baseUrl}/api/admin/offers`);
                 if (res.ok) {
                     const data = await res.json();
                     setOffers(data);

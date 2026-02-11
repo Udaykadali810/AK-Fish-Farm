@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Package, CreditCard, Tag, ShoppingBag,
     Lock, LogOut, LayoutDashboard, ChevronRight,
-    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish
+    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish, Download, Calendar
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('orders');
@@ -16,6 +17,7 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [newOrderAlert, setNewOrderAlert] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [lastDownloadDate, setLastDownloadDate] = useState(localStorage.getItem('lastDownloadDate') ? new Date(localStorage.getItem('lastDownloadDate')) : null);
     const lastOrderId = React.useRef(null);
     const lastInquiryId = React.useRef(null);
     const navigate = useNavigate();
@@ -66,7 +68,8 @@ const AdminDashboard = () => {
     };
 
     const apiFetch = async (url, options = {}) => {
-        const res = await fetch(`http://localhost:5000${url}`, {
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        const res = await fetch(`${baseUrl}${url}`, {
             ...options,
             headers: {
                 ...options.headers,
@@ -95,6 +98,60 @@ const AdminDashboard = () => {
             });
             fetchData();
         } catch (err) { alert('Update failed'); }
+    };
+
+    const handleDownloadBackup = () => {
+        const wb = XLSX.utils.book_new();
+
+        // 1. Orders Sheet
+        const ordersData = orders.map(o => ({
+            OrderID: o.id,
+            Customer: o.customerName,
+            Place: o.place,
+            Phone: o.phone,
+            Total: o.total,
+            Status: o.status || 'Pending',
+            Date: o.createdAt || o.date,
+            Coupon: o.appliedCoupon || 'None'
+        }));
+        const ordersWS = XLSX.utils.json_to_sheet(ordersData);
+        XLSX.utils.book_append_sheet(wb, ordersWS, "Orders");
+
+        // 2. AI Leads/Inquiries Sheet
+        const inquiriesData = inquiries.map(i => ({
+            Name: i.name,
+            Phone: i.contactNumber,
+            City: i.city,
+            FishEnquiry: i.fishEnquiry,
+            Date: i.createdAt
+        }));
+        const inquiriesWS = XLSX.utils.json_to_sheet(inquiriesData);
+        XLSX.utils.book_append_sheet(wb, inquiriesWS, "AI Leads");
+
+        // 3. Products Sheet
+        const productsData = products.map(p => ({
+            ID: p.id,
+            Name: p.name,
+            Price: p.price,
+            Category: p.category,
+            Active: p.active
+        }));
+        const productsWS = XLSX.utils.json_to_sheet(productsData);
+        XLSX.utils.book_append_sheet(wb, productsWS, "Products");
+
+        // Save File
+        const fileName = `AK_Fish_Farms_Full_Backup_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+
+        const now = new Date();
+        localStorage.setItem('lastDownloadDate', now.toISOString());
+        setLastDownloadDate(now);
+    };
+
+    const isBackupDue = () => {
+        if (!lastDownloadDate) return true;
+        const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+        return (new Date() - lastDownloadDate) > thirtyDaysInMs;
     };
 
     const handleDeleteOrder = async (id) => {
@@ -189,12 +246,25 @@ const AdminDashboard = () => {
                     ))}
                 </nav>
 
-                <button
-                    onClick={handleLogout}
-                    className="mt-12 flex items-center gap-4 p-4 text-red-500 font-black text-xs uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all"
-                >
-                    <LogOut className="w-5 h-5" /> Logout Session
-                </button>
+                <div className="space-y-4 pt-12 mt-auto">
+                    <button
+                        onClick={handleDownloadBackup}
+                        className={`w-full flex items-center justify-between p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border-2 ${isBackupDue() ? 'border-primary/50 bg-primary/5 text-primary animate-pulse' : 'border-gray-100 dark:border-gray-800 text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+                    >
+                        <div className="flex items-center gap-3">
+                            <Download className="w-4 h-4" />
+                            {isBackupDue() ? 'Backup Due (Excel)' : 'Download Backup'}
+                        </div>
+                        {isBackupDue() && <Calendar className="w-3 h-3" />}
+                    </button>
+
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-4 p-4 text-red-500 font-black text-xs uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all"
+                    >
+                        <LogOut className="w-5 h-5" /> Logout Session
+                    </button>
+                </div>
             </aside>
 
             {/* Main Content */}

@@ -55,7 +55,8 @@ const AIAssistant = () => {
 
             // Submit to Backend
             try {
-                await fetch('/api/inquiries', {
+                const baseUrl = import.meta.env.VITE_API_URL || '';
+                await fetch(`${baseUrl}/api/inquiries`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(finalData)
@@ -80,7 +81,7 @@ const AIAssistant = () => {
                         initial={{ opacity: 0, y: 100, scale: 0.8 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 100, scale: 0.8 }}
-                        className="mb-4 w-[350px] md:w-[400px] h-[500px] glass-morphism rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-primary/20"
+                        className="mb-4 w-[calc(100vw-2rem)] sm:w-[350px] md:w-[400px] h-[500px] glass-morphism rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-primary/20"
                     >
                         {/* Header */}
                         <div className="bg-gradient-to-r from-primary to-accent p-4 flex justify-between items-center">
@@ -108,8 +109,8 @@ const AIAssistant = () => {
                                     className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}
                                 >
                                     <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'bot'
-                                            ? 'bg-white/10 text-white rounded-tl-none border border-white/10'
-                                            : 'bg-primary text-dark font-bold rounded-tr-none'
+                                        ? 'bg-white/10 text-white rounded-tl-none border border-white/10'
+                                        : 'bg-primary text-dark font-bold rounded-tr-none'
                                         }`}>
                                         {msg.content}
                                     </div>

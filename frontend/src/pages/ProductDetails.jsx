@@ -75,7 +75,7 @@ const ProductDetails = () => {
                             <Droplets className="w-3 h-3" /> {product.category}
                         </div>
 
-                        <h1 className="text-4xl lg:text-6xl font-black text-dark dark:text-white mb-6 italic">{product.name}</h1>
+                        <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-dark dark:text-white mb-6 italic">{product.name}</h1>
 
                         <div className="flex items-center gap-6 mb-8">
                             <div className="flex text-yellow-500 items-center">
@@ -87,11 +87,11 @@ const ProductDetails = () => {
                         <div className="flex items-end gap-4 mb-10">
                             {product.offerPrice ? (
                                 <>
-                                    <span className="text-5xl font-black text-primary italic">₹{product.offerPrice}</span>
-                                    <span className="text-xl text-gray-400 line-through mb-1">₹{product.price}</span>
+                                    <span className="text-4xl sm:text-5xl font-black text-primary italic">₹{product.offerPrice}</span>
+                                    <span className="text-lg sm:text-xl text-gray-400 line-through mb-1">₹{product.price}</span>
                                 </>
                             ) : (
-                                <span className="text-5xl font-black text-dark dark:text-white italic">₹{product.price}</span>
+                                <span className="text-4xl sm:text-5xl font-black text-dark dark:text-white italic">₹{product.price}</span>
                             )}
                         </div>
 
@@ -105,12 +105,12 @@ const ProductDetails = () => {
                                     href={`https://wa.me/919492045766?text=I'm interested in buying ${product.name}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex-grow py-5 bg-primary text-white rounded-2xl font-black text-xl shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                    className="flex-grow py-5 bg-primary text-white rounded-2xl font-black text-lg sm:text-xl shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
                                 >
-                                    <MessageCircle className="w-6 h-6" /> Inquiry on WhatsApp
+                                    <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" /> Inquiry on WhatsApp
                                 </a>
                                 <button className="px-8 py-5 bg-white dark:bg-slate-900 text-dark dark:text-white rounded-2xl font-black transition-all hover:bg-gray-100 flex items-center justify-center gap-2 border border-gray-100 dark:border-gray-800 shadow-sm">
-                                    <Share2 className="w-6 h-6" />
+                                    <Share2 className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </button>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ const ProductDetails = () => {
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`pb-4 text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-primary' : 'text-gray-400 hover:text-dark'}`}
+                                className={`pb-4 text-[10px] sm:text-sm font-black uppercase tracking-widest whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-primary' : 'text-gray-400 hover:text-dark'}`}
                             >
                                 {tab.replace('-', ' ')}
                                 {activeTab === tab && (

@@ -107,22 +107,22 @@ const Shop = () => {
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 mb-20">
                     <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }}>
-                        <h1 className="text-5xl lg:text-8xl font-black text-white italic mb-4 uppercase">The <span className="text-primary italic">Catalog</span></h1>
+                        <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-white italic mb-4 uppercase">The <span className="text-primary italic">Catalog</span></h1>
                         <p className="text-gray-400 font-medium tracking-wide">Showing {filteredProducts.length} premium aquatic species available for your selection.</p>
                     </motion.div>
 
                     <div className="flex items-center gap-4 w-full md:w-auto">
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="lg:hidden flex items-center gap-3 px-8 py-4 glass-card rounded-2xl border border-white/10 font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-dark transition-all"
+                            className="lg:hidden flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 glass-card rounded-2xl border border-white/10 font-black text-[10px] sm:text-xs uppercase tracking-widest hover:bg-primary hover:text-dark transition-all"
                         >
                             <SlidersHorizontal className="w-4 h-4" /> Filters
                         </button>
 
-                        <div className="flex items-center gap-3 glass-card px-6 py-4 rounded-2xl border border-white/10 flex-grow">
+                        <div className="flex items-center gap-3 glass-card px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border border-white/10 flex-grow">
                             <ArrowUpDown className="w-4 h-4 text-primary" />
                             <select
-                                className="bg-transparent text-white font-black uppercase text-xs tracking-widest focus:outline-none cursor-pointer w-full"
+                                className="bg-transparent text-white font-black uppercase text-[10px] sm:text-xs tracking-widest focus:outline-none cursor-pointer w-full"
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
                             >
