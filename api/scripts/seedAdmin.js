@@ -9,17 +9,18 @@ const seedAdmin = async () => {
 
         await sequelize.sync();
 
-        const existingAdmin = await Admin.findOne({ where: { email } });
-        if (existingAdmin) {
-            console.log('Admin already exists.');
-            process.exit(0);
-        }
-
         const hashedPassword = await bcrypt.hash(password, 10);
-        await Admin.create({
-            email,
-            password: hashedPassword
+
+        const [admin, created] = await Admin.findOrCreate({
+            where: { email },
+            defaults: { password: hashedPassword }
         });
+
+        if (!created) {
+            console.log('Admin exists. Updating password...');
+            admin.password = hashedPassword;
+            await admin.save();
+        }
 
         console.log('Admin created successfully.');
         console.log('Email:', email);

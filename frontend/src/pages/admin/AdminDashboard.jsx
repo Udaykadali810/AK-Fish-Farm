@@ -4,9 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Package, CreditCard, Tag, ShoppingBag,
     Lock, LogOut, LayoutDashboard, ChevronRight,
-    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish, Download, Calendar
+    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish, Download, Calendar, CheckCircle2, XCircle
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+
+const SkeletonLoader = () => (
+    <div className="animate-pulse space-y-8 p-12">
+        <div className="h-12 bg-gray-200 dark:bg-slate-800 rounded-2xl w-1/3"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="h-64 bg-gray-200 dark:bg-slate-800 rounded-[3rem]"></div>
+            <div className="h-64 bg-gray-200 dark:bg-slate-800 rounded-[3rem]"></div>
+            <div className="h-64 bg-gray-200 dark:bg-slate-800 rounded-[3rem]"></div>
+        </div>
+        <div className="h-96 bg-gray-200 dark:bg-slate-800 rounded-[3rem]"></div>
+    </div>
+);
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('orders');
@@ -26,7 +38,7 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         if (!token) {
-            navigate('/admin');
+            navigate('/admin/login');
             return;
         }
         fetchData(true); // Initial load
@@ -39,12 +51,21 @@ const AdminDashboard = () => {
     const fetchData = async (firstLoad = false) => {
         if (firstLoad) setLoading(true);
         try {
-            const [ordersRes, offersRes, productsRes, inquiriesRes] = await Promise.all([
-                apiFetch('/api/admin/orders'),
+            const results = await Promise.allSettled([
+                apiFetch('/api/admin/orders?limit=20'),
                 apiFetch('/api/admin/offers'),
                 apiFetch('/api/admin/products'),
-                apiFetch('/api/inquiries')
+                apiFetch('/api/inquiries?limit=20')
             ]);
+
+            const ordersRes = results[0].status === 'fulfilled' ? results[0].value : [];
+            const offersRes = results[1].status === 'fulfilled' ? results[1].value : [];
+            const productsRes = results[2].status === 'fulfilled' ? results[2].value : [];
+            const inquiriesRes = results[3].status === 'fulfilled' ? results[3].value : [];
+
+            if (results.some(r => r.status === 'rejected')) {
+                console.error("Some data failed to load:", results.filter(r => r.status === 'rejected'));
+            }
 
             // Notification Logic
             if (ordersRes.length > 0) {
@@ -68,25 +89,38 @@ const AdminDashboard = () => {
     };
 
     const apiFetch = async (url, options = {}) => {
-        const baseUrl = import.meta.env.VITE_API_URL || '';
-        const res = await fetch(`${baseUrl}${url}`, {
-            ...options,
-            headers: {
-                ...options.headers,
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+        try {
+            const baseUrl = import.meta.env.VITE_API_URL || '';
+            const res = await fetch(`${baseUrl}${url}`, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    ...options.headers,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            clearTimeout(timeoutId);
+
+            if (res.status === 401) {
+                handleLogout();
+                throw new Error('Unauthorized');
             }
-        });
-        if (res.status === 401) {
-            handleLogout();
-            throw new Error('Unauthorized');
+            if (!res.ok) throw new Error(`API Error: ${res.status}`);
+
+            return res.json();
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
         }
-        return res.json();
     };
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
-        navigate('/admin');
+        navigate('/admin/login');
     };
 
     const handleUpdateOrderStatus = async (id, data) => {
@@ -188,9 +222,11 @@ const AdminDashboard = () => {
         { id: 'password', label: 'Security', icon: <Lock className="w-5 h-5" /> },
     ];
 
+
+
     if (loading && orders.length === 0) return (
-        <div className="min-h-screen bg-bg-main flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        <div className="min-h-screen bg-bg-main">
+            <SkeletonLoader />
         </div>
     );
 
@@ -507,63 +543,147 @@ const OffersSection = ({ offers, onRefresh, apiFetch }) => {
 };
 
 const ProductsSection = ({ products, onRefresh, apiFetch, onSync }) => {
+    const [newProduct, setNewProduct] = useState({ name: '', price: '', active: true });
+
+    const handleAdd = async () => {
+        if (!newProduct.name || !newProduct.name.trim()) return alert("Product Name is required");
+        if (!newProduct.price) return alert("Price is required");
+
+        try {
+            await apiFetch('/api/admin/products', {
+                method: 'POST',
+                body: JSON.stringify({
+                    ...newProduct,
+                    price: Number(newProduct.price)
+                })
+            });
+            setNewProduct({ name: '', price: '', active: true });
+            onRefresh();
+        } catch (err) {
+            alert("Failed to add product");
+        }
+    };
+
     const handleUpdate = async (id, data) => {
-        await apiFetch(`/api/admin/products/${id}`, { method: 'PUT', body: JSON.stringify(data) });
-        onRefresh();
+        try {
+            await apiFetch(`/api/admin/products/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+            onRefresh();
+        } catch (err) { }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this product?")) return;
+        try {
+            await apiFetch(`/api/admin/products/${id}`, { method: 'DELETE' });
+            onRefresh();
+        } catch (err) { alert("Failed to delete"); }
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-            <div className="p-8 border-b border-gray-50 flex justify-between items-center">
-                <h3 className="font-black italic">Species Control</h3>
-                <button onClick={onSync} className="text-[10px] font-black text-primary uppercase bg-primary/5 px-4 py-2 rounded-xl">Sync Registry</button>
+        <div className="space-y-12">
+            {/* Add New Product Form */}
+            <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <div className="space-y-2 md:col-span-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase">Fish / Product Name</label>
+                    <input
+                        type="text"
+                        value={newProduct.name}
+                        onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
+                        className="w-full p-4 rounded-xl bg-gray-50 dark:bg-slate-800 border-none font-bold text-sm text-dark dark:text-white"
+                        placeholder="e.g. Red Cap Oranda Goldfish"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase">Price (₹)</label>
+                    <input
+                        type="number"
+                        value={newProduct.price}
+                        onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
+                        className="w-full p-4 rounded-xl bg-gray-50 dark:bg-slate-800 border-none font-bold text-sm text-dark dark:text-white"
+                        placeholder="450"
+                    />
+                </div>
+                <button onClick={handleAdd} className="p-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-primary/90 transition-all">
+                    <Plus className="w-4 h-4" /> Add to Stock
+                </button>
             </div>
-            <table className="w-full text-left">
-                <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
-                    <tr>
-                        <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Species</th>
-                        <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Price</th>
-                        <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Visibility</th>
-                        <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
-                    {products.map(product => (
-                        <tr key={product.id} className="font-bold">
-                            <td className="p-8">
-                                <input
-                                    type="text"
-                                    defaultValue={product.name}
-                                    onBlur={(e) => handleUpdate(product.id, { name: e.target.value })}
-                                    className="bg-transparent border-none p-0 font-black italic text-dark dark:text-white"
-                                />
-                            </td>
-                            <td className="p-8">
-                                <div className="flex items-center gap-1">
-                                    <span>₹</span>
-                                    <input
-                                        type="number"
-                                        defaultValue={product.price}
-                                        onBlur={(e) => handleUpdate(product.id, { price: Number(e.target.value) })}
-                                        className="bg-transparent border-none p-0 w-24 font-black"
-                                    />
-                                </div>
-                            </td>
-                            <td className="p-8">
-                                <button
-                                    onClick={() => handleUpdate(product.id, { active: !product.active })}
-                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${product.active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
-                                >
-                                    {product.active ? 'ON' : 'OFF'}
-                                </button>
-                            </td>
-                            <td className="p-8 text-right">
-                                <div className="p-3 text-primary inline-flex bg-primary/5 rounded-xl"><Edit3 className="w-4 h-4" /></div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+
+            {/* Products Table */}
+            <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div className="p-8 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center">
+                    <h3 className="font-black italic text-dark dark:text-white">Current Inventory</h3>
+                    <div className="flex gap-4">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div> Active
+                        </span>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-red-500"></div> Out of Stock
+                        </span>
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+                            <tr>
+                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Species Name</th>
+                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Price (₹)</th>
+                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+                            {products.map(product => (
+                                <tr key={product.id} className="font-bold hover:bg-gray-50/30 transition-all">
+                                    <td className="p-8">
+                                        <input
+                                            type="text"
+                                            defaultValue={product.name}
+                                            onBlur={(e) => handleUpdate(product.id, { name: e.target.value })}
+                                            className="bg-transparent border-b border-transparent focus:border-primary border-dashed outline-none p-1 font-black italic text-dark dark:text-white w-full transition-all"
+                                        />
+                                    </td>
+                                    <td className="p-8">
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-gray-400">₹</span>
+                                            <input
+                                                type="number"
+                                                defaultValue={product.price}
+                                                onBlur={(e) => handleUpdate(product.id, { price: Number(e.target.value) })}
+                                                className="bg-transparent border-b border-transparent focus:border-primary border-dashed outline-none p-1 w-24 font-black text-dark dark:text-white transition-all"
+                                            />
+                                        </div>
+                                    </td>
+                                    <td className="p-8">
+                                        <button
+                                            onClick={() => handleUpdate(product.id, { active: !product.active })}
+                                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-2 ${product.active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+                                        >
+                                            {product.active ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                            {product.active ? 'In Stock' : 'Out of Stock'}
+                                        </button>
+                                    </td>
+                                    <td className="p-8 text-right">
+                                        <button
+                                            onClick={() => handleDelete(product.id)}
+                                            className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                            title="Delete Product"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {products.length === 0 && (
+                                <tr>
+                                    <td colSpan="4" className="p-12 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                        Inventory is empty. Add your first fish above.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };

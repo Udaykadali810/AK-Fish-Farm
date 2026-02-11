@@ -137,7 +137,7 @@ const TrackOrder = () => {
         <div className="max-w-6xl mx-auto px-4 py-24 min-h-screen">
             {/* Header Sec */}
             <div className="text-center mb-16">
-                <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-white italic mb-6 tracking-tighter uppercase">
+                <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-dark italic mb-6 tracking-tighter uppercase text-shadow-sm">
                     Track <span className="text-primary italic">Live</span>
                 </h1>
                 <div className="max-w-2xl mx-auto relative group">
@@ -147,9 +147,9 @@ const TrackOrder = () => {
                             value={orderIdInput}
                             onChange={(e) => setOrderIdInput(e.target.value.toUpperCase())}
                             placeholder="ORDER ID (AKF-XXXXX)"
-                            className="w-full py-5 sm:py-7 px-8 sm:px-12 rounded-[2rem] sm:rounded-[2.5rem] bg-white/5 border border-white/10 text-white font-black italic text-lg sm:text-2xl focus:outline-none focus:border-primary/50 focus:ring-8 focus:ring-primary/10 transition-all placeholder:text-white/10 uppercase tracking-widest"
+                            className="w-full py-5 sm:py-7 px-8 sm:px-12 rounded-[2rem] sm:rounded-[2.5rem] bg-white border border-gray-200 text-dark font-black italic text-lg sm:text-2xl focus:outline-none focus:border-primary/50 focus:ring-8 focus:ring-primary/10 transition-all placeholder:text-gray-300 uppercase tracking-widest shadow-xl"
                         />
-                        <button type="submit" className="absolute right-2 sm:right-4 top-2 sm:top-4 bottom-2 sm:top-4 px-6 sm:px-10 bg-primary text-dark rounded-[1.2rem] sm:rounded-[1.5rem] font-black uppercase text-[10px] sm:text-xs tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-2 sm:gap-3">
+                        <button type="submit" className="absolute right-2 sm:right-4 top-2 sm:top-4 bottom-2 sm:bottom-4 px-6 sm:px-10 bg-primary text-white rounded-[1.2rem] sm:rounded-[1.5rem] font-black uppercase text-[10px] sm:text-xs tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-2 sm:gap-3 shadow-lg shadow-primary/30">
                             <Search className="w-4 h-4 sm:w-5 h-5" /> Track
                         </button>
                     </form>
@@ -165,14 +165,14 @@ const TrackOrder = () => {
                         className="space-y-12"
                     >
                         {/* 3D Visualizer Card */}
-                        <div className="glass-card p-8 lg:p-20 rounded-[3rem] sm:rounded-[4rem] border border-white/10 bg-gradient-to-br from-white/5 to-transparent relative overflow-hidden flex flex-col items-center">
+                        <div className="glass-card p-8 lg:p-20 rounded-[3rem] sm:rounded-[4rem] border border-white/60 bg-white/80 shadow-2xl relative overflow-hidden flex flex-col items-center backdrop-blur-xl">
                             <div className="absolute top-10 left-10">
-                                <span className="text-[10px] font-black text-primary/60 uppercase tracking-[0.5em] block mb-2">Live Animation</span>
+                                <span className="text-[10px] font-black text-primary/80 uppercase tracking-[0.5em] block mb-2">Live Animation</span>
                                 <div className="h-1 w-20 bg-primary rounded-full" />
                             </div>
 
                             <div className="mb-10 text-center">
-                                <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase border tracking-widest inline-block mb-8 ${currentStatus === 'Delivered' ? 'bg-green-500/20 text-green-500 border-green-500/30' : 'bg-primary/20 text-primary border-primary/30 animate-pulse'}`}>
+                                <span className={`px-6 py-2 rounded-full text-[10px] font-black uppercase border tracking-widest inline-block mb-8 ${currentStatus === 'Delivered' ? 'bg-green-100 text-green-600 border-green-200' : 'bg-primary/10 text-primary border-primary/20 animate-pulse'}`}>
                                     {statusStages[activeIndex]?.label || currentStatus}
                                 </span>
                                 <div className="h-64 flex items-center justify-center">
@@ -182,7 +182,7 @@ const TrackOrder = () => {
 
                             {/* Status Timeline */}
                             <div className="w-full max-w-4xl relative pt-12 mt-12">
-                                <div className="absolute top-[4.2rem] left-0 right-0 h-1.5 bg-white/5 rounded-full" />
+                                <div className="absolute top-[4.2rem] left-0 right-0 h-1.5 bg-gray-200 rounded-full" />
                                 <div
                                     className="absolute top-[4.2rem] left-0 h-1.5 bg-primary rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(0,180,216,0.6)]"
                                     style={{ width: `${(activeIndex / (statusStages.length - 1)) * 100}%` }}
@@ -195,10 +195,10 @@ const TrackOrder = () => {
                                         const isActive = idx === activeIndex;
                                         return (
                                             <div key={idx} className="flex flex-col items-center group">
-                                                <div className={`w-14 h-14 lg:w-20 lg:h-20 rounded-[1.5rem] lg:rounded-[2rem] flex items-center justify-center border-2 transition-all duration-700 ${isActive ? 'bg-primary text-dark border-primary scale-110 shadow-2xl shadow-primary/40' : isPast ? 'bg-primary/20 text-primary border-primary/40' : 'bg-dark/40 text-white/10 border-white/5'}`}>
+                                                <div className={`w-14 h-14 lg:w-20 lg:h-20 rounded-[1.5rem] lg:rounded-[2rem] flex items-center justify-center border-2 transition-all duration-700 ${isActive ? 'bg-primary text-white border-primary scale-110 shadow-xl shadow-primary/30' : isPast ? 'bg-primary/10 text-primary border-primary/30' : 'bg-white text-gray-300 border-gray-200'}`}>
                                                     <Icon className={`w-6 h-6 lg:w-8 lg:h-8 ${isActive ? 'animate-bounce' : ''}`} />
                                                 </div>
-                                                <span className={`mt-6 text-[8px] lg:text-[10px] font-black uppercase tracking-tighter text-center ${isActive ? 'text-white' : 'text-white/20'}`}>
+                                                <span className={`mt-6 text-[8px] lg:text-[10px] font-black uppercase tracking-tighter text-center transition-colors ${isActive ? 'text-primary' : 'text-gray-400'}`}>
                                                     {stage.label}
                                                 </span>
                                             </div>
@@ -211,19 +211,19 @@ const TrackOrder = () => {
                         {/* Order Details Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Detailed Info Card */}
-                            <div className="lg:col-span-2 glass-card p-8 sm:p-12 rounded-[3rem] sm:rounded-[3.5rem] border border-white/10 bg-white/5">
-                                <div className="flex justify-between items-start mb-12 border-b border-white/5 pb-8">
+                            <div className="lg:col-span-2 glass-card p-8 sm:p-12 rounded-[3rem] sm:rounded-[3.5rem] border border-white/40 bg-white/60 shadow-xl">
+                                <div className="flex justify-between items-start mb-12 border-b border-gray-200 pb-8">
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Order Tracking Identity</p>
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Order Tracking Identity</p>
                                         <div className="flex items-center gap-4">
-                                            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white italic">{orderIdInput}</h2>
-                                            <button onClick={copyToClipboard} className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all">
-                                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-text-main" />}
+                                            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-black text-dark italic">{orderIdInput}</h2>
+                                            <button onClick={copyToClipboard} className="p-3 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-all shadow-sm">
+                                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-gray-600" />}
                                             </button>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Amount</p>
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Total Amount</p>
                                         <h2 className="text-2xl sm:text-4xl font-black text-primary italic">₹{trackingResult.total}</h2>
                                     </div>
                                 </div>
@@ -232,20 +232,20 @@ const TrackOrder = () => {
                                     <div className="space-y-6">
                                         <div>
                                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">Customer Details</label>
-                                            <p className="text-xl font-black text-white italic flex items-center gap-3"><ShoppingBag className="w-5 h-5 text-primary" /> {trackingResult.customerName}</p>
+                                            <p className="text-xl font-black text-dark italic flex items-center gap-3"><ShoppingBag className="w-5 h-5 text-primary" /> {trackingResult.customerName}</p>
                                         </div>
                                         <div>
                                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">Delivery Location</label>
-                                            <p className="text-xl font-black text-white italic flex items-center gap-3"><MapPin className="w-5 h-5 text-primary" /> {trackingResult.place}</p>
+                                            <p className="text-xl font-black text-dark italic flex items-center gap-3"><MapPin className="w-5 h-5 text-primary" /> {trackingResult.place}</p>
                                         </div>
                                     </div>
                                     <div className="space-y-4">
                                         <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">Items Ordered</label>
                                         <div className="space-y-3">
                                             {trackingResult.items?.map((item, i) => (
-                                                <div key={i} className="flex justify-between items-center text-sm font-bold bg-white/5 p-4 rounded-2xl border border-white/5">
-                                                    <span className="text-white italic">{item.name} <span className="text-xs text-primary ml-2">x{item.quantity}</span></span>
-                                                    <span className="text-gray-400">₹{item.price * item.quantity}</span>
+                                                <div key={i} className="flex justify-between items-center text-sm font-bold bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                                                    <span className="text-dark italic">{item.name} <span className="text-xs text-primary ml-2">x{item.quantity}</span></span>
+                                                    <span className="text-gray-600">₹{item.price * item.quantity}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -264,24 +264,24 @@ const TrackOrder = () => {
                             </div>
 
                             {/* Quick Action/Status Summary */}
-                            <div className="glass-card p-12 rounded-[3.5rem] border border-white/10 bg-primary/5 flex flex-col justify-between">
+                            <div className="glass-card p-12 rounded-[3.5rem] border border-white/60 bg-white/50 shadow-xl flex flex-col justify-between backdrop-blur-md">
                                 <div>
-                                    <span className="text-[10px] font-black text-primary/60 uppercase tracking-widest block mb-1">Status Summary</span>
-                                    <h3 className="text-3xl font-black text-white italic mb-10 leading-tight">Your order is currently in <span className="text-primary underline ">{currentStatus}</span> phase.</h3>
+                                    <span className="text-[10px] font-black text-primary/80 uppercase tracking-widest block mb-1">Status Summary</span>
+                                    <h3 className="text-3xl font-black text-dark italic mb-10 leading-tight">Your order is currently in <span className="text-primary underline ">{currentStatus}</span> phase.</h3>
 
                                     <div className="space-y-6">
                                         <div className="flex gap-4">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                                            <p className="text-xs text-gray-400 font-bold leading-relaxed">Our team is working diligently to ensure your aquatic pets arrive safely and in perfect condition.</p>
+                                            <p className="text-xs text-gray-500 font-bold leading-relaxed">Our team is working diligently to ensure your aquatic pets arrive safely and in perfect condition.</p>
                                         </div>
                                         <div className="flex gap-4">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                                            <p className="text-xs text-gray-400 font-bold leading-relaxed">Status updates are pushed in real-time. Keep this page open for live tracking.</p>
+                                            <p className="text-xs text-gray-500 font-bold leading-relaxed">Status updates are pushed in real-time. Keep this page open for live tracking.</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <Link to="/my-orders" className="w-full py-5 glass-card rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2 mt-12 border border-white/10">
+                                <Link to="/my-orders" className="w-full py-5 glass-card rounded-3xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 mt-12 border border-gray-200 text-dark shadow-lg bg-white/80">
                                     <ArrowRight className="w-4 h-4 rotate-180" /> My All Orders
                                 </Link>
                             </div>

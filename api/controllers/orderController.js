@@ -60,7 +60,11 @@ exports.getOrderById = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.findAll({ order: [['createdAt', 'DESC']] });
+        const limit = req.query.limit ? parseInt(req.query.limit) : 50; // Default to 50 to prevent overload, can be 10 if requested
+        const orders = await Order.findAll({
+            order: [['createdAt', 'DESC']],
+            limit: limit
+        });
         const mappedOrders = orders.map(o => ({
             ...o.toJSON(),
             id: o.orderId,

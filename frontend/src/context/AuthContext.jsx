@@ -1,118 +1,99 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    signInWithPopup,
-    updateProfile
-} from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db, googleProvider } from '../firebase';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState({ name: 'Guest', phoneNumber: '0000000000', role: 'user' });
     const [loading, setLoading] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(false);
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            if (firebaseUser) {
-                // Get additional user data from Firestore
-                const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-                if (userDoc.exists()) {
-                    setUser({ ...firebaseUser, ...userDoc.data() });
-                } else {
-                    setUser(firebaseUser);
-                }
-            } else {
-                setUser(null);
+        const checkAuth = async () => {
+            const savedProfile = JSON.parse(localStorage.getItem('ak_user_profile') || '{}');
+            const token = localStorage.getItem('ak_token');
+
+            // Base user starts with Guest defaults, overridden by saved profile
+            let userState = { name: 'Guest', phoneNumber: '0000000000', role: 'user', ...savedProfile };
+
+            if (token) {
+                const role = localStorage.getItem('ak_role');
+                userState = { ...userState, token, role };
             }
+
+            setUser(userState);
             setLoading(false);
-        });
-
-        const savedTheme = localStorage.getItem('ak_theme');
-        if (savedTheme === 'dark') {
-            setIsDarkMode(true);
-            document.body.classList.add('dark');
-        }
-
-        return () => unsubscribe();
+        };
+        checkAuth();
     }, []);
 
-    const login = async (email, password) => {
+    const sendOtp = async (phoneNumber) => {
         try {
-            const result = await signInWithEmailAndPassword(auth, email, password);
-            return { success: true, user: result.user };
+            const res = await axios.post(`${API_URL}/api/auth/send-otp`, { phoneNumber });
+            return { success: true, message: res.data.message, debugOtp: res.data.debugOtp };
         } catch (error) {
-            return {
-                success: false,
-                message: error.message || 'Login failed'
-            };
-        }
-    };
-
-    const googleLogin = async () => {
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-
-            // Check if user exists in Firestore, if not create
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (!userDoc.exists()) {
-                await setDoc(doc(db, 'users', user.uid), {
-                    name: user.displayName,
-                    email: user.email,
-                    createdAt: new Date().toISOString()
-                });
+            console.error('sendOtp Error:', error);
+            if (error.code === 'ERR_NETWORK') {
+                return { success: false, message: 'Unable to connect to server. Is it running?' };
             }
-            return { success: true, user };
-        } catch (error) {
-            return { success: false, message: error.message };
+            return { success: false, message: error.response?.data?.message || 'Failed to send OTP' };
         }
     };
 
-    const register = async (name, email, password, phone) => {
+    const verifyOtp = async (phoneNumber, otp) => {
         try {
-            const result = await createUserWithEmailAndPassword(auth, email, password);
-            const user = result.user;
-
-            // Update Firebase profile name
-            await updateProfile(user, { displayName: name });
-
-            // Store extra info in Firestore
-            await setDoc(doc(db, 'users', user.uid), {
-                name,
-                email,
-                phone,
-                role: 'user',
-                createdAt: new Date().toISOString()
-            });
-
-            return { success: true, user };
+            const res = await axios.post(`${API_URL}/api/auth/verify-otp`, { phoneNumber, otp });
+            const { token, user, role } = res.data;
+            localStorage.setItem('ak_token', token);
+            localStorage.setItem('ak_role', role);
+            setUser({ ...user, token, role });
+            return { success: true };
         } catch (error) {
-            return {
-                success: false,
-                message: error.message || 'Registration failed'
-            };
+            return { success: false, message: error.response?.data?.message || 'Invalid OTP' };
         }
     };
 
-    const logout = async () => {
+    const loginWithPhone = async (phoneNumber) => {
         try {
-            await signOut(auth);
-            setUser(null);
+            const res = await axios.post(`${API_URL}/api/auth/login-phone`, { phoneNumber });
+            const { token, user, role } = res.data;
+            localStorage.setItem('ak_token', token);
+            localStorage.setItem('ak_role', role);
+            setUser({ ...user, token, role });
+            return { success: true };
         } catch (error) {
-            console.error("Logout error", error);
+            console.error('Phone Login Error:', error);
+            if (error.code === 'ERR_NETWORK') {
+                return { success: false, message: 'Unable to connect to server.' };
+            }
+            return { success: false, message: error.response?.data?.message || 'Login failed' };
         }
+    };
+
+    const login = async (email, password) => { // Admin login
+        try {
+            const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
+            const { token, role } = res.data;
+            localStorage.setItem('ak_token', token);
+            localStorage.setItem('ak_role', role);
+            setUser({ token, role });
+            return { success: true };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Login failed' };
+        }
+    };
+
+    const logout = () => {
+        localStorage.removeItem('ak_token');
+        localStorage.removeItem('ak_role');
+        setUser({ name: 'Guest', phoneNumber: '0000000000', role: 'user' });
     };
 
     const toggleDarkMode = () => {
         setIsDarkMode(!isDarkMode);
-        const newMode = !isDarkMode;
-        if (newMode) {
+        if (!isDarkMode) {
             document.body.classList.add('dark');
             localStorage.setItem('ak_theme', 'dark');
         } else {
@@ -121,11 +102,20 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUserProfile = (newDetails) => {
+        setUser(prev => {
+            const updated = { ...prev, ...newDetails };
+            localStorage.setItem('ak_user_profile', JSON.stringify(updated));
+            return updated;
+        });
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, googleLogin, register, logout, isDarkMode, toggleDarkMode }}>
+        <AuthContext.Provider value={{ user, loading, sendOtp, verifyOtp, loginWithPhone, login, logout, isDarkMode, toggleDarkMode, updateUserProfile }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
 export const useAuth = () => useContext(AuthContext);
+

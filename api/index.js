@@ -7,35 +7,28 @@ const { sequelize } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS Configuration
-const allowedOrigins = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    process.env.FRONTEND_URL,
-    'https://ak-fish-farm.vercel.app'
-].filter(Boolean);
+// Logging Middleware (Top Level)
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 
+// CORS Configuration - Permissive for Debugging
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow all local development origins automatically
-        if (!origin || origin.includes('localhost') || origin.includes('127.0.0.1')) {
-            return callback(null, true);
-        }
-        if (allowedOrigins.indexOf(origin) === -1) {
-            var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
+    origin: true, // Allow any origin
     credentials: true
 }));
 
 app.use(express.json());
 
+
+
+app.get('/test-ping', (req, res) => res.send('pong'));
+
 // Routes
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/offers', require('./routes/offers'));
-app.use('/api/admin', require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/inquiries', require('./routes/inquiries'));
 

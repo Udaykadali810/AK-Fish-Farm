@@ -18,17 +18,17 @@ const AdminLogin = ({ onLogin }) => {
 
         try {
             const baseUrl = import.meta.env.VITE_API_URL || '';
-            const res = await fetch(`${baseUrl}/api/admin/login`, {
+            const res = await fetch(`${baseUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ email: username, password }) // Controller expects 'email' or 'username'
             });
 
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('adminToken', data.token);
-                onLogin();
-                navigate('/admin/dashboard');
+                if (onLogin) onLogin();
+                navigate('/admin');
             } else {
                 setError(data.message || 'Login failed');
             }

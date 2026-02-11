@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Instagram, Facebook, ShoppingCart, MessageCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { Menu, X, Instagram, Facebook, ShoppingCart, MessageCircle, User, Fish } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +11,6 @@ const Navbar = () => {
     const location = useLocation();
     const { cart } = useCart();
     const { user } = useAuth();
-    const { isDarkMode, toggleTheme } = useTheme();
 
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -28,9 +26,10 @@ const Navbar = () => {
 
     const navLinks = [
         { name: 'Home', path: '/' },
-        { name: 'My Orders', path: '/my-orders' },
+        { name: 'Shop', path: '/shop' },
         { name: 'Categories', path: '/categories' },
         { name: 'Offers', path: '/offers' },
+        { name: 'My Orders', path: '/my-orders' },
         { name: 'Contact', path: '/contact' },
         { name: 'Admin', path: '/admin' },
     ];
@@ -52,7 +51,7 @@ const Navbar = () => {
                             <Link
                                 key={link.name}
                                 to={link.path}
-                                className={`nav-link ${location.pathname === link.path ? 'text-primary' : 'text-text-main hover:text-primary'}`}
+                                className={`nav-link transition-colors ${location.pathname === link.path ? 'text-primary' : 'text-gray-600 hover:text-primary'}`}
                             >
                                 {link.name}
                             </Link>
@@ -61,62 +60,46 @@ const Navbar = () => {
 
                     {/* Icons Area */}
                     <div className="hidden lg:flex items-center space-x-6">
+                        <Link to="/profile" className="text-gray-600 hover:text-primary transition-all duration-300 flex items-center gap-2 font-black text-xs uppercase group">
+                            <User className="h-5 w-5" />
+                            {user ? 'Profile' : 'Login'}
+                        </Link>
+
                         <a
                             href={WHATSAPP_LINK}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-text-main hover:text-green-500 transition-all duration-300 flex items-center gap-2 font-black text-xs uppercase group"
+                            className="text-gray-600 hover:text-green-500 transition-all duration-300 flex items-center gap-2 font-black text-xs uppercase group"
                         >
                             <div className="p-2 bg-green-500/10 rounded-xl group-hover:bg-green-500/20 transition-all">
                                 <MessageCircle className="h-5 w-5 text-green-500" />
                             </div>
-                            WhatsApp Chat
+                            WhatsApp
                         </a>
 
                         <Link to="/cart" className="relative group p-2 bg-white/5 rounded-2xl border border-white/10 hover:border-primary/50 transition-all duration-500">
-                            <ShoppingCart className={`h-6 w-6 transition-all duration-300 ${cartCount > 0 ? 'text-primary' : 'text-text-main'}`} />
+                            <ShoppingCart className={`h-5 w-5 transition-all duration-300 ${cartCount > 0 ? 'text-primary' : 'text-gray-600'}`} />
                             {cartCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-primary text-dark text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full shadow-lg animate-pulse">
+                                <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg">
                                     {cartCount}
                                 </span>
                             )}
                         </Link>
-
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 bg-white/5 rounded-2xl border border-white/10 hover:border-primary/50 transition-all duration-500 text-text-main"
-                            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                        >
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={isDarkMode ? 'dark' : 'light'}
-                                    initial={{ y: 10, opacity: 0, rotate: -45 }}
-                                    animate={{ y: 0, opacity: 1, rotate: 0 }}
-                                    exit={{ y: -10, opacity: 0, rotate: 45 }}
-                                    transition={{ duration: 0.2 }}
-                                >
-                                    {isDarkMode ? <Sun className="h-6 w-6 text-yellow-400" /> : <Moon className="h-6 w-6 text-primary" />}
-                                </motion.div>
-                            </AnimatePresence>
-                        </button>
                     </div>
 
                     {/* Mobile menu button */}
                     <div className="lg:hidden flex items-center gap-4">
                         <Link to="/cart" className="relative p-2">
-                            <ShoppingCart className="h-7 w-7 text-text-main" />
+                            <ShoppingCart className="h-7 w-7 text-gray-600" />
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-primary text-dark text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">
+                                <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">
                                     {cartCount}
                                 </span>
                             )}
                         </Link>
-                        <button onClick={toggleTheme} className="p-2 text-text-main">
-                            {isDarkMode ? <Sun className="h-7 w-7 text-yellow-400" /> : <Moon className="h-7 w-7 text-primary" />}
-                        </button>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 text-text-main hover:text-primary transition-colors focus:outline-none"
+                            className="p-2 text-gray-600 hover:text-primary transition-colors focus:outline-none"
                         >
                             {isOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
                         </button>
@@ -139,25 +122,18 @@ const Navbar = () => {
                                     key={link.name}
                                     to={link.path}
                                     onClick={() => setIsOpen(false)}
-                                    className={`block py-3 px-4 rounded-xl font-bold transition-all ${location.pathname === link.path ? 'bg-primary text-dark shadow-lg' : 'text-text-main hover:bg-white/10'}`}
+                                    className={`block py-3 px-4 rounded-xl font-bold transition-all ${location.pathname === link.path ? 'bg-primary text-white shadow-lg' : 'text-gray-600 hover:bg-white/10'}`}
                                 >
                                     {link.name}
                                 </Link>
                             ))}
-                            <div className="pt-4 flex items-center justify-between border-t border-white/10 mt-4">
-                                <a
-                                    href={WHATSAPP_LINK}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 text-green-500 font-black uppercase text-sm"
-                                >
-                                    <MessageCircle className="h-5 w-5" /> WhatsApp Chat
-                                </a>
-                                <div className="flex space-x-4">
-                                    <Instagram className="h-5 w-5 text-text-main" />
-                                    <Facebook className="h-5 w-5 text-text-main" />
-                                </div>
-                            </div>
+                            <Link
+                                to="/profile"
+                                onClick={() => setIsOpen(false)}
+                                className="block py-3 px-4 rounded-xl font-bold text-gray-600 hover:bg-white/10"
+                            >
+                                Profile / Account
+                            </Link>
                         </div>
                     </motion.div>
                 )}
@@ -167,4 +143,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

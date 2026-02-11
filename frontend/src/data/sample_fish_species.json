@@ -1,0 +1,39 @@
+[
+    {
+        "id": "1",
+        "name": "Red Cap Oranda",
+        "scientificName": "Carassius auratus",
+        "category": "Goldfish",
+        "price": 450,
+        "rating": 4.8,
+        "image": "/images/compressed/red-cap-primary.webp",
+        "thumbnails": [
+            "/images/compressed/red-cap-1.webp",
+            "/images/compressed/red-cap-2.webp"
+        ],
+        "description": "High-quality Red Cap Oranda with prominent wen growth.",
+        "active": true
+    },
+    {
+        "id": "2",
+        "name": "Super Red Arowana (F1)",
+        "scientificName": "Scleropages formosus",
+        "category": "Arowana",
+        "price": 12000,
+        "rating": 5.0,
+        "image": "/images/compressed/super-red-arowana.webp",
+        "description": "F1 Grade Super Red Arowana, micro-chipped and certified.",
+        "active": true
+    },
+    {
+        "id": "3",
+        "name": "Full Gold Guppy",
+        "scientificName": "Poecilia reticulata",
+        "category": "Guppy",
+        "price": 850,
+        "rating": 4.7,
+        "image": "/images/compressed/full-gold-guppy.webp",
+        "description": "Pure strain Full Gold Guppies (Pair).",
+        "active": true
+    }
+]

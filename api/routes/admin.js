@@ -23,7 +23,9 @@ router.delete('/offers/:id', offerController.deleteOffer);
 
 // Products management
 router.get('/products', productController.getAllProducts);
+router.post('/products', productController.createProduct);
 router.put('/products/:id', productController.updateProduct);
+router.delete('/products/:id', productController.deleteProduct);
 router.post('/products/sync', productController.syncProducts);
 
 module.exports = router;

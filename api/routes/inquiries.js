@@ -21,8 +21,10 @@ router.post('/', async (req, res) => {
 // Get all inquiries (Admin only)
 router.get('/', async (req, res) => {
     try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 50;
         const inquiries = await Inquiry.findAll({
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            limit: limit
         });
         res.json(inquiries);
     } catch (error) {

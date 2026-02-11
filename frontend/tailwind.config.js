@@ -8,10 +8,12 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "#00b4d8", // Aqua
-                secondary: "#0077b6", // Blue
-                accent: "#caf0f8", // Light Aqua
-                dark: "#03045e", // Dark Blue
+                primary: "var(--primary)",
+                secondary: "var(--secondary)",
+                accent: "var(--accent)",
+                dark: "var(--dark)",
+                "bg-main": "var(--bg-main)",
+                "text-main": "var(--text-main)",
             },
         },
     },

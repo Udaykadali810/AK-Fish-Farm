@@ -2,14 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { products } from '../data/products';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Star, ShieldCheck, Truck, Droplets, ChevronLeft, ChevronRight, Share2, Plus, Minus, MessageCircle } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ShieldCheck, Truck, Droplets, ChevronLeft, ChevronRight, Share2, Plus, Minus, MessageCircle, Check } from 'lucide-react';
 import ProductCard from '../components/ui/ProductCard';
+import { useCart } from '../context/CartContext';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
     const [activeTab, setActiveTab] = useState('description');
+    const [quantity, setQuantity] = useState(1);
+    const [added, setAdded] = useState(false);
+
+    const handleAddToCart = () => {
+        addToCart({ ...product, quantity });
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
+    };
+
 
     useEffect(() => {
         const found = products.find(p => p.id === parseInt(id));
@@ -29,16 +40,16 @@ const ProductDetails = () => {
         <div className="bg-bg-main min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest mb-12">
+                <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest mb-12">
                     <Link to="/" className="hover:text-primary transition-colors">Home</Link>
                     <ChevronRight className="w-3 h-3" />
                     <Link to="/shop" className="hover:text-primary transition-colors">Shop</Link>
                     <ChevronRight className="w-3 h-3" />
-                    <span className="text-dark dark:text-white">{product.name}</span>
+                    <span className="text-dark">{product.name}</span>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-                    {/* Image Section */}
+                    {/* Image Section - Unchanged */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -75,12 +86,12 @@ const ProductDetails = () => {
                             <Droplets className="w-3 h-3" /> {product.category}
                         </div>
 
-                        <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-dark dark:text-white mb-6 italic">{product.name}</h1>
+                        <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-dark mb-6 italic">{product.name}</h1>
 
                         <div className="flex items-center gap-6 mb-8">
                             <div className="flex text-yellow-500 items-center">
                                 {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-4 h-4 fill-yellow-500" />)}
-                                <span className="ml-2 font-black text-dark dark:text-white text-sm">5.0 (24 reviews)</span>
+                                <span className="ml-2 font-black text-dark text-sm">5.0 (24 reviews)</span>
                             </div>
                         </div>
 
@@ -91,29 +102,68 @@ const ProductDetails = () => {
                                     <span className="text-lg sm:text-xl text-gray-400 line-through mb-1">₹{product.price}</span>
                                 </>
                             ) : (
-                                <span className="text-4xl sm:text-5xl font-black text-dark dark:text-white italic">₹{product.price}</span>
+                                <span className="text-4xl sm:text-5xl font-black text-dark italic">₹{product.price}</span>
                             )}
                         </div>
 
-                        <p className="text-gray-500 dark:text-gray-400 text-lg font-medium leading-relaxed mb-10">
+                        <p className="text-gray-600 text-lg font-medium leading-relaxed mb-10">
                             {product.description}
                         </p>
 
-                        <div className="bg-gray-50 dark:bg-slate-800/50 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 mb-10">
-                            <div className="flex flex-col sm:flex-row gap-4 text-center">
+                        {/* Quantity and Buttons - Unchanged */}
+                        <div className="flex flex-col gap-8 mb-10">
+                            <div className="flex items-center gap-6">
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Quantity</span>
+                                <div className="flex items-center bg-white/50 rounded-2xl border border-white/20 p-2">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white transition-all text-dark hover:text-primary"
+                                    >
+                                        <Minus className="w-4 h-4" />
+                                    </button>
+                                    <span className="w-12 text-center font-black text-lg text-dark">{quantity}</span>
+                                    <button
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white transition-all text-dark hover:text-primary"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="flex-grow py-5 bg-primary text-white rounded-[2rem] font-black text-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                >
+                                    <ShoppingCart className="w-6 h-6" /> {added ? 'Added to Cart' : 'Add to Cart'}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addToCart({ ...product, quantity });
+                                        navigate('/checkout');
+                                    }}
+                                    className="flex-grow py-5 bg-[#FF6B6B] text-white rounded-[2rem] font-black text-xl shadow-xl shadow-[#FF6B6B]/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                >
+                                    Buy Now
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
                                 <a
                                     href={`https://wa.me/919492045766?text=I'm interested in buying ${product.name}`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex-grow py-5 bg-primary text-white rounded-2xl font-black text-lg sm:text-xl shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                    className="flex items-center gap-2 text-[10px] font-black text-green-600 uppercase tracking-widest hover:translate-x-1 transition-transform"
                                 >
-                                    <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" /> Inquiry on WhatsApp
+                                    <MessageCircle className="w-4 h-4" /> Ask Expertise via WhatsApp
                                 </a>
-                                <button className="px-8 py-5 bg-white dark:bg-slate-900 text-dark dark:text-white rounded-2xl font-black transition-all hover:bg-gray-100 flex items-center justify-center gap-2 border border-gray-100 dark:border-gray-800 shadow-sm">
-                                    <Share2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                                <button className="ml-auto p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-gray-400 hover:text-primary transition-colors">
+                                    <Share2 className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
+
 
                         {/* Features list */}
                         <div className="grid grid-cols-3 gap-4">
@@ -122,7 +172,7 @@ const ProductDetails = () => {
                                 { icon: <Truck className="w-5 h-5" />, label: "Fast Safe" },
                                 { icon: <Droplets className="w-5 h-5" />, label: "Eco Pack" }
                             ].map((f, i) => (
-                                <div key={i} className="flex flex-col items-center p-4 rounded-2xl border border-dashed border-gray-200 dark:border-gray-800">
+                                <div key={i} className="flex flex-col items-center p-4 rounded-2xl border border-dashed border-gray-200">
                                     <div className="text-primary mb-2">{f.icon}</div>
                                     <span className="text-[10px] font-black uppercase text-gray-500">{f.label}</span>
                                 </div>
@@ -133,7 +183,7 @@ const ProductDetails = () => {
 
                 {/* Tabs Section */}
                 <section className="mt-24">
-                    <div className="flex gap-12 border-b border-gray-100 dark:border-gray-800 mb-12 overflow-x-auto pb-px">
+                    <div className="flex gap-12 border-b border-gray-200 mb-12 overflow-x-auto pb-px">
                         {['description', 'care-guide', 'shipping'].map(tab => (
                             <button
                                 key={tab}
@@ -152,15 +202,15 @@ const ProductDetails = () => {
                         <AnimatePresence mode='wait'>
                             {activeTab === 'description' && (
                                 <motion.div key="desc" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                                    <p className="text-lg text-gray-600 dark:text-gray-400">{product.description}</p>
-                                    <p className="mt-6 text-lg text-gray-600 dark:text-gray-400">Our {product.name} are sourced from professional breeders and undergo a strict 14 days quarantine period. This ensures they are free from common parasites and ready to adapt to your aquarium environment smoothly.</p>
+                                    <p className="text-lg text-gray-600">{product.description}</p>
+                                    <p className="mt-6 text-lg text-gray-600">Our {product.name} are sourced from professional breeders and undergo a strict 14 days quarantine period. This ensures they are free from common parasites and ready to adapt to your aquarium environment smoothly.</p>
                                 </motion.div>
                             )}
                             {activeTab === 'care-guide' && (
                                 <motion.div key="care" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                                    <div className="bg-white dark:bg-slate-900 p-10 rounded-[3.5rem] border border-gray-100 dark:border-gray-800">
-                                        <h4 className="text-2xl font-black text-dark dark:text-white mb-6 italic">Aquarium Expert's Tips</h4>
-                                        <div className="space-y-4 text-gray-600 dark:text-gray-400 text-lg">
+                                    <div className="bg-white p-10 rounded-[3.5rem] border border-gray-200">
+                                        <h4 className="text-2xl font-black text-dark mb-6 italic">Aquarium Expert's Tips</h4>
+                                        <div className="space-y-4 text-gray-600 text-lg">
                                             <p className="flex items-center gap-3"><Droplets className="w-5 h-5 text-primary" /> {product.careInstructions || 'Standard tropical care: 24-28°C, pH 7.0'}</p>
                                             <p className="flex items-center gap-3"><Star className="w-5 h-5 text-primary" /> Minimum Tank Size: 15 Gallons recommended</p>
                                             <p className="flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-primary" /> Diet: High protein flakes/pellets and live bloodworms</p>
@@ -175,7 +225,7 @@ const ProductDetails = () => {
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (
                     <section className="mt-32">
-                        <h2 className="text-4xl font-black text-dark dark:text-white italic mb-12">Related <span className="text-primary italic">Favorites</span></h2>
+                        <h2 className="text-4xl font-black text-dark italic mb-12">Related <span className="text-primary italic">Favorites</span></h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
                         </div>

@@ -18,33 +18,50 @@ const Shop = () => {
     const [priceRange, setPriceRange] = useState(3000);
     const [sortBy, setSortBy] = useState('Newest');
     const [showFilters, setShowFilters] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 8;
+    const productsPerPage = 9;
 
     useEffect(() => {
-        let result = products;
+        // Simulate loading delay for skeleton effect
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 800);
+        return () => clearTimeout(timer);
+    }, []);
 
-        if (search) {
-            result = result.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
-        }
+    // Filter and sort products
+    useEffect(() => {
+        let filtered = products;
 
+        // Filter by category
         if (category !== 'All') {
-            result = result.filter(p => p.category === category);
+            filtered = filtered.filter(p => p.category === category);
         }
 
-        result = result.filter(p => (p.offerPrice || p.price) <= priceRange);
+        // Filter by search
+        if (search) {
+            filtered = filtered.filter(p =>
+                p.name.toLowerCase().includes(search.toLowerCase()) ||
+                p.description.toLowerCase().includes(search.toLowerCase())
+            );
+        }
 
+        // Filter by price
+        filtered = filtered.filter(p => p.price <= priceRange);
+
+        // Sort
         if (sortBy === 'Price: Low to High') {
-            result = [...result].sort((a, b) => (a.offerPrice || a.price) - (b.offerPrice || b.price));
+            filtered.sort((a, b) => a.price - b.price);
         } else if (sortBy === 'Price: High to Low') {
-            result = [...result].sort((a, b) => (b.offerPrice || b.price) - (a.offerPrice || a.price));
+            filtered.sort((a, b) => b.price - a.price);
         } else if (sortBy === 'Rating') {
-            result = [...result].sort((a, b) => b.rating - a.rating);
+            filtered.sort((a, b) => (b.rating || 5) - (a.rating || 5));
         }
 
-        setFilteredProducts(result);
-        setCurrentPage(1);
-    }, [search, category, priceRange, sortBy]);
+        setFilteredProducts(filtered);
+        setCurrentPage(1); // Reset to first page when filters change
+    }, [category, search, priceRange, sortBy]);
 
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -59,7 +76,7 @@ const Shop = () => {
                     <input
                         type="text"
                         placeholder="Type to search..."
-                        className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-primary/50 text-white font-medium transition-all focus:outline-none"
+                        className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-gray-200 focus:border-primary/50 text-dark font-medium transition-all focus:outline-none placeholder-gray-400"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -74,7 +91,7 @@ const Shop = () => {
                         <button
                             key={cat}
                             onClick={() => setCategory(cat)}
-                            className={`block w-full text-left px-5 py-4 rounded-xl text-xs font-black tracking-widest uppercase transition-all ${category === cat ? 'bg-primary text-dark shadow-xl shadow-primary/20' : 'text-gray-500 hover:bg-white/5 hover:text-white'}`}
+                            className={`block w-full text-left px-5 py-4 rounded-xl text-xs font-black tracking-widest uppercase transition-all ${category === cat ? 'bg-primary text-dark shadow-xl shadow-primary/20' : 'text-gray-500 hover:bg-gray-100 hover:text-dark'}`}
                         >
                             {cat}
                         </button>
@@ -91,7 +108,7 @@ const Shop = () => {
                     step="100"
                     value={priceRange}
                     onChange={(e) => setPriceRange(Number(e.target.value))}
-                    className="w-full accent-primary bg-white/5 h-2 rounded-lg cursor-pointer"
+                    className="w-full accent-primary bg-gray-200 h-2 rounded-lg cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] font-black text-gray-500 mt-4 tracking-widest">
                     <span>₹100</span>
@@ -101,14 +118,37 @@ const Shop = () => {
         </div>
     );
 
+    if (loading) {
+        return (
+            <div className="bg-bg-main min-h-screen">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="flex flex-col lg:flex-row gap-16">
+                        <div className="hidden lg:block w-72 flex-shrink-0">
+                            <div className="h-96 bg-gray-200 rounded-[3rem] animate-pulse"></div>
+                        </div>
+                        <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-10">
+                            {[...Array(6)].map((_, i) => (
+                                <div key={i} className="bg-white rounded-[2rem] p-4 shadow-lg border border-gray-100 animate-pulse h-96">
+                                    <div className="h-48 bg-gray-200 rounded-[1.5rem] mb-4 w-full"></div>
+                                    <div className="h-6 bg-gray-200 rounded-full w-3/4 mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded-full w-1/2 mb-4"></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="bg-bg-main min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 {/* Header */}
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 mb-20">
                     <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }}>
-                        <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-white italic mb-4 uppercase">The <span className="text-primary italic">Catalog</span></h1>
-                        <p className="text-gray-400 font-medium tracking-wide">Showing {filteredProducts.length} premium aquatic species available for your selection.</p>
+                        <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-dark italic mb-4 uppercase">The <span className="text-primary italic">Catalog</span></h1>
+                        <p className="text-gray-600 font-medium tracking-wide">Showing {filteredProducts.length} premium aquatic species available for your selection.</p>
                     </motion.div>
 
                     <div className="flex items-center gap-4 w-full md:w-auto">
@@ -122,7 +162,7 @@ const Shop = () => {
                         <div className="flex items-center gap-3 glass-card px-4 sm:px-6 py-3 sm:py-4 rounded-2xl border border-white/10 flex-grow">
                             <ArrowUpDown className="w-4 h-4 text-primary" />
                             <select
-                                className="bg-transparent text-white font-black uppercase text-[10px] sm:text-xs tracking-widest focus:outline-none cursor-pointer w-full"
+                                className="bg-transparent text-dark font-black uppercase text-[10px] sm:text-xs tracking-widest focus:outline-none cursor-pointer w-full"
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
                             >
@@ -151,19 +191,19 @@ const Shop = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="fixed inset-0 bg-dark/80 backdrop-blur-sm z-[60]"
+                                    className="fixed inset-0 bg-dark/20 backdrop-blur-sm z-[60]"
                                     onClick={() => setShowFilters(false)}
                                 />
                                 <motion.div
                                     initial={{ x: '100%' }}
                                     animate={{ x: 0 }}
                                     exit={{ x: '100%' }}
-                                    className="fixed right-0 top-0 h-full w-80 glass-morphism z-[70] p-10 overflow-y-auto"
+                                    className="fixed right-0 top-0 h-full w-80 glass-morphism z-[70] p-10 overflow-y-auto bg-white"
                                 >
                                     <div className="flex justify-between items-center mb-12">
-                                        <h3 className="text-2xl font-black text-white italic uppercase">Filters</h3>
+                                        <h3 className="text-2xl font-black text-dark italic uppercase">Filters</h3>
                                         <button onClick={() => setShowFilters(false)} className="p-3 glass-card rounded-xl">
-                                            <X className="w-6 h-6 text-white" />
+                                            <X className="w-6 h-6 text-dark" />
                                         </button>
                                     </div>
                                     {filters}
@@ -186,8 +226,8 @@ const Shop = () => {
                         {filteredProducts.length === 0 && (
                             <div className="text-center py-40 glass-card rounded-[4rem] border border-white/5">
                                 <Sparkles className="w-16 h-16 text-primary mx-auto mb-8 opacity-20" />
-                                <h3 className="text-3xl font-black text-white italic mb-4">No Species Found</h3>
-                                <p className="text-gray-400 max-w-sm mx-auto">Try adjusting your filters or search terms.</p>
+                                <h3 className="text-3xl font-black text-dark italic mb-4">No Species Found</h3>
+                                <p className="text-gray-500 max-w-sm mx-auto">Try adjusting your filters or search terms.</p>
                             </div>
                         )}
 
@@ -197,17 +237,17 @@ const Shop = () => {
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                     disabled={currentPage === 1}
-                                    className="p-5 glass-card rounded-2xl border border-white/10 text-white disabled:opacity-20 hover:bg-primary hover:text-dark transition-all"
+                                    className="p-5 glass-card rounded-2xl border border-white/10 text-dark disabled:opacity-20 hover:bg-primary hover:text-white transition-all"
                                 >
                                     <ChevronLeft className="w-6 h-6" />
                                 </button>
-                                <div className="text-white font-black italic text-xl tracking-widest">
-                                    {currentPage} <span className="text-white/20">/</span> {totalPages}
+                                <div className="text-dark font-black italic text-xl tracking-widest">
+                                    {currentPage} <span className="text-dark/20">/</span> {totalPages}
                                 </div>
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                     disabled={currentPage === totalPages}
-                                    className="p-5 glass-card rounded-2xl border border-white/10 text-white disabled:opacity-20 hover:bg-primary hover:text-dark transition-all"
+                                    className="p-5 glass-card rounded-2xl border border-white/10 text-dark disabled:opacity-20 hover:bg-primary hover:text-white transition-all"
                                 >
                                     <ChevronRight className="w-6 h-6" />
                                 </button>

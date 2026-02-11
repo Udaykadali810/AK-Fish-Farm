@@ -5,8 +5,13 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const Profile = () => {
-    const { user, logout } = useAuth();
+    const { user, logout, updateUserProfile } = useAuth();
     const [editing, setEditing] = useState(false);
+
+    // ... (lines 10-153 omitted or assumed unchanged, I should only target the button click and destructuring) 
+
+    // Actually I can't skip lines in replacement content easily if I am replacing a block.
+    // Let's replace the top destructuring and the save button separately using multi_replace_file_content.
     const [formData, setFormData] = useState({
         name: user?.name || '',
         phone: user?.address?.phone || '',
@@ -14,6 +19,22 @@ const Profile = () => {
         city: user?.address?.city || '',
         zip: user?.address?.zip || ''
     });
+
+    const handleSave = async () => {
+        // Construct the update object
+        const updates = {
+            name: formData.name,
+            phoneNumber: formData.phone, // mapping phone to phoneNumber
+            address: {
+                street: formData.street,
+                city: formData.city,
+                zip: formData.zip,
+                phone: formData.phone
+            }
+        };
+        updateUserProfile(updates);
+        setEditing(false);
+    };
 
     if (!user) {
         return (
@@ -29,7 +50,7 @@ const Profile = () => {
     }
 
     return (
-        <div className="bg-bg-main min-h-screen pb-24">
+        <div className="bg-bg-main min-h-screen pb-24" >
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     {/* Left Panel: Profile Info */}
@@ -51,7 +72,7 @@ const Profile = () => {
                             <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-10">{user.email}</p>
 
                             <div className="space-y-4">
-                                <Link to="/orders" className="w-full p-6 rounded-3xl bg-gray-50 dark:bg-slate-800 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all flex items-center justify-between group">
+                                <Link to="/my-orders" className="w-full p-6 rounded-3xl bg-gray-50 dark:bg-slate-800 hover:bg-primary/5 dark:hover:bg-primary/20 transition-all flex items-center justify-between group">
                                     <div className="flex items-center gap-4">
                                         <Package className="text-primary w-6 h-6" />
                                         <span className="font-bold text-sm">My Orders</span>
@@ -158,7 +179,7 @@ const Profile = () => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         type="button"
-                                        onClick={() => setEditing(false)}
+                                        onClick={handleSave}
                                         className="w-full py-6 bg-secondary text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-secondary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
                                     >
                                         <Save className="w-6 h-6" /> Save Profile Changes
@@ -169,7 +190,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
