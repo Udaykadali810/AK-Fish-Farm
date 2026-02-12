@@ -1,7 +1,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Admin } = require('../db');
 const otps = new Map(); // In production, use Redis or a DB table
+
+// Hardcoded admin credentials for serverless deployment
+const ADMIN_EMAIL = 'admin@akfishfarms.com';
+const ADMIN_PASSWORD = 'AKFish2026!';
+const JWT_SECRET = process.env.JWT_SECRET || 'ak_fish_farms_secret_key_2026';
 
 exports.login = async (req, res) => {
     try {
@@ -9,24 +13,17 @@ exports.login = async (req, res) => {
         const identifier = email || username;
 
         console.log('Login attempt for:', identifier);
-        const admin = await Admin.findOne({ where: { email: identifier } });
-        console.log('Admin record found:', admin ? 'Yes' : 'No');
 
-        if (!admin) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+        // Check if it's the admin account
+        if (identifier === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            const token = jwt.sign({ id: 1, role: 'admin', email: ADMIN_EMAIL }, JWT_SECRET, { expiresIn: '24h' });
+            return res.json({ token, role: 'admin' });
         }
 
-        const isMatch = await bcrypt.compare(password, admin.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-        const token = jwt.sign({ id: admin.id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '24h' });
-
-        res.json({ token, role: 'admin' });
+        return res.status(401).json({ message: 'Invalid credentials' });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
 
