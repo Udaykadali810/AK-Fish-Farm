@@ -6,7 +6,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "install-all": "npm install && cd api && npm install && cd ../frontend && npm install",
-    "build": "cd frontend && npm install && npm run build && cd ../api && npm install",
+    "build": "cd frontend && npm install && npm run build && cd .. && rm -rf dist && cp -r frontend/dist ./dist",
     "start": "cd api && node index.js"
   },
   "devDependencies": {
