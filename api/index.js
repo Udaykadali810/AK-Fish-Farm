@@ -1,11 +1,41 @@
 const express = require('express');
 const cors = require('cors');
-// Make sure this points correctly to your database config file
-const { sequelize } = require('./db');
+const bcrypt = require('bcryptjs');
+const { sequelize, Admin } = require('./db');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Initialize database and create admin user
+const initializeDatabase = async () => {
+    try {
+        await sequelize.sync({ alter: false });
+        console.log('Database synced');
+
+        // Create default admin if doesn't exist
+        const email = 'admin@akfishfarms.com';
+        const password = 'AKFish2026!';
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const [admin, created] = await Admin.findOrCreate({
+            where: { email },
+            defaults: { password: hashedPassword }
+        });
+
+        if (created) {
+            console.log('✅ Admin user created');
+            console.log('📧 Email:', email);
+            console.log('🔑 Password:', password);
+        } else {
+            console.log('✅ Admin user already exists');
+        }
+    } catch (error) {
+        console.error('❌ Database initialization error:', error);
+    }
+};
+
+initializeDatabase();
 
 // A simple test route to verify the backend is alive
 app.get('/api/test', (req, res) => {

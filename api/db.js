@@ -1,21 +1,30 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// We use POSTGRES_URL because it is the "Pooled" connection from your screenshot
-const sequelize = new Sequelize(process.env.POSTGRES_URL, {
-    dialect: 'postgres',
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false // REQUIRED for Neon/Vercel to "talk"
-        }
-    },
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-    }
+// Use SQLite for Vercel serverless (PostgreSQL won't work in serverless without external DB)
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './database.sqlite',
+    logging: false
 });
 
-module.exports = { sequelize };
+// Import models
+const Admin = require('./models/Admin')(sequelize);
+const User = require('./models/User')(sequelize);
+const Order = require('./models/Order')(sequelize);
+const Product = require('./models/Product')(sequelize);
+const Offer = require('./models/Offer')(sequelize);
+const Inquiry = require('./models/Inquiry')(sequelize);
+
+// Sync database
+sequelize.sync({ alter: false });
+
+module.exports = {
+    sequelize,
+    Admin,
+    User,
+    Order,
+    Product,
+    Offer,
+    Inquiry
+};
