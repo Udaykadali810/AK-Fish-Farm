@@ -1,16 +1,29 @@
-# React + Vite
+# 🌊 AK Fish Farms - Premium Ecommerce Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the official repository for the **AK Fish Farms** website. This is a high-performance, mobile-optimized ecommerce platform designed for elite aquatic species acquisition.
 
-Currently, two official plugins are available:
+## 📄 Project Documentation
+For a detailed breakdown of what we have built, the tech stack used, and key features, please refer to our **Official Project Portfolio**:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+👉 **[View PROJECT_OVERVIEW.md](./PROJECT_OVERVIEW.md)**
 
-## React Compiler
+## 🚀 Quick Start (Development)
+1. **Clone the repository**
+2. **Install dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   ```
+3. **Run locally**:
+   ```bash
+   npm run dev
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 Tech Stack at a Glance
+- **React 19 + Vite**
+- **Tailwind CSS + Framer Motion**
+- **Vercel Serverless Functions (Node.js)**
+- **GitHub & Vercel Deployment Pipeline**
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+*Developed for AK Fish Farms*
