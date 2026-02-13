@@ -47,11 +47,6 @@ const ProductCard = ({ product }) => {
                             <div className="w-full h-full flex items-center justify-center text-[#BFEFFF]/10 font-black italic text-5xl">AK</div>
                         )}
 
-                        {/* Floating Price Tag: Neon Cyan Glow */}
-                        <div className="absolute top-4 right-4 sm:top-5 sm:right-5 bg-[#071A2F]/90 backdrop-blur-2xl border border-[#00E5FF]/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl text-[10px] sm:text-[11px] font-extrabold text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)] uppercase tracking-widest z-20 transition-all">
-                            ₹{product.price}
-                        </div>
-
                         {/* Category Badge */}
                         <div className={`absolute bottom-4 left-4 sm:bottom-5 sm:left-5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl z-20 ${product.category === 'AK Premium Collection' ? 'bg-[#00E5FF] text-[#071A2F] shadow-[0_0_20px_rgba(0,229,255,0.4)]' : 'bg-[#BFEFFF]/90 text-[#071A2F]'}`}>
                             {product.category === 'AK Premium Collection' ? '💎 Premium' : product.category.replace(' Collection', '')}
@@ -68,6 +63,13 @@ const ProductCard = ({ product }) => {
                                 {product.category === 'AK Premium Collection' && <span className="text-[#00E5FF] ml-2 inline-block animate-pulse">★</span>}
                             </h3>
                         </Link>
+                    </div>
+
+                    {/* Highly Visible Price Section */}
+                    <div className="mb-4 sm:mb-6">
+                        <span className="text-3xl sm:text-4xl font-black text-[#00E5FF] italic drop-shadow-[0_0_15px_rgba(0,229,255,0.6)] tracking-tighter">
+                            ₹{product.price}
+                        </span>
                     </div>
 
                     <p className="text-[#BFEFFF]/40 text-[11px] sm:text-xs mb-8 sm:mb-10 font-medium leading-relaxed tracking-wide italic line-clamp-3">

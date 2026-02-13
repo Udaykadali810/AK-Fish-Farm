@@ -123,6 +123,49 @@ const Contact = () => {
                     </div>
                 </div>
 
+                {/* Location QR Code Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="mt-16 lg:mt-24 max-w-2xl mx-auto"
+                >
+                    <div className="glass-card rounded-[4rem] p-12 sm:p-16 border border-[#00E5FF]/20 text-center relative overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.6)] bg-gradient-to-br from-[#0B2A4A]/40 to-transparent">
+                        <div className="absolute inset-0 bg-[#00E5FF]/5 blur-[80px] rounded-full pointer-events-none -z-10"></div>
+
+                        <h2 className="text-3xl sm:text-4xl font-black text-[#BFEFFF] italic mb-10 uppercase tracking-tighter">
+                            Scan to <span className="text-[#00E5FF]">Visit Our Location</span>
+                        </h2>
+
+                        <div className="relative inline-block p-6 bg-white rounded-[3rem] shadow-[0_0_50px_rgba(0,229,255,0.3)] group transition-transform duration-500 hover:scale-105 mb-10">
+                            <img
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://www.google.com/maps?q=16.58448,81.5531017&z=17&hl=en"
+                                alt="AK Fish Farms Location QR"
+                                className="w-[180px] h-[180px] sm:w-[250px] sm:h-[250px] relative z-10"
+                            />
+                            {/* Decorative Corner Brackets */}
+                            <div className="absolute -top-2 -left-2 w-8 h-8 border-t-4 border-l-4 border-[#00E5FF] rounded-tl-xl"></div>
+                            <div className="absolute -top-2 -right-2 w-8 h-8 border-t-4 border-r-4 border-[#00E5FF] rounded-tr-xl"></div>
+                            <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-4 border-l-4 border-[#00E5FF] rounded-bl-xl"></div>
+                            <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-4 border-r-4 border-[#00E5FF] rounded-br-xl"></div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <p className="text-2xl font-black text-[#BFEFFF] italic tracking-tighter uppercase">AK Fish Farms</p>
+                            <p className="text-[#BFEFFF]/40 text-xs font-black uppercase tracking-[0.3em]">Palakoderu, Andhra Pradesh</p>
+                        </div>
+
+                        <a
+                            href="https://www.google.com/maps?q=16.58448,81.5531017&z=17&hl=en"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-10 inline-flex items-center gap-3 text-[#00E5FF] text-[10px] font-black uppercase tracking-[0.4em] hover:tracking-[0.6em] transition-all group"
+                        >
+                            Open in Maps <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
+                        </a>
+                    </div>
+                </motion.div>
+
                 {/* Floating WhatsApp Button */}
                 <motion.a
                     href="https://wa.me/919492045766"
