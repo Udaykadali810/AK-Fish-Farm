@@ -12,11 +12,29 @@ exports.login = async (req, res) => {
     try {
         const { email, username, password } = req.body;
         const identifier = email || username;
+        const { Admin } = require('../db');
 
         console.log('Login attempt for:', identifier);
 
-        // Check if it's the admin account
+        // 1. Try to find the admin in the database first
+        const dbAdmin = await Admin.findOne({ where: { email: identifier } });
+
+        if (dbAdmin) {
+            const isMatch = await bcrypt.compare(password, dbAdmin.password);
+            if (isMatch) {
+                const token = jwt.sign({ id: dbAdmin.id, role: 'admin', email: dbAdmin.email }, JWT_SECRET, { expiresIn: '24h' });
+                return res.json({ token, role: 'admin' });
+            }
+        }
+
+        // 2. Fallback to hardcoded credentials if DB check fails or user not in DB yet
         if (identifier === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            // Create the admin in DB if they don't exist so we can update them later
+            if (!dbAdmin) {
+                const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
+                await Admin.create({ email: ADMIN_EMAIL, password: hashedPassword });
+            }
+
             const token = jwt.sign({ id: 1, role: 'admin', email: ADMIN_EMAIL }, JWT_SECRET, { expiresIn: '24h' });
             return res.json({ token, role: 'admin' });
         }
@@ -94,6 +112,7 @@ exports.changePassword = async (req, res) => {
     try {
         const { newPassword } = req.body;
         const adminId = req.adminId;
+        const { Admin } = require('../db');
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await Admin.update({ password: hashedPassword }, { where: { id: adminId } });
