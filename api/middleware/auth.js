@@ -8,11 +8,12 @@ module.exports = (req, res, next) => {
     }
 
     try {
-        const secret = process.env.JWT_SECRET || 'ak_fish_farms_secret_key_2026';
+        const secret = 'ak_fish_farms_secret_key_2026_v1';
         const decoded = jwt.verify(token, secret);
         req.adminId = decoded.id;
         next();
     } catch (error) {
+        console.error('Auth Middleware Error:', error.message);
         return res.status(401).json({ message: 'Invalid token' });
     }
 };

@@ -2,6 +2,11 @@ const { Sequelize } = require('sequelize');
 const pg = require('pg');
 require('dotenv').config();
 
+// Hardcoded admin credentials for serverless deployment
+const ADMIN_EMAIL = 'admin@akfishfarms.com';
+const ADMIN_PASSWORD = 'AKFish2026!';
+const JWT_SECRET = 'ak_fish_farms_secret_key_2026_v1';
+
 // Ensure the connection string works with Sequelize and PG
 const connectionString = process.env.POSTGRES_URL;
 
@@ -29,10 +34,14 @@ const Product = require('./models/Product')(sequelize);
 const Offer = require('./models/Offer')(sequelize);
 const Inquiry = require('./models/Inquiry')(sequelize);
 
-// Test connection (don't block, just log)
+// Test connection and sync tables (non-blocking for serverless)
 sequelize.authenticate()
-    .then(() => console.log('Successfully connected to Neon Database.'))
-    .catch(err => console.error('Unable to connect to the database:', err));
+    .then(() => {
+        console.log('Successfully connected to Neon Database.');
+        return sequelize.sync({ alter: false });
+    })
+    .then(() => console.log('Database tables synchronized.'))
+    .catch(err => console.error('Database Error:', err));
 
 // Export models and sequelize
 module.exports = {

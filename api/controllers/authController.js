@@ -5,7 +5,8 @@ const otps = new Map(); // In production, use Redis or a DB table
 // Hardcoded admin credentials for serverless deployment
 const ADMIN_EMAIL = 'admin@akfishfarms.com';
 const ADMIN_PASSWORD = 'AKFish2026!';
-const JWT_SECRET = process.env.JWT_SECRET || 'ak_fish_farms_secret_key_2026';
+const JWT_SECRET = 'ak_fish_farms_secret_key_2026_v1';
+
 
 exports.login = async (req, res) => {
     try {
