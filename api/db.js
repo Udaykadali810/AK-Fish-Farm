@@ -1,10 +1,14 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-// Use SQLite for Vercel serverless (PostgreSQL won't work in serverless without external DB)
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './database.sqlite',
+const sequelize = new Sequelize(process.env.POSTGRES_URL + "?sslmode=require", {
+    dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    },
     logging: false
 });
 
