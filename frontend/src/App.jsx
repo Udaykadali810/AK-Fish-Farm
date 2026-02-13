@@ -39,8 +39,9 @@ const EliteApp = lazy(() => import('./pages/EliteApp'));
 const AkProStore = lazy(() => import('./pages/AkProStore'));
 
 const Loading = () => (
-  <div className="min-h-screen flex items-center justify-center bg-white">
-    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+  <div className="min-h-screen flex flex-col items-center justify-center bg-[#071A2F]">
+    <div className="w-20 h-20 border-4 border-[#00E5FF] border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(0,229,255,0.2)] mb-8"></div>
+    <div className="text-[#00E5FF] text-[10px] font-black uppercase tracking-[0.5em] animate-pulse">Establishing Connection...</div>
   </div>
 );
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, Star, Check, Plus } from 'lucide-react';
+import { ShoppingCart, Star, Check, Plus, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 
@@ -26,15 +26,16 @@ const ProductCard = ({ product }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            className="group relative glass-card rounded-[3rem] overflow-hidden border border-white/5 transition-all duration-700 hover:border-aqua/30 flex flex-col h-full bg-dark"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -10 }}
+            className="group relative glass-card rounded-[3rem] overflow-visible min-h-[500px]"
         >
-            <div className="relative p-5 flex-grow flex flex-col">
+            <div className="relative p-8 flex flex-col h-full">
                 {/* Image Section */}
-                <Link to={`/product/${product.id}`} className="block">
-                    <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-white/[0.03] mb-8 border border-white/5">
+                <Link to={`/product/${product.id}`} className="block mb-8">
+                    <div className="relative aspect-[16/10] rounded-[2.5rem] overflow-hidden bg-[#0B2A4A]/20 border border-[#00E5FF]/10 shadow-2xl">
                         {product.image ? (
                             <img
                                 src={product.image}
@@ -43,48 +44,44 @@ const ProductCard = ({ product }) => {
                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-white/10 font-black italic text-4xl">AK</div>
+                            <div className="w-full h-full flex items-center justify-center text-[#BFEFFF]/10 font-black italic text-5xl">AK</div>
                         )}
 
-                        {/* Floating Highlights */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent pointer-events-none"></div>
-
-                        {/* Price Tag: Vibrant Neon Cyan */}
-                        <div className="absolute top-5 right-5 bg-dark/60 backdrop-blur-3xl border border-aqua/30 neon-price px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider z-10">
+                        {/* Floating Price Tag: Neon Cyan Glow */}
+                        <div className="absolute top-5 right-5 bg-[#071A2F]/90 backdrop-blur-2xl border border-[#00E5FF]/30 px-5 py-2.5 rounded-2xl text-[11px] font-extrabold text-[#00E5FF] shadow-[0_0_15px_rgba(0,229,255,0.4)] uppercase tracking-widest z-20">
                             ₹{product.price}
                         </div>
 
-                        {/* Label: High Contrast White/Dark */}
-                        <div className="absolute bottom-5 left-5 px-5 py-2.5 bg-white text-dark rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl z-20">
-                            {product.category}
+                        {/* Category Badge */}
+                        <div className={`absolute bottom-5 left-5 px-5 py-2.5 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl z-20 ${product.category === 'AK Premium Collection' ? 'bg-[#00E5FF] text-[#071A2F] shadow-[0_0_20px_rgba(0,229,255,0.4)]' : 'bg-[#BFEFFF]/90 text-[#071A2F]'}`}>
+                            {product.category === 'AK Premium Collection' ? '💎 Premium' : product.category.replace(' Collection', '')}
                         </div>
                     </div>
                 </Link>
 
-                {/* Info Container */}
-                <div className="px-3 pb-2 flex flex-col flex-grow">
-                    <div className="flex justify-between items-start mb-4">
-                        <Link to={`/product/${product.id}`} className="flex-grow">
-                            <h3 className="text-2xl font-black text-white italic line-clamp-1 group-hover:text-aqua transition-colors duration-500 uppercase tracking-tighter">
+                {/* Content Section */}
+                <div className="flex flex-col flex-grow px-2">
+                    <div className="mb-5">
+                        <Link to={`/product/${product.id}`} className="block min-w-0">
+                            <h3 className="text-2xl sm:text-3xl font-black text-[#BFEFFF] italic group-hover:text-[#00E5FF] transition-colors duration-500 uppercase tracking-tighter leading-[1.1] whitespace-normal break-words overflow-visible">
                                 {product.name}
+                                {product.category === 'AK Premium Collection' && <span className="text-[#00E5FF] ml-2 inline-block animate-pulse">★</span>}
                             </h3>
                         </Link>
-                        <div className="flex items-center text-accent font-black text-[10px] bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                            <Star className="w-3 h-3 fill-accent mr-1.5" /> {product.rating}
-                        </div>
                     </div>
 
-                    <p className="text-white/30 text-xs mb-10 line-clamp-2 h-10 font-medium leading-relaxed tracking-wide">
+                    <p className="text-[#BFEFFF]/40 text-xs mb-10 font-medium leading-relaxed tracking-wide italic leading-snug">
                         {product.description}
                     </p>
 
-                    {/* Industrial/Professional Action Area */}
+                    {/* Action Area: Premium Buttons */}
                     <div className="mt-auto flex gap-4">
                         <button
                             onClick={handleAddToCart}
-                            className={`p-5 rounded-[2.2rem] flex items-center justify-center transition-all duration-500 active:scale-90 border ${added ? 'bg-green-500 border-green-400 text-white shadow-xl shadow-green-500/20' : 'bg-white/5 text-aqua border-white/10 hover:bg-aqua hover:text-dark hover:border-aqua shadow-2xl'}`}
+                            className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 active:scale-90 border-2 flex-shrink-0 ${added ? 'bg-green-500 border-green-400 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)]' : 'bg-[#0B2A4A]/40 text-[#BFEFFF]/60 border-[#00E5FF]/20 hover:border-[#00E5FF] hover:text-[#00E5FF]'}`}
+                            title="Add to Cart"
                         >
-                            <AnimatePresence mode="wait">
+                            <AnimatePresence mode="white/5">
                                 {added ? (
                                     <motion.div key="added" initial={{ scale: 0.5 }} animate={{ scale: 1 }} exit={{ scale: 0.5 }}>
                                         <Check className="w-6 h-6" />
@@ -99,9 +96,9 @@ const ProductCard = ({ product }) => {
 
                         <button
                             onClick={handleBuyNow}
-                            className="flex-grow py-5 bg-aqua text-dark rounded-[2.2rem] font-black text-[11px] uppercase tracking-[0.3em] shadow-xl shadow-aqua/20 hover:shadow-aqua/40 active:scale-95 transition-all text-center flex items-center justify-center gap-3"
+                            className="flex-grow h-16 btn-premium flex items-center justify-center gap-4 text-xs"
                         >
-                            Instant Get <Plus className="w-4 h-4 font-black" />
+                            Buy Now <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                         </button>
                     </div>
                 </div>

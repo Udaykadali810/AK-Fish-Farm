@@ -3,49 +3,62 @@ import { Mail, Phone, Instagram, MessageCircle, MapPin, Send, MessageSquare, Dro
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Contact = () => {
-    // ... (state and handlers same)
+    const [loading, setLoading] = useState(false);
+    const [sent, setSent] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            setSent(true);
+        }, 1500);
+    };
 
     return (
-        <div className="min-h-screen pb-32">
-            {/* Header Banner - High-End Aquatic Feel */}
-            <div className="h-[60vh] flex items-center justify-center text-white text-center px-4 relative overflow-hidden">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1 }}
-                    className="relative z-10"
-                >
-                    <div className="inline-flex items-center gap-3 px-8 py-3 bg-white/5 backdrop-blur-3xl rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-12 border border-white/10 glow-border">
-                        <Droplets className="w-4 h-4 text-aqua" /> AK Fish Farms Protocol
-                    </div>
-                    <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black italic mb-10 leading-[0.9] tracking-tighter uppercase">Contact <span className="text-aqua glow-text">Farms.</span></h1>
-                    <p className="text-xl text-white/40 max-w-2xl mx-auto font-medium tracking-wide">Headquarters: Palakoderu, Andhra Pradesh. <br />Reach our technical experts for genetics and logistics info.</p>
-                </motion.div>
-            </div>
+        <div className="min-h-screen pt-40 pb-32 relative overflow-hidden bg-transparent">
+            {/* Background Blobs */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00E5FF]/5 blur-[120px] rounded-full"></div>
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#00C2D1]/5 blur-[120px] rounded-full"></div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-20">
+            <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
+                <div className="text-center mb-24">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        <span className="text-[#00E5FF] text-[10px] font-black uppercase tracking-[0.5em] mb-6 block">Communication Protocol</span>
+                        <h1 className="text-6xl lg:text-9xl font-black text-[#BFEFFF] italic mb-8 leading-[0.8] tracking-tighter uppercase">
+                            Establish <span className="text-[#00E5FF] drop-shadow-[0_0_20px_rgba(0,229,255,0.4)]">Contact</span>
+                        </h1>
+                        <p className="text-[#BFEFFF]/40 font-medium tracking-[0.2em] text-xs uppercase max-w-2xl mx-auto leading-relaxed">
+                            Direct channel for elite species acquisition and habitat coordination.
+                        </p>
+                    </motion.div>
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
                     {/* Contact Info Cards */}
                     <div className="lg:col-span-1 space-y-6">
                         {[
-                            { icon: <Droplets className="w-6 h-6" />, label: "Proprietor", value: "K. Hari Teja", color: "text-aqua", link: "#" },
-                            { icon: <Phone className="w-6 h-6" />, label: "Call Us", value: "94920 45766", color: "text-blue-400", link: "tel:+919492045766" },
-                            { icon: <MessageCircle className="w-6 h-6" />, label: "WhatsApp", value: "Direct Support", color: "text-green-400", link: "https://wa.me/919492045766" },
-                            { icon: <Instagram className="w-6 h-6" />, label: "Instagram", value: "@akfishfarms", color: "text-pink-400", link: "https://www.instagram.com/akfishfarms/" },
-                            { icon: <MapPin className="w-6 h-6" />, label: "Location", value: "Andhra Pradesh", color: "text-orange-400", link: "https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6" }
+                            { icon: <Droplets className="w-6 h-6" />, label: "Proprietor", value: "K. Hari Teja", color: "text-[#00E5FF]", link: "#" },
+                            { icon: <Phone className="w-6 h-6" />, label: "Comm Channel", value: "94920 45766", color: "text-[#00C2D1]", link: "tel:+919492045766" },
+                            { icon: <MessageCircle className="w-6 h-6" />, label: "WhatsApp Status", value: "Online", color: "text-green-400", link: "https://wa.me/919492045766" },
+                            { icon: <Instagram className="w-6 h-6" />, label: "Instagram Link", value: "@akfishfarms", color: "text-pink-400", link: "https://www.instagram.com/akfishfarms/" },
+                            { icon: <MapPin className="w-6 h-6" />, label: "Coordinates", value: "Andhra Pradesh", color: "text-orange-400", link: "https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6" }
                         ].map((item, i) => (
                             <motion.a
-                                whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.05)" }}
+                                whileHover={{ x: 10, scale: 1.02 }}
                                 href={item.link}
                                 key={i}
-                                className="glass-card p-8 rounded-[3rem] border border-white/5 flex items-center gap-8 group block"
+                                className="glass-card p-10 rounded-[3rem] border border-[#00E5FF]/10 flex items-center gap-10 group block"
                             >
-                                <div className={`p-4 rounded-2xl bg-white/5 ${item.color} group-hover:scale-110 transition-transform duration-500`}>
+                                <div className={`p-5 rounded-3xl bg-[#0B2A4A] ${item.color} group-hover:scale-110 transition-transform duration-500 shadow-xl border border-[#00E5FF]/10`}>
                                     {item.icon}
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] mb-1">{item.label}</span>
-                                    <span className="text-xl font-black text-white italic tracking-tight">{item.value}</span>
+                                    <span className="text-[10px] font-black text-[#BFEFFF]/30 uppercase tracking-[0.3em] mb-2">{item.label}</span>
+                                    <span className="text-xl font-black text-[#BFEFFF] italic tracking-tight uppercase">{item.value}</span>
                                 </div>
                             </motion.a>
                         ))}
@@ -57,11 +70,13 @@ const Contact = () => {
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className="glass-card rounded-[4rem] p-12 lg:p-20 border border-white/5 h-full relative overflow-hidden"
+                            className="glass-card rounded-[4rem] p-12 lg:p-20 border border-[#00E5FF]/20 h-full relative overflow-hidden shadow-2xl bg-gradient-to-br from-[#0B2A4A]/40 to-transparent"
                         >
-                            <div className="flex items-center gap-6 mb-16">
-                                <div className="p-5 bg-aqua text-dark rounded-3xl shadow-xl shadow-aqua/20"><MessageSquare className="w-8 h-8" /></div>
-                                <h2 className="text-4xl sm:text-5xl font-black text-white italic uppercase tracking-tighter">Drop a <span className="text-aqua">Note</span></h2>
+                            <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#00E5FF]/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+                            <div className="flex items-center gap-8 mb-16 relative z-10">
+                                <div className="p-6 bg-[#00E5FF] text-[#071A2F] rounded-[2rem] shadow-[0_0_30px_rgba(0,229,255,0.4)]"><MessageSquare className="w-8 h-8" /></div>
+                                <h2 className="text-4xl sm:text-5xl font-black text-[#BFEFFF] italic uppercase tracking-tighter leading-tight">Drop a <span className="text-[#00E5FF]">Note</span></h2>
                             </div>
 
                             <AnimatePresence mode='wait'>
@@ -70,36 +85,36 @@ const Contact = () => {
                                         key="success"
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="flex flex-col items-center justify-center py-24 text-center h-full"
+                                        className="flex flex-col items-center justify-center py-24 text-center h-full relative z-10"
                                     >
-                                        <div className="w-24 h-24 bg-aqua text-dark rounded-full flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(14,165,233,0.5)]">
+                                        <div className="w-24 h-24 bg-[#00E5FF] text-[#071A2F] rounded-full flex items-center justify-center mb-8 shadow-[0_0_60px_rgba(0,229,255,0.5)] border-4 border-[#071A2F]">
                                             <CheckCircle2 className="w-12 h-12" />
                                         </div>
-                                        <h3 className="text-4xl font-black text-white mb-4 italic uppercase tracking-tight">Transmission Complete</h3>
-                                        <p className="text-white/40 font-medium max-w-sm">We'll respond faster than a hunting Betta.</p>
+                                        <h3 className="text-4xl font-black text-[#BFEFFF] mb-4 italic uppercase tracking-tight">Transmission Secured</h3>
+                                        <p className="text-[#BFEFFF]/60 font-medium max-w-sm uppercase text-[10px] tracking-widest">A human operator will respond to your channel shortly.</p>
                                     </motion.div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    <form onSubmit={handleSubmit} className="space-y-12 relative z-10">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                             <div className="space-y-4">
-                                                <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Commander Name</label>
-                                                <input required type="text" className="w-full p-6 rounded-[2rem] bg-white/5 border border-white/10 focus:border-aqua/50 focus:ring-4 focus:ring-aqua/10 text-white font-bold transition-all outline-none placeholder-white/10" placeholder="Your Name" />
+                                                <label className="text-[10px] font-black text-[#00E5FF]/50 uppercase tracking-[0.4em] ml-4">Identifier Name</label>
+                                                <input required type="text" className="w-full p-8 rounded-[2.5rem] bg-[#071A2F]/60 border border-[#00E5FF]/20 focus:border-[#00E5FF] focus:ring-4 focus:ring-[#00E5FF]/10 text-[#BFEFFF] font-black transition-all outline-none placeholder-[#BFEFFF]/10 shadow-inner text-sm uppercase tracking-widest" placeholder="Your Full Name" />
                                             </div>
                                             <div className="space-y-4">
-                                                <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Comm Channel (Email)</label>
-                                                <input required type="email" className="w-full p-6 rounded-[2rem] bg-white/5 border border-white/10 focus:border-aqua/50 focus:ring-4 focus:ring-aqua/10 text-white font-bold transition-all outline-none placeholder-white/10" placeholder="email@address.com" />
+                                                <label className="text-[10px] font-black text-[#00E5FF]/50 uppercase tracking-[0.4em] ml-4">Phone Protocol</label>
+                                                <input required type="tel" className="w-full p-8 rounded-[2.5rem] bg-[#071A2F]/60 border border-[#00E5FF]/20 focus:border-[#00E5FF] focus:ring-4 focus:ring-[#00E5FF]/10 text-[#BFEFFF] font-black transition-all outline-none placeholder-[#BFEFFF]/10 shadow-inner text-sm uppercase tracking-widest" placeholder="10-digit primary" />
                                             </div>
                                             <div className="md:col-span-2 space-y-4">
-                                                <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Detail Narrative</label>
-                                                <textarea required rows="6" className="w-full p-6 rounded-[2rem] bg-white/5 border border-white/10 focus:border-aqua/50 focus:ring-4 focus:ring-aqua/10 text-white font-bold transition-all outline-none resize-none placeholder-white/10" placeholder="Type your message here..."></textarea>
+                                                <label className="text-[10px] font-black text-[#00E5FF]/50 uppercase tracking-[0.4em] ml-4">Detailed Message</label>
+                                                <textarea required rows="6" className="w-full p-8 rounded-[2.5rem] bg-[#071A2F]/60 border border-[#00E5FF]/20 focus:border-[#00E5FF] focus:ring-4 focus:ring-[#00E5FF]/10 text-[#BFEFFF] font-black transition-all outline-none resize-none placeholder-[#BFEFFF]/10 shadow-inner text-sm uppercase tracking-widest" placeholder="Inquire about species or logistics..."></textarea>
                                             </div>
                                         </div>
                                         <button
                                             disabled={loading}
                                             type="submit"
-                                            className="w-full py-7 bg-aqua text-dark rounded-[2.5rem] font-black text-xl uppercase tracking-widest shadow-[0_0_40px_rgba(14,165,233,0.3)] hover:shadow-aqua/50 transition-all flex items-center justify-center gap-4 disabled:opacity-50 active:scale-95"
+                                            className="w-full py-8 btn-premium flex items-center justify-center gap-6 text-sm"
                                         >
-                                            {loading ? 'Transmitting...' : <>Establish Contact <Send className="w-6 h-6" /></>}
+                                            {loading ? 'Transmitting...' : <>Initiate Direct Contact <Send className="w-6 h-6" /></>}
                                         </button>
                                     </form>
                                 )}
@@ -107,50 +122,19 @@ const Contact = () => {
                         </motion.div>
                     </div>
                 </div>
-            </div>
 
-            {/* Location Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-40">
-                <div className="glass-card rounded-[5rem] p-12 lg:p-24 border border-white/5 text-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-aqua/5 rounded-full blur-[100px]"></div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="relative z-10 flex flex-col items-center"
-                    >
-                        <div className="inline-flex items-center gap-3 px-8 py-3 bg-white/5 rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-12 border border-white/10">
-                            <MapPin className="w-4 h-4 text-aqua" /> Farm Coordinates
-                        </div>
-                        <h2 className="text-4xl sm:text-6xl font-black text-white mb-10 italic uppercase tracking-tighter shadow-2xl">Scan for <span className="text-aqua glow-text">Portal</span></h2>
-
-                        <div className="relative p-12 bg-white rounded-[4rem] shadow-[0_0_60px_rgba(255,255,255,0.1)] group mb-16">
-                            <img
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6"
-                                alt="Location QR Code"
-                                className="w-64 h-64 grayscale group-hover:grayscale-0 transition-all duration-700"
-                            />
-                            <motion.div
-                                animate={{ top: ["0%", "100%", "0%"] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                                className="absolute left-0 right-0 h-1 bg-aqua/50 blur-sm z-20 pointer-events-none"
-                            />
-                        </div>
-
-                        <a
-                            href="https://maps.app.goo.gl/GnqDjeTsM2h6eQEy6"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex flex-col items-center gap-4"
-                        >
-                            <span className="text-white/40 font-black uppercase text-[10px] tracking-[0.5em]">Andhra Pradesh, India</span>
-                            <div className="flex items-center gap-4 text-2xl font-black text-white group-hover:text-aqua transition-colors italic">
-                                Open Navigation <ArrowRight className="w-8 h-8 group-hover:translate-x-3 transition-transform" />
-                            </div>
-                        </a>
-                    </motion.div>
-                </div>
+                {/* Floating WhatsApp Button */}
+                <motion.a
+                    href="https://wa.me/919492045766"
+                    initial={{ scale: 0, x: 100 }}
+                    animate={{ scale: 1, x: 0 }}
+                    whileHover={{ scale: 1.1, rotate: 10 }}
+                    className="fixed bottom-10 right-10 z-[200] w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.5)] border-4 border-white/20 group"
+                >
+                    <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20"></div>
+                    <MessageCircle className="w-10 h-10 drop-shadow-lg" />
+                    <span className="absolute right-24 top-1/2 -translate-y-1/2 bg-white text-dark px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block shadow-xl whitespace-nowrap">Proprietor WhatsApp</span>
+                </motion.a>
             </div>
         </div>
     );

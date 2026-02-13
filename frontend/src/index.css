@@ -3,114 +3,84 @@
 @tailwind utilities;
 
 :root {
-  --primary: #0EA5E9;
-  --secondary: #071B2E;
-  --accent: #2DD4BF;
-  --dark: #020617;
-  --text-main: #F0F9FF;
-  --bg-main: #020617;
-  /* Solid deep-space navy */
+  --primary: #071A2F;
+  --secondary: #00C2D1;
+  --accent: #00E5FF;
+  --dark: #071A2F;
+  --bg-main: #071A2F;
+  --text-main: #BFEFFF;
+  --bg-gradient: linear-gradient(135deg, #071A2F, #0B2A4A, #001F3F);
 }
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: var(--bg-main);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-main);
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* Legibility Fix: All text uses a subtle black drop shadow */
+/* Legibility & Glow Effects */
 * {
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.safe-area-bottom {
-  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
-}
-
-/* Glassmorphism Refined: 40% Opacity Blur (around 40px) */
-.glass-morphism {
-  background: rgba(14, 165, 233, 0.05);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-}
-
+/* Improved Glassmorphism with Cyan Glow */
 .glass-card {
-  background: rgba(14, 165, 233, 0.08);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(14, 165, 233, 0.2);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(7, 26, 47, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-card:hover {
-  background: rgba(14, 165, 233, 0.15);
-  border-color: rgba(45, 212, 191, 0.6);
-  box-shadow: 0 30px 60px rgba(14, 165, 233, 0.3);
-  transform: translateY(-8px);
-}
-
-/* Neon Price Tags */
-.neon-price {
-  color: #00FFFF;
-  /* Cyan */
-  text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), 0 0 20px rgba(0, 255, 255, 0.4);
+  border-color: rgba(0, 229, 255, 0.4);
+  box-shadow: 0 12px 40px 0 rgba(0, 229, 255, 0.15);
+  transform: translateY(-5px);
 }
 
 .glow-text {
-  text-shadow: 0 0 15px rgba(14, 165, 233, 0.6), 1px 1px 2px rgba(0, 0, 0, 1);
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5), 0 0 20px rgba(0, 229, 255, 0.2);
 }
 
-.glow-border {
-  border: 1px solid rgba(45, 212, 191, 0.4);
-  box-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
+/* Advanced Button Design: Cyan to Aqua Gradient */
+.btn-premium {
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
+  color: #071A2F;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-radius: 9999px;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-premium:hover {
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.6);
+  transform: scale(1.02);
+}
+
+.btn-premium:active {
+  transform: scale(0.95);
 }
 
 /* Custom Utilities */
-.bg-ocean {
-  background-color: #071B2E;
+.text-aqua {
+  color: var(--secondary);
 }
 
-.bg-aqua {
-  background-color: #0EA5E9;
+.text-cyan {
+  color: var(--accent);
 }
 
-@layer components {
-  .text-primary {
-    color: var(--primary);
-  }
-
-  .bg-primary {
-    background-color: var(--primary);
-  }
-
-  .text-accent {
-    color: var(--accent);
-  }
-
-  .bg-accent {
-    background-color: var(--accent);
-  }
-
-  .text-dark {
-    color: var(--dark);
-  }
-
-  .bg-dark {
-    background-color: var(--dark);
-  }
-
-  .text-text-main {
-    color: var(--text-main);
-  }
-
-  .bg-bg-main {
-    background-color: var(--bg-main);
-  }
+.bg-deep {
+  background: var(--primary);
 }
 
 @keyframes float {
@@ -131,20 +101,20 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
-@keyframes bubble {
+@keyframes marquee {
   0% {
-    transform: translateY(100vh) scale(0);
-    opacity: 0;
-  }
-
-  50% {
-    opacity: 0.5;
+    transform: translateX(0);
   }
 
   100% {
-    transform: translateY(-100px) scale(1.2);
-    opacity: 0;
+    transform: translateX(-50%);
   }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
 }
 
 .bubble {

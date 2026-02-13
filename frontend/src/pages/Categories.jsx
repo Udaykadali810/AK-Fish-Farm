@@ -25,38 +25,35 @@ const Categories = () => {
                     </motion.div>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-12 sm:gap-16">
+                <div className="flex flex-wrap justify-center gap-12 sm:gap-20">
                     {categories.map((cat, idx) => (
                         <motion.div
                             key={cat.id}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
                             transition={{ delay: idx * 0.1, duration: 0.8 }}
                             viewport={{ once: true }}
                             className="group relative"
                         >
-                            <Link to={`/shop?category=${cat.name}`} className="block w-full sm:w-[420px] h-[550px] glass-card rounded-[4rem] p-12 border border-white/10 transition-all duration-700 hover:border-aqua/50 overflow-hidden relative">
-                                {/* Glass shine overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent group-hover:from-aqua/10 transition-all duration-700" />
-
+                            <Link to={`/shop?category=${cat.name}`} className="block w-full sm:w-[420px] h-[580px] glass-card rounded-[4rem] p-12 overflow-hidden relative border border-[#00E5FF]/10 hover:border-[#00E5FF]/40 bg-[#071A2F]/60 shadow-[0_30px_60px_rgba(0,0,0,0.5)]">
                                 <div className="relative z-10 flex flex-col h-full items-center justify-center text-center">
-                                    <div className="w-32 h-32 bg-white/5 rounded-[3rem] p-6 mb-12 group-hover:scale-110 group-hover:bg-aqua group-hover:text-dark transition-all duration-700 flex items-center justify-center text-6xl shadow-2xl border border-white/5 group-hover:rotate-6">
+                                    <div className="w-36 h-36 bg-[#BFEFFF]/5 rounded-[3.5rem] p-8 mb-12 group-hover:scale-110 group-hover:bg-[#00E5FF] group-hover:text-[#071A2F] transition-all duration-700 flex items-center justify-center text-7xl shadow-2xl border border-[#BFEFFF]/10 group-hover:rotate-6">
                                         {cat.icon}
                                     </div>
 
-                                    <h3 className="text-4xl font-black text-white italic mb-6 group-hover:text-aqua transition-colors duration-500">
+                                    <h3 className="text-5xl font-black text-[#BFEFFF] italic mb-6 group-hover:text-[#00E5FF] transition-colors duration-500 uppercase tracking-tighter">
                                         {cat.name}
                                     </h3>
 
-                                    <div className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full mb-12">
-                                        <Droplets className="w-3 h-3 text-aqua" />
-                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
+                                    <div className="flex items-center gap-4 px-6 py-3 bg-[#0B2A4A]/60 rounded-full mb-12 border border-[#00E5FF]/5">
+                                        <Droplets className="w-4 h-4 text-[#00E5FF]" />
+                                        <span className="text-[10px] font-black text-[#BFEFFF]/40 uppercase tracking-[0.4em]">
                                             {cat.count} Premium Stock
                                         </span>
                                     </div>
 
-                                    <div className="mt-auto px-10 py-5 w-full bg-white/5 rounded-2xl border border-white/5 group-hover:bg-aqua group-hover:text-dark transition-all duration-500 font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-4">
-                                        Explore World <ChevronRight className="w-4 h-4" />
+                                    <div className="mt-auto h-16 w-full btn-premium flex items-center justify-center gap-4 text-[10px]">
+                                        Explore World <ChevronRight className="w-5 h-5" />
                                     </div>
                                 </div>
                             </Link>

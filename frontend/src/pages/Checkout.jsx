@@ -6,10 +6,34 @@ import { motion } from 'framer-motion';
 import { User, MapPin, Phone, ArrowRight, ShoppingBag, Tag } from 'lucide-react';
 
 const Checkout = () => {
-    // ... (state and effects same)
+    const navigate = useNavigate();
+    const { cart, getCartTotal, placeOrder } = useCart();
+    const { user } = useAuth();
+
+    const [formData, setFormData] = React.useState({
+        customerName: user?.name || '',
+        place: '',
+        phone: user?.phone || ''
+    });
+
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState('');
+    const [discount, setDiscount] = React.useState(null);
+
+    React.useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                customerName: user.name || '',
+                phone: user.phone || ''
+            }));
+        }
+    }, [user]);
 
     if (cart.length === 0) {
-        navigate('/shop');
+        React.useEffect(() => {
+            navigate('/shop');
+        }, []);
         return null;
     }
 

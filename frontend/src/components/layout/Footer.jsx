@@ -34,9 +34,9 @@ const Footer = () => {
                         <h4 className="text-white font-black uppercase text-xs tracking-[0.3em] mb-10 italic">Collections</h4>
                         <ul className="space-y-6">
                             {[
-                                { name: 'AK Special Fish', path: '/shop?category=AK Special Fish Collection' },
+                                { name: 'AK Special', path: '/shop?category=AK Special Collection' },
                                 { name: 'AK Premium', path: '/shop?category=AK Premium Collection' },
-                                { name: 'Fancy Guppy', path: '/shop?category=Fancy Guppy Collection' }
+                                { name: 'AK Guppy', path: '/shop?category=AK Guppy Collection' }
                             ].map((item) => (
                                 <li key={item.name}>
                                     <Link to={item.path} className="text-gray-400 hover:text-primary transition-all flex items-center gap-2 group font-bold">

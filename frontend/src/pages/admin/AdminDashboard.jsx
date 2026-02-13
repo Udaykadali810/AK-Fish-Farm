@@ -7,6 +7,7 @@ import {
     Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish, Download, Calendar, CheckCircle2, XCircle
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { products as localProducts } from '../../data/products';
 
 const SkeletonLoader = () => (
     <div className="animate-pulse space-y-8 p-12">
@@ -197,18 +198,22 @@ const AdminDashboard = () => {
     };
 
     const handleSyncProducts = async () => {
-        // In a real app, this would fetch from the products data file
-        // For now, we'll mock it if empty
-        if (products.length === 0) {
-            const initialProducts = [
-                { id: '1', name: 'Red Cap Oranda', price: 450, active: true },
-                { id: '2', name: 'Flowerhorn S', price: 1200, active: true },
-            ];
+        // Sync with the master local inventory data
+        const initialProducts = localProducts.map(p => ({
+            name: p.name,
+            price: p.price,
+            active: true
+        }));
+
+        try {
             await apiFetch('/api/admin/products/sync', {
                 method: 'POST',
                 body: JSON.stringify({ products: initialProducts })
             });
             fetchData();
+            alert("Database synchronized with local catalog!");
+        } catch (err) {
+            alert("Sync failed. Check backend connection.");
         }
     };
 
@@ -233,12 +238,12 @@ const AdminDashboard = () => {
     return (
         <div className="bg-bg-main min-h-screen flex flex-col lg:flex-row relative">
             {/* Mobile Header */}
-            <header className="lg:hidden flex items-center justify-between p-6 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
+            <header className="lg:hidden flex items-center justify-between p-6 bg-dark/40 backdrop-blur-3xl border-b border-white/5 sticky top-0 z-50">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white italic font-black shadow-lg">AK</div>
-                    <h2 className="text-lg font-black italic text-dark dark:text-white">Admin <span className="text-primary">Hub</span></h2>
+                    <div className="w-10 h-10 bg-aqua rounded-xl flex items-center justify-center text-dark italic font-black shadow-[0_0_20px_rgba(14,165,233,0.3)]">AK</div>
+                    <h2 className="text-lg font-black italic text-white uppercase tracking-tighter">Admin <span className="text-aqua">Hub</span></h2>
                 </div>
-                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-3 bg-gray-100 dark:bg-slate-800 rounded-xl text-dark dark:text-white">
+                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-3 bg-white/5 rounded-xl text-white hover:bg-aqua hover:text-dark transition-all">
                     {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
             </header>
@@ -257,12 +262,12 @@ const AdminDashboard = () => {
             </AnimatePresence>
 
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 w-80 bg-white dark:bg-slate-900 border-r border-gray-100 dark:border-gray-800 p-8 flex flex-col z-[70] transition-transform duration-300 transform lg:translate-x-0 lg:static ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 w-80 bg-dark/40 backdrop-blur-3xl border-r border-white/5 p-8 flex flex-col z-[70] transition-transform duration-300 transform lg:translate-x-0 lg:static ${isSidebarOpen ? 'translate-x-0 shadow-2xl shadow-aqua/10' : '-translate-x-full'}`}>
                 <div className="hidden lg:flex items-center gap-4 mb-16 px-4">
-                    <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white italic font-black shadow-lg">AK</div>
+                    <div className="w-12 h-12 bg-aqua rounded-2xl flex items-center justify-center text-dark italic font-black shadow-[0_0_30px_rgba(14,165,233,0.4)]">AK</div>
                     <div>
-                        <h2 className="text-xl font-black italic text-dark dark:text-white leading-tight">Admin <span className="text-primary">Hub</span></h2>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">v2.0 Stable</p>
+                        <h2 className="text-xl font-black italic text-white leading-tight uppercase tracking-tighter">Admin <span className="text-aqua">Hub</span></h2>
+                        <p className="text-[10px] text-aqua/40 font-bold uppercase tracking-[0.2em]">v2.0 Stable</p>
                     </div>
                 </div>
 
@@ -271,7 +276,7 @@ const AdminDashboard = () => {
                         <button
                             key={item.id}
                             onClick={() => { setActiveTab(item.id); setIsSidebarOpen(false); }}
-                            className={`w-full flex items-center justify-between p-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all ${activeTab === item.id ? 'bg-primary text-white shadow-xl translate-x-2' : 'text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+                            className={`w-full flex items-center justify-between p-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === item.id ? 'bg-aqua text-dark shadow-[0_0_20px_rgba(14,165,233,0.4)] translate-x-2' : 'text-white/30 hover:bg-white/5 hover:text-white'}`}
                         >
                             <div className="flex items-center gap-4">
                                 {item.icon}
@@ -285,7 +290,7 @@ const AdminDashboard = () => {
                 <div className="space-y-4 pt-12 mt-auto">
                     <button
                         onClick={handleDownloadBackup}
-                        className={`w-full flex items-center justify-between p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border-2 ${isBackupDue() ? 'border-primary/50 bg-primary/5 text-primary animate-pulse' : 'border-gray-100 dark:border-gray-800 text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'}`}
+                        className={`w-full flex items-center justify-between p-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border ${isBackupDue() ? 'border-aqua/50 bg-aqua/5 text-aqua animate-pulse' : 'border-white/10 text-white/20 hover:bg-white/5 hover:text-white'}`}
                     >
                         <div className="flex items-center gap-3">
                             <Download className="w-4 h-4" />
@@ -296,7 +301,7 @@ const AdminDashboard = () => {
 
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-4 p-4 text-red-500 font-black text-xs uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-500/10 rounded-2xl transition-all"
+                        className="w-full flex items-center gap-4 p-4 text-red-400/60 font-black text-[10px] uppercase tracking-widest hover:bg-red-500/10 hover:text-red-400 rounded-2xl transition-all border border-transparent hover:border-red-500/20"
                     >
                         <LogOut className="w-5 h-5" /> Logout Session
                     </button>
@@ -321,8 +326,8 @@ const AdminDashboard = () => {
 
                 <header className="mb-12 flex justify-between items-center">
                     <div>
-                        <h1 className="text-4xl font-black text-dark dark:text-white italic mb-2 capitalize">{activeTab} <span className="text-primary mt-1">Management</span></h1>
-                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Overview of business unit {activeTab}</p>
+                        <h1 className="text-4xl font-black text-white italic mb-2 uppercase tracking-tighter shadow-2xl">{activeTab} <span className="text-aqua italic glow-text">Management</span></h1>
+                        <p className="text-white/20 font-black uppercase tracking-[0.3em] text-[10px]">Overview of business unit {activeTab}</p>
                     </div>
                 </header>
 
@@ -367,14 +372,14 @@ const OrdersSection = ({ orders, onUpdate, onDelete }) => {
                     placeholder="Search by Name, Phone, or ID..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-gray-100 dark:border-gray-800 text-sm font-bold shadow-sm focus:ring-2 focus:ring-primary/20 transition-all"
+                    className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold text-white shadow-sm focus:border-aqua/50 outline-none transition-all placeholder-white/20"
                 />
-                <Search className="absolute left-4 top-4 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-4 top-4 text-aqua w-5 h-5" />
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto custom-scrollbar">
+            <div className="glass-card rounded-[3rem] border border-white/5 overflow-x-auto custom-scrollbar">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+                    <thead className="bg-white/5 border-b border-white/5">
                         <tr>
                             <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Order ID</th>
                             <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Name</th>
@@ -386,26 +391,26 @@ const OrdersSection = ({ orders, onUpdate, onDelete }) => {
                             <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right whitespace-nowrap">Date / Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+                    <tbody className="divide-y divide-white/5">
                         {filteredOrders.sort((a, b) => new Date(b.date) - new Date(a.date)).map(order => (
-                            <tr key={order.id} className="hover:bg-gray-50/30 transition-all font-bold align-top text-[10px]">
-                                <td className="p-6 italic font-black text-primary">#{order.id}</td>
-                                <td className="p-6 whitespace-nowrap">{order.customerName}</td>
-                                <td className="p-6 text-gray-400">{order.place}</td>
-                                <td className="p-6 whitespace-nowrap">{order.phone}</td>
+                            <tr key={order.id} className="hover:bg-white/5 transition-all font-bold align-top text-[10px]">
+                                <td className="p-6 italic font-black text-aqua">#{order.id}</td>
+                                <td className="p-6 whitespace-nowrap text-white">{order.customerName}</td>
+                                <td className="p-6 text-white/40">{order.place}</td>
+                                <td className="p-6 whitespace-nowrap text-white">{order.phone}</td>
                                 <td className="p-6">
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 text-white/60">
                                         {order.items.map((item, i) => (
                                             <span key={i} className="whitespace-nowrap">• {item.name} (x{item.quantity})</span>
                                         ))}
                                     </div>
                                 </td>
-                                <td className="p-6 font-black text-dark dark:text-white">₹{order.total}</td>
+                                <td className="p-6 font-black text-white italic">₹{order.total}</td>
                                 <td className="p-6 space-y-4">
                                     <select
                                         value={order.status}
                                         onChange={(e) => onUpdate(order.id, { status: e.target.value })}
-                                        className="w-full bg-gray-100 dark:bg-slate-800 border-none rounded-lg text-[9px] font-black p-2"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg text-[9px] font-black p-2 text-white outline-none focus:border-aqua"
                                     >
                                         <option value="Processing">Order Placed</option>
                                         <option value="Packing">Packing</option>
@@ -419,14 +424,14 @@ const OrdersSection = ({ orders, onUpdate, onDelete }) => {
                                         placeholder="Add Internal Note..."
                                         defaultValue={order.deliveryNotes || ''}
                                         onBlur={(e) => onUpdate(order.id, { deliveryNotes: e.target.value })}
-                                        className="w-full bg-transparent border-b border-gray-100 dark:border-slate-800 text-[9px] p-1 font-medium italic focus:border-primary outline-none"
+                                        className="w-full bg-transparent border-b border-white/10 text-[9px] p-1 font-medium italic focus:border-aqua outline-none text-white/60"
                                     />
                                 </td>
                                 <td className="p-6 text-right space-y-2">
-                                    <div className="text-[9px] text-gray-400 whitespace-nowrap">
+                                    <div className="text-[9px] text-white/20 whitespace-nowrap font-black uppercase tracking-widest">
                                         {new Date(order.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                     </div>
-                                    <button onClick={() => onDelete(order.id)} className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
+                                    <button onClick={() => onDelete(order.id)} className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all"><Trash2 className="w-4 h-4" /></button>
                                 </td>
                             </tr>
                         ))}
@@ -438,22 +443,22 @@ const OrdersSection = ({ orders, onUpdate, onDelete }) => {
 };
 
 const PaymentsSection = ({ orders }) => (
-    <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div className="glass-card rounded-[3rem] border border-white/5 overflow-hidden">
         <table className="w-full text-left">
-            <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+            <thead className="bg-white/5 border-b border-white/5">
                 <tr>
-                    <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Order ID</th>
-                    <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Amount</th>
-                    <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Payment Status</th>
+                    <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Order ID</th>
+                    <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Amount</th>
+                    <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Payment Status</th>
                 </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+            <tbody className="divide-y divide-white/5">
                 {orders.map(order => (
-                    <tr key={order.id} className="font-bold">
-                        <td className="p-8 italic">#{order.id}</td>
-                        <td className="p-8 text-dark dark:text-white">₹{order.total}</td>
+                    <tr key={order.id} className="font-bold hover:bg-white/5 transition-all">
+                        <td className="p-8 italic text-aqua font-black">#{order.id}</td>
+                        <td className="p-8 text-white italic">₹{order.total}</td>
                         <td className="p-8">
-                            <span className={`px-4 py-2 rounded-full text-[10px] font-black uppercase ${order.status === 'Delivered' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
+                            <span className={`px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${order.status === 'Delivered' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
                                 {order.status === 'Delivered' ? 'PAID' : 'PENDING'}
                             </span>
                         </td>
@@ -467,24 +472,24 @@ const PaymentsSection = ({ orders }) => (
 const TrackSection = ({ orders, onUpdate }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {orders.map(order => (
-            <div key={order.id} className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] shadow-lg border border-gray-100 dark:border-gray-800">
+            <div key={order.id} className="glass-card p-8 rounded-[3rem] border border-white/5 group">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order ID</p>
-                        <h4 className="text-xl font-black italic">#{order.id}</h4>
+                        <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Order ID</p>
+                        <h4 className="text-xl font-black italic text-aqua uppercase tracking-tighter">#{order.id}</h4>
                     </div>
-                    <div className="p-3 bg-primary/10 text-primary rounded-2xl"><MapPin className="w-5 h-5" /></div>
+                    <div className="p-4 bg-aqua/10 text-aqua rounded-2xl group-hover:scale-110 transition-transform"><MapPin className="w-5 h-5" /></div>
                 </div>
-                <div className="space-y-4">
-                    <p className="text-sm font-bold text-gray-500">Current Phase: <span className="text-primary uppercase ml-2">{order.status}</span></p>
-                    <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-6">
+                    <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Status Phase: <span className="text-aqua italic ml-2">{order.status}</span></p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-3">
                         {['Processing', 'Packing', 'Shipped', 'Out for Delivery', 'Delivered'].map(status => (
                             <button
                                 key={status}
                                 onClick={() => onUpdate(order.id, { status })}
-                                className={`p-4 rounded-2xl text-[9px] font-black uppercase tracking-widest border transition-all ${order.status === status ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-gray-50 dark:bg-slate-800 border-transparent text-gray-400 hover:border-primary/30'}`}
+                                className={`p-4 rounded-2xl text-[8px] font-black uppercase tracking-widest border transition-all ${order.status === status ? 'bg-aqua text-dark border-aqua shadow-[0_0_15px_rgba(14,165,233,0.4)]' : 'bg-white/5 border-white/5 text-white/40 hover:border-aqua/50 hover:text-white'}`}
                             >
-                                {status === 'Processing' ? 'Order Placed' : status}
+                                {status === 'Processing' ? 'Confirmed' : status}
                             </button>
                         ))}
                     </div>
@@ -511,30 +516,31 @@ const OffersSection = ({ offers, onRefresh, apiFetch }) => {
 
     return (
         <div className="space-y-12">
-            <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase">Offer Title</label>
-                    <input type="text" value={newOffer.title} onChange={e => setNewOffer({ ...newOffer, title: e.target.value })} className="w-full p-4 rounded-xl bg-gray-50 border-none font-bold text-sm" placeholder="Flat 10% Off" />
+            <div className="glass-card p-10 rounded-[3rem] border border-white/5 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Offer Title</label>
+                    <input type="text" value={newOffer.title} onChange={e => setNewOffer({ ...newOffer, title: e.target.value })} className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 font-bold text-sm text-white outline-none focus:border-aqua transition-all" placeholder="Flat 10% Off" />
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase">Code (Opt)</label>
-                    <input type="text" value={newOffer.code} onChange={e => setNewOffer({ ...newOffer, code: e.target.value })} className="w-full p-4 rounded-xl bg-gray-50 border-none font-bold text-sm" placeholder="GUPPY10" />
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Code (Opt)</label>
+                    <input type="text" value={newOffer.code} onChange={e => setNewOffer({ ...newOffer, code: e.target.value })} className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 font-bold text-sm text-white outline-none focus:border-aqua transition-all" placeholder="GUPPY10" />
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase">Discount Value</label>
-                    <input type="text" value={newOffer.discount} onChange={e => setNewOffer({ ...newOffer, discount: e.target.value })} className="w-full p-4 rounded-xl bg-gray-50 border-none font-bold text-sm" placeholder="10%" />
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Discount Value</label>
+                    <input type="text" value={newOffer.discount} onChange={e => setNewOffer({ ...newOffer, discount: e.target.value })} className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 font-bold text-sm text-white outline-none focus:border-aqua transition-all" placeholder="10%" />
                 </div>
-                <button onClick={handleAdd} className="p-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg"><Plus className="w-4 h-4" /> Add Offer</button>
+                <button onClick={handleAdd} className="p-5 bg-aqua text-dark rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:scale-[1.02] active:scale-95 transition-all"><Plus className="w-4 h-4" /> Deploy Offer</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {offers.map(offer => (
-                    <div key={offer.id} className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] shadow-lg border border-gray-100 dark:border-gray-800 relative group">
-                        <button onClick={() => handleDelete(offer.id)} className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 text-red-500 hover:scale-110 transition-all"><X className="w-4 h-4" /></button>
-                        <Tag className="text-primary w-8 h-8 mb-6" />
-                        <h4 className="text-2xl font-black italic">{offer.title}</h4>
-                        <p className="text-primary font-black mt-2">{offer.discount}</p>
-                        {offer.code && <p className="mt-4 text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 p-2 inline-block rounded-lg">Code: {offer.code}</p>}
+                    <div key={offer.id} className="glass-card p-8 rounded-[3rem] border border-white/5 relative group overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-aqua/5 to-transparent pointer-events-none"></div>
+                        <button onClick={() => handleDelete(offer.id)} className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 text-red-500 hover:scale-125 transition-all z-10 p-2 bg-red-500/10 rounded-xl"><X className="w-4 h-4" /></button>
+                        <Tag className="text-aqua w-8 h-8 mb-6" />
+                        <h4 className="text-2xl font-black italic text-white uppercase tracking-tighter leading-tight">{offer.title}</h4>
+                        <p className="text-aqua font-black mt-2 text-xl italic">{offer.discount}</p>
+                        {offer.code && <p className="mt-8 text-[9px] font-black text-white/40 uppercase tracking-[0.3em] bg-white/5 p-3 rounded-xl border border-white/5 inline-block">Code Unlock: {offer.code}</p>}
                     </div>
                 ))}
             </div>
@@ -582,93 +588,101 @@ const ProductsSection = ({ products, onRefresh, apiFetch, onSync }) => {
     return (
         <div className="space-y-12">
             {/* Add New Product Form */}
-            <div className="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
-                <div className="space-y-2 md:col-span-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase">Fish / Product Name</label>
+            <div className="glass-card p-10 rounded-[3rem] border border-white/5 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <div className="space-y-3 md:col-span-2">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Fish / Product Name</label>
                     <input
                         type="text"
                         value={newProduct.name}
                         onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
-                        className="w-full p-4 rounded-xl bg-gray-50 dark:bg-slate-800 border-none font-bold text-sm text-dark dark:text-white"
+                        className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 font-bold text-sm text-white outline-none focus:border-aqua transition-all"
                         placeholder="e.g. Red Cap Oranda Goldfish"
                     />
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase">Price (₹)</label>
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Price (₹)</label>
                     <input
                         type="number"
                         value={newProduct.price}
                         onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
-                        className="w-full p-4 rounded-xl bg-gray-50 dark:bg-slate-800 border-none font-bold text-sm text-dark dark:text-white"
+                        className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 font-bold text-sm text-white outline-none focus:border-aqua transition-all"
                         placeholder="450"
                     />
                 </div>
-                <button onClick={handleAdd} className="p-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg hover:bg-primary/90 transition-all">
+                <button onClick={handleAdd} className="p-5 bg-aqua text-dark rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:scale-[1.02] active:scale-95 transition-all">
                     <Plus className="w-4 h-4" /> Add to Stock
                 </button>
             </div>
 
             {/* Products Table */}
-            <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-                <div className="p-8 border-b border-gray-50 dark:border-gray-800 flex justify-between items-center">
-                    <h3 className="font-black italic text-dark dark:text-white">Current Inventory</h3>
-                    <div className="flex gap-4">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div> Active
-                        </span>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500"></div> Out of Stock
-                        </span>
+            <div className="glass-card rounded-[3rem] border border-white/5 overflow-hidden">
+                <div className="p-8 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <h3 className="font-black italic text-white uppercase tracking-tighter">Current Inventory</h3>
+                    <div className="flex flex-wrap items-center gap-6">
+                        <button
+                            onClick={onSync}
+                            className="flex items-center gap-2 px-6 py-3 bg-aqua/10 text-aqua rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-aqua hover:text-dark transition-all border border-aqua/20"
+                        >
+                            <Zap className="w-4 h-4" /> Sync Catalog
+                        </button>
+                        <div className="flex gap-4">
+                            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div> Active
+                            </span>
+                            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div> Out
+                            </span>
+                        </div>
                     </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+                        <thead className="bg-white/5 border-b border-white/5">
                             <tr>
-                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Species Name</th>
-                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Price (₹)</th>
-                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
-                                <th className="p-8 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                                <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Species Name</th>
+                                <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Price (₹)</th>
+                                <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Status</th>
+                                <th className="p-8 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+                        <tbody className="divide-y divide-white/5">
                             {products.map(product => (
-                                <tr key={product.id} className="font-bold hover:bg-gray-50/30 transition-all">
+                                <tr key={product.id} className="font-bold hover:bg-white/5 transition-all">
                                     <td className="p-8">
                                         <input
                                             type="text"
                                             defaultValue={product.name}
                                             onBlur={(e) => handleUpdate(product.id, { name: e.target.value })}
-                                            className="bg-transparent border-b border-transparent focus:border-primary border-dashed outline-none p-1 font-black italic text-dark dark:text-white w-full transition-all"
+                                            className="bg-transparent border-b border-transparent focus:border-aqua border-dashed outline-none p-1 font-black italic text-white w-full transition-all"
                                         />
                                     </td>
                                     <td className="p-8">
                                         <div className="flex items-center gap-1">
-                                            <span className="text-gray-400">₹</span>
+                                            <span className="text-white/20">₹</span>
                                             <input
                                                 type="number"
                                                 defaultValue={product.price}
                                                 onBlur={(e) => handleUpdate(product.id, { price: Number(e.target.value) })}
-                                                className="bg-transparent border-b border-transparent focus:border-primary border-dashed outline-none p-1 w-24 font-black text-dark dark:text-white transition-all"
+                                                className="bg-transparent border-b border-transparent focus:border-aqua border-dashed outline-none p-1 w-24 font-black text-white italic transition-all"
                                             />
                                         </div>
                                     </td>
                                     <td className="p-8">
                                         <button
                                             onClick={() => handleUpdate(product.id, { active: !product.active })}
-                                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-2 ${product.active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+                                            className={`px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-3 ${product.active ? 'bg-green-500/10 text-green-400 border border-green-500/20 shadow-[0_0_10px_rgba(34,197,94,0.1)]' : 'bg-red-500/10 text-red-500 border border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]'}`}
                                         >
-                                            {product.active ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                            <div className={`w-2 h-2 rounded-full ${product.active ? 'bg-green-400' : 'bg-red-500'}`}></div>
                                             {product.active ? 'In Stock' : 'Out of Stock'}
                                         </button>
                                     </td>
                                     <td className="p-8 text-right">
                                         <button
                                             onClick={() => handleDelete(product.id)}
-                                            className="p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                                            className="p-3 bg-red-400/10 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-400/20"
                                             title="Delete Product"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 className="w-5 h-5" />
                                         </button>
                                     </td>
                                 </tr>
@@ -707,10 +721,13 @@ const PasswordSection = ({ apiFetch }) => {
 
     return (
         <div className="max-w-md mx-auto mt-20 text-center">
-            <div className="bg-white dark:bg-slate-900 p-12 rounded-[4rem] shadow-4xl border border-gray-100 dark:border-gray-800">
-                <Lock className="w-16 h-16 text-primary mx-auto mb-8" />
-                <h3 className="text-3xl font-black text-dark dark:text-white italic mb-4">Rotate Key</h3>
-                <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-12">Update your administrative access password</p>
+            <div className="glass-card p-12 rounded-[4rem] border border-white/5 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-aqua/10 to-transparent pointer-events-none"></div>
+                <div className="inline-flex items-center justify-center p-8 bg-aqua rounded-3xl text-dark shadow-[0_0_30px_rgba(14,165,233,0.4)] mb-12 rotate-12 group-hover:rotate-0 transition-transform duration-700">
+                    <Lock className="w-12 h-12" />
+                </div>
+                <h3 className="text-3xl font-black text-white italic mb-4 uppercase tracking-tighter leading-tight">Rotate <span className="text-aqua">Key</span></h3>
+                <p className="text-white/20 font-black uppercase tracking-[0.3em] text-[9px] mb-12">Security Protocol Update Required</p>
 
                 <form onSubmit={handleUpdate} className="space-y-8">
                     <input
@@ -718,16 +735,16 @@ const PasswordSection = ({ apiFetch }) => {
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        placeholder="New Secure Password"
-                        className="w-full p-5 rounded-3xl bg-gray-50 dark:bg-slate-800 border-none font-bold text-center"
+                        placeholder="NEW SECURE PASS"
+                        className="w-full p-6 rounded-3xl bg-white/5 border border-white/10 font-bold text-center text-white outline-none focus:border-aqua transition-all placeholder-white/10"
                     />
                     <button
                         type="submit"
-                        className="w-full py-5 bg-dark dark:bg-primary text-white rounded-3xl font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] transition-all"
+                        className="w-full py-6 bg-aqua text-dark rounded-3xl font-black uppercase tracking-[0.3em] text-[10px] shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:scale-[1.02] active:scale-95 transition-all"
                     >
-                        Update Key
+                        Sync Credentials
                     </button>
-                    {success && <p className="text-green-500 font-black text-xs uppercase animate-bounce mt-4">Security Credentials Synced!</p>}
+                    {success && <p className="text-green-400 font-black text-[10px] uppercase tracking-widest animate-pulse mt-6">Protocol Updated!</p>}
                 </form>
             </div>
         </div>
@@ -744,47 +761,47 @@ const InquiriesSection = ({ inquiries, onRefresh, apiFetch }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-x-auto custom-scrollbar">
+        <div className="glass-card rounded-[3rem] border border-white/5 overflow-x-auto custom-scrollbar">
             <table className="w-full text-left">
-                <thead className="bg-gray-50/50 dark:bg-white/5 border-b border-gray-100 dark:border-gray-800">
+                <thead className="bg-white/5 border-b border-white/5">
                     <tr>
-                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Lead Name</th>
-                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Contact</th>
-                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">City</th>
-                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Fish Inquiry</th>
-                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Status</th>
-                        <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right whitespace-nowrap">Date</th>
+                        <th className="p-6 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] whitespace-nowrap">Lead Name</th>
+                        <th className="p-6 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] whitespace-nowrap">Contact</th>
+                        <th className="p-6 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] whitespace-nowrap">City</th>
+                        <th className="p-6 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] whitespace-nowrap">Fish Inquiry</th>
+                        <th className="p-6 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] whitespace-nowrap">Status</th>
+                        <th className="p-6 text-[10px] font-black text-white/40 uppercase tracking-[0.3em] text-right whitespace-nowrap">Date</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
+                <tbody className="divide-y divide-white/5">
                     {inquiries.map(inquiry => (
-                        <tr key={inquiry.id} className="hover:bg-gray-50/30 transition-all font-bold align-top text-[10px]">
-                            <td className="p-6 whitespace-nowrap flex items-center gap-2">
-                                <User className="w-3 h-3 text-primary" /> {inquiry.name}
+                        <tr key={inquiry.id} className="hover:bg-white/5 transition-all font-bold align-top text-[10px]">
+                            <td className="p-6 whitespace-nowrap flex items-center gap-3 text-white">
+                                <User className="w-3 h-3 text-aqua" /> {inquiry.name}
                             </td>
-                            <td className="p-6 whitespace-nowrap">
-                                <div className="flex items-center gap-2">
-                                    <Phone className="w-3 h-3 text-green-500" /> {inquiry.contactNumber}
+                            <td className="p-6 whitespace-nowrap text-white/60 font-black tracking-widest uppercase">
+                                <div className="flex items-center gap-3">
+                                    <Phone className="w-3 h-3 text-green-400" /> {inquiry.contactNumber}
                                 </div>
                             </td>
-                            <td className="p-6 whitespace-nowrap">
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="w-3 h-3 text-orange-500" /> {inquiry.city}
+                            <td className="p-6 whitespace-nowrap text-white italic">
+                                <div className="flex items-center gap-3">
+                                    <MapPin className="w-3 h-3 text-aqua" /> {inquiry.city}
                                 </div>
                             </td>
                             <td className="p-6">
-                                <div className="flex items-start gap-2 max-w-xs">
-                                    <Fish className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
-                                    <span className="italic">{inquiry.fishEnquiry}</span>
+                                <div className="flex items-start gap-4 max-w-xs text-white/60">
+                                    <Fish className="w-3 h-3 text-aqua mt-1 flex-shrink-0" />
+                                    <span className="italic leading-relaxed">{inquiry.fishEnquiry}</span>
                                 </div>
                             </td>
                             <td className="p-6">
                                 <select
                                     value={inquiry.status}
                                     onChange={(e) => handleStatusUpdate(inquiry.id, e.target.value)}
-                                    className={`w-full border-none rounded-lg text-[9px] font-black p-2 ${inquiry.status === 'Pending' ? 'bg-orange-100 text-orange-600' :
-                                        inquiry.status === 'Responded' ? 'bg-blue-100 text-blue-600' :
-                                            'bg-green-100 text-green-600'
+                                    className={`w-full bg-white/5 border border-white/10 rounded-lg text-[8px] font-black p-2 outline-none focus:border-aqua transition-all ${inquiry.status === 'Pending' ? 'text-orange-400' :
+                                        inquiry.status === 'Responded' ? 'text-aqua' :
+                                            'text-green-400'
                                         }`}
                                 >
                                     <option value="Pending">Pending</option>
@@ -792,7 +809,7 @@ const InquiriesSection = ({ inquiries, onRefresh, apiFetch }) => {
                                     <option value="Closed">Closed</option>
                                 </select>
                             </td>
-                            <td className="p-6 text-right text-gray-400 whitespace-nowrap">
+                            <td className="p-6 text-right text-white/20 whitespace-nowrap font-black uppercase tracking-widest">
                                 {new Date(inquiry.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                             </td>
                         </tr>
