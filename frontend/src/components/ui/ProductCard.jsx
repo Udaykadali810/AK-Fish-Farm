@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, Star, ArrowRight, Check } from 'lucide-react';
+import { ShoppingCart, Star, Check, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 
@@ -8,7 +8,6 @@ const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
     const [added, setAdded] = useState(false);
     const navigate = useNavigate();
-    const isMobile = window.innerWidth < 768;
 
     const handleAddToCart = (e) => {
         e.preventDefault();
@@ -23,95 +22,75 @@ const ProductCard = ({ product }) => {
         navigate('/checkout');
     };
 
-
-
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{
-                y: -10,
-                scale: 1.02,
-                transition: { duration: 0.3 }
-            }}
-            transition={{ duration: 0.4 }}
             viewport={{ once: true, margin: "-50px" }}
-            className="group relative glass-card rounded-[3rem] overflow-hidden border border-white/40 shadow-xl transition-all duration-500 hover:shadow-primary/20 transform-gpu"
+            className="group relative glass-card rounded-[2.5rem] overflow-hidden border border-white/10 transition-all duration-700 hover:border-aqua/40 flex flex-col h-full"
         >
-            {/* Glow Effect */}
-            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl" />
+            {/* 3D Floating Effect Container */}
+            <div className="relative p-4 flex-grow flex flex-col">
 
-            {/* Image Container */}
-            <div className="relative h-64 overflow-hidden bg-gradient-to-br from-blue-50/50 to-white/30 flex items-center justify-center p-6 group-hover:from-primary/10 transition-colors duration-500">
-                {product.image ? (
-                    <img
-                        src={product.image}
-                        alt={product.name}
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                    />
-                ) : (
-                    <div className="text-center transform group-hover:scale-110 transition-transform duration-700">
-                        <span className="text-3xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent italic drop-shadow-sm block mb-2">
-                            AK Fish Farms
-                        </span>
-                        <div className="flex items-center justify-center gap-2 opacity-60">
-                            <div className="h-[1px] w-8 bg-primary/40"></div>
-                            <span className="text-[10px] uppercase tracking-[0.3em] font-black text-gray-400">Premium</span>
-                            <div className="h-[1px] w-8 bg-primary/40"></div>
+                {/* Image Container with Glow */}
+                <div className="relative aspect-[4/3] rounded-[2rem] overflow-hidden bg-gradient-to-br from-white/5 to-white/0 mb-6 group-hover:shadow-[0_0_30px_rgba(14,165,233,0.1)] transition-all duration-700">
+                    <div className="absolute inset-0 bg-aqua/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+
+                    {product.image ? (
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center opacity-20">
+                            <span className="text-2xl font-black italic">AK</span>
                         </div>
+                    )}
+
+                    {/* Price Badge - Aqua Glowing */}
+                    <div className="absolute top-4 right-4 bg-aqua text-dark font-black px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest shadow-[0_0_20px_rgba(14,165,233,0.4)] z-10 backdrop-blur-md">
+                        ₹{product.price}
                     </div>
-                )}
 
-                <div className="absolute top-4 right-4 bg-primary/90 text-dark font-black px-4 py-2 rounded-2xl text-[10px] shadow-lg z-10 backdrop-blur-md">
-                    ₹{product.price} / pair
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-8 relative z-10">
-                <div className="flex justify-between items-start mb-4 text-[10px] font-black uppercase tracking-[0.2em]">
-                    <span className="text-primary/60">{product.category}</span>
-                    <div className="flex items-center text-yellow-500/80">
-                        <Star className="w-3 h-3 fill-yellow-500/50 mr-1" /> {product.rating}
+                    {/* Category Overlay */}
+                    <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-md text-white/60 font-black px-4 py-2 rounded-xl text-[8px] uppercase tracking-widest z-10">
+                        {product.category}
                     </div>
                 </div>
 
-                <Link to={`/product/${product.id}`}>
-                    <h3 className="text-xl font-black text-dark mb-2 line-clamp-1 group-hover:text-primary transition-colors italic">
-                        {product.name}
-                    </h3>
-                </Link>
-
-                <p className="text-gray-500 text-xs mb-8 line-clamp-2 h-10 leading-relaxed font-medium">
-                    {product.description}
-                </p>
-
-
-                <div className="flex flex-col gap-4 mt-6">
-                    <div className="flex items-center justify-between px-2">
-                        <div className="flex flex-col">
-                            <span className="text-[9px] font-black text-dark/40 uppercase tracking-widest">Price</span>
-                            <span className="text-2xl font-black text-dark italic">₹{product.price}</span>
-                        </div>
-                        <div className="flex items-center text-yellow-500/80 bg-white/50 px-3 py-1 rounded-full border border-white/40">
-                            <Star className="w-3 h-3 fill-yellow-500/50 mr-1" /> {product.rating}
+                {/* Content */}
+                <div className="px-4 pb-4 flex flex-col flex-grow">
+                    <div className="flex justify-between items-start mb-3">
+                        <Link to={`/product/${product.id}`} className="flex-grow pr-4">
+                            <h3 className="text-xl font-black text-white italic line-clamp-1 group-hover:text-aqua transition-colors duration-500">
+                                {product.name}
+                            </h3>
+                        </Link>
+                        <div className="flex items-center text-accent/80 font-bold text-xs">
+                            <Star className="w-3 h-3 fill-accent mr-1" /> {product.rating}
                         </div>
                     </div>
 
-                    <div className="flex gap-3">
+                    <p className="text-white/40 text-xs mb-8 line-clamp-2 h-10 font-medium leading-relaxed tracking-wide">
+                        {product.description}
+                    </p>
+
+                    {/* Action Area */}
+                    <div className="mt-auto flex gap-3">
                         <button
                             onClick={handleAddToCart}
-                            className={`flex-1 py-5 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all duration-500 flex items-center justify-center gap-2 shadow-lg active:scale-95 ${added ? 'bg-green-500 text-white' : 'bg-primary text-white hover:shadow-primary/30'}`}
+                            className={`p-4 rounded-2xl flex items-center justify-center transition-all duration-500 active:scale-90 border border-white/10 ${added ? 'bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'bg-white/5 text-aqua hover:bg-aqua hover:text-dark hover:shadow-aqua/20 shadow-lg'}`}
                         >
                             <AnimatePresence mode="wait">
                                 {added ? (
-                                    <motion.div key="added" initial={{ y: 10 }} animate={{ y: 0 }} exit={{ y: -10 }} className="flex items-center gap-2">
-                                        <Check className="w-4 h-4" /> Added
+                                    <motion.div key="added" initial={{ scale: 0.5 }} animate={{ scale: 1 }} exit={{ scale: 0.5 }}>
+                                        <Check className="w-5 h-5" />
                                     </motion.div>
                                 ) : (
-                                    <motion.div key="add" initial={{ y: 10 }} animate={{ y: 0 }} exit={{ y: -10 }} className="flex items-center gap-2">
-                                        <ShoppingCart className="w-4 h-4" /> Add
+                                    <motion.div key="add" initial={{ scale: 0.5 }} animate={{ scale: 1 }} exit={{ scale: 0.5 }}>
+                                        <ShoppingCart className="w-5 h-5" />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -119,17 +98,15 @@ const ProductCard = ({ product }) => {
 
                         <button
                             onClick={handleBuyNow}
-                            className="flex-1 py-5 bg-[#FF6B6B] text-white rounded-[2rem] font-black text-xs uppercase tracking-widest text-center shadow-lg hover:shadow-[#FF6B6B]/30 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            className="flex-grow py-4 bg-aqua text-dark rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-aqua/10 hover:shadow-aqua/30 active:scale-95 transition-all text-center flex items-center justify-center gap-2"
                         >
-                            Buy Now
+                            Quick Buy <Plus className="w-3 h-3" />
                         </button>
-
                     </div>
                 </div>
             </div>
         </motion.div>
     );
 };
-
 
 export default ProductCard;

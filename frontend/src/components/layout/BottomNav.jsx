@@ -1,43 +1,37 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Fish, User, ShoppingBag } from 'lucide-react';
+import { Home, Package, ShoppingCart, User } from 'lucide-react';
 
 const BottomNav = () => {
     return (
-        <div className="lg:hidden fixed bottom-6 left-6 right-6 z-[60]">
-            <div className="glass-morphism rounded-[2.5rem] flex items-center justify-between p-3 px-6 shadow-2xl border border-white/40">
+        <div className="lg:hidden fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-[100]">
+            <div className="glass-card rounded-full flex items-center justify-around p-3 shadow-2xl border border-white/10 backdrop-blur-3xl glow-border">
                 <NavLink
                     to="/"
-                    className={({ isActive }) => `flex flex-col items-center gap-1 p-2 transition-all ${isActive ? 'text-primary scale-110' : 'text-gray-400 opacity-60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1 p-3 rounded-full transition-all ${isActive ? 'bg-aqua text-dark shadow-lg shadow-aqua/20 scale-110' : 'text-white/40'}`}
                 >
                     <Home className="w-6 h-6" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Home</span>
                 </NavLink>
 
-
+                <NavLink
+                    to="/my-orders"
+                    className={({ isActive }) => `flex flex-col items-center gap-1 p-3 rounded-full transition-all ${isActive ? 'bg-aqua text-dark shadow-lg shadow-aqua/20 scale-110' : 'text-white/40'}`}
+                >
+                    <Package className="w-6 h-6" />
+                </NavLink>
 
                 <NavLink
                     to="/cart"
-                    className={({ isActive }) => `relative flex flex-col items-center gap-1 p-2 transition-all ${isActive ? 'text-primary scale-110' : 'text-gray-400 opacity-60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1 p-3 rounded-full transition-all ${isActive ? 'bg-aqua text-dark shadow-lg shadow-aqua/20 scale-110' : 'text-white/40'}`}
                 >
-                    <ShoppingBag className="w-6 h-6" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Bag</span>
-                </NavLink>
-
-                <NavLink
-                    to="/shop"
-                    className={({ isActive }) => `flex flex-col items-center gap-1 p-2 transition-all ${isActive ? 'text-primary scale-110' : 'text-gray-400 opacity-60'}`}
-                >
-                    <Fish className="w-6 h-6" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Browse</span>
+                    <ShoppingCart className="w-6 h-6" />
                 </NavLink>
 
                 <NavLink
                     to="/profile"
-                    className={({ isActive }) => `flex flex-col items-center gap-1 p-2 transition-all ${isActive ? 'text-primary scale-110' : 'text-gray-400 opacity-60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1 p-3 rounded-full transition-all ${isActive ? 'bg-aqua text-dark shadow-lg shadow-aqua/20 scale-110' : 'text-white/40'}`}
                 >
                     <User className="w-6 h-6" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Profile</span>
                 </NavLink>
             </div>
         </div>
