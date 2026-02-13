@@ -6,32 +6,35 @@ import { ArrowRight, Sparkles, Star, ShieldCheck, Zap } from 'lucide-react';
 const CategoryCard = ({ category }) => {
     return (
         <motion.div
-            whileHover={{ y: -15, scale: 1.05, rotateZ: 1 }}
-            className="group relative w-full sm:w-[380px] h-[520px] cursor-pointer"
+            whileHover={{ y: -10, scale: 1.02 }}
+            className="group relative w-full sm:w-[380px] h-[580px] cursor-pointer"
         >
             <Link to={`/shop?category=${category.slug}`}>
-                <div className="w-full h-full glass-card rounded-[3rem] p-8 flex flex-col items-center justify-between text-center relative z-10 border border-white/10 group-hover:border-aqua/50 overflow-hidden">
-                    {/* Glowing effect inside card */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-aqua/20 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div className="w-full h-full glass-card rounded-[3.5rem] p-10 flex flex-col items-center justify-between text-center relative z-10 border border-white/5 group-hover:border-aqua/40 overflow-hidden bg-dark">
+                    {/* Industrial ID overlay */}
+                    <div className="absolute top-8 left-10 text-[10px] font-black text-white/10 uppercase tracking-[.4em] z-20">Protocol-{category.slug.split(' ')[1]}</div>
 
-                    {/* Logo Area */}
-                    <div className="relative mt-8">
-                        <div className="w-24 h-24 bg-gradient-to-br from-aqua via-blue-600 to-teal-500 rounded-[2rem] flex items-center justify-center shadow-2xl transform rotate-6 group-hover:rotate-0 transition-transform duration-700 glow-border">
-                            <span className="text-4xl font-black text-white italic drop-shadow-lg">AK</span>
+                    {/* Highlight Glow */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-aqua/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+
+                    {/* Branding Node */}
+                    <div className="relative mt-12 mb-10">
+                        <div className="w-28 h-28 bg-white/5 border border-white/10 rounded-[2.5rem] flex items-center justify-center group-hover:bg-aqua group-hover:border-aqua transition-colors duration-700 shadow-2xl relative">
+                            <span className="text-4xl font-black text-white group-hover:text-dark italic transition-colors">AK</span>
                         </div>
                     </div>
 
                     <div className="z-10 px-4">
-                        <h3 className="text-3xl font-black text-white italic mb-4 leading-tight group-hover:text-aqua transition-colors">
+                        <h3 className="text-4xl font-black text-white italic mb-6 leading-[0.9] tracking-tighter uppercase group-hover:text-aqua transition-colors">
                             {category.name}
                         </h3>
-                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-8">
-                            {category.subtitle || 'Luxury Collection'}
+                        <p className="text-white/20 text-[11px] font-black uppercase tracking-[0.5em] mb-12">
+                            {category.subtitle}
                         </p>
                     </div>
 
-                    <div className="w-full h-12 flex items-center justify-center gap-3 bg-white/5 rounded-2xl border border-white/5 group-hover:bg-aqua group-hover:text-dark transition-all duration-500 font-black uppercase text-[10px] tracking-widest mb-4">
-                        Explore Stock <ArrowRight className="w-4 h-4" />
+                    <div className="w-full py-6 flex items-center justify-center gap-4 bg-white/5 rounded-3xl border border-white/10 group-hover:bg-aqua group-hover:text-dark group-hover:border-aqua transition-all duration-700 font-black uppercase text-xs tracking-[0.3em]">
+                        View Inventory <ArrowRight className="w-5 h-5" />
                     </div>
                 </div>
             </Link>
@@ -41,14 +44,14 @@ const CategoryCard = ({ category }) => {
 
 const Home = () => {
     const categoriesList = [
-        { name: 'AK Special Fish Collection', slug: 'AK Special Fish Collection', subtitle: 'Rare & Vibrant' },
-        { name: 'AK Premium Collection', slug: 'AK Premium Collection', subtitle: 'Exotic & Royal' },
-        { name: 'Fancy Guppy Collection', slug: 'Fancy Guppy Collection', subtitle: 'Elegant & Pure' }
+        { name: 'AK Special', slug: 'AK Special Fish Collection', subtitle: 'Rare Efficiency' },
+        { name: 'AK Premium', slug: 'AK Premium Collection', subtitle: 'Exotic Standard' },
+        { name: 'AK Guppy', slug: 'Fancy Guppy Collection', subtitle: 'Pure Precision' }
     ];
 
     return (
-        <div className="relative min-h-screen py-20 flex flex-col items-center justify-center overflow-hidden">
-            {/* Hero Section */}
+        <div className="relative min-h-screen py-32 flex flex-col items-center justify-center overflow-hidden">
+            {/* Hero Section: Static & Anchored Structure */}
             <div className="max-w-7xl mx-auto px-6 relative z-10 text-center mb-32 w-full">
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
