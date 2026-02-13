@@ -13,12 +13,19 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.0",
     "axios": "^1.13.5",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
     "firebase": "^12.9.0",
     "framer-motion": "^12.33.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
