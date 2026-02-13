@@ -88,13 +88,9 @@ const Navbar = () => {
 
                     {/* Mobile Controls */}
                     <div className="lg:hidden flex items-center gap-4">
-                        <Link to="/cart" className="relative p-2.5 bg-[#0B2A4A]/40 rounded-xl border border-[#00E5FF]/10 text-[#00E5FF]">
-                            <ShoppingCart className="w-5 h-5" />
-                            {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-[#00E5FF] text-[#071A2F] text-[7px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(0,229,255,0.4)]">{cartCount}</span>}
-                        </Link>
                         <button
                             onClick={() => setIsOpen(!isOpen)}
-                            className="p-3 bg-[#0B2A4A]/40 rounded-2xl text-[#00E5FF] hover:bg-[#00E5FF] hover:text-[#071A2F] transition-all border border-[#00E5FF]/20"
+                            className="p-3 bg-[#0B2A4A]/40 rounded-2xl text-[#00E5FF] hover:bg-[#00E5FF] hover:text-[#071A2F] transition-all border border-[#00E5FF]/20 shadow-lg"
                         >
                             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                         </button>
@@ -111,32 +107,17 @@ const Navbar = () => {
                         exit={{ opacity: 0, scale: 0.95 }}
                         className="lg:hidden mx-4 mt-6 overflow-hidden rounded-[3rem] border border-[#00E5FF]/10 shadow-[0_30px_100px_rgba(0,0,0,0.9)] bg-[#071A2F]/95 backdrop-blur-3xl"
                     >
-                        <div className="p-10 space-y-5">
+                        <div className="p-10 space-y-4">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.name}
                                     to={link.path}
                                     onClick={() => setIsOpen(false)}
-                                    className={`block py-6 px-10 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all ${location.pathname === link.path ? 'bg-[#00E5FF] text-[#071A2F] shadow-xl' : 'text-[#BFEFFF]/50 hover:bg-[#BFEFFF]/5'}`}
+                                    className={`block py-6 px-10 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all ${location.pathname === link.path ? 'bg-[#00E5FF] text-[#071A2F] shadow-xl' : 'text-[#BFEFFF]/50 hover:bg-[#BFEFFF]/5'}`}
                                 >
                                     {link.name}
                                 </Link>
                             ))}
-                            <Link
-                                to="/my-orders"
-                                onClick={() => setIsOpen(false)}
-                                className={`block py-6 px-10 rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all ${location.pathname === '/my-orders' ? 'bg-[#00E5FF] text-[#071A2F] shadow-xl' : 'text-[#BFEFFF]/50 hover:bg-[#BFEFFF]/5'}`}
-                            >
-                                My Orders
-                            </Link>
-                            <div className="pt-8 border-t border-[#00E5FF]/5 mt-8 grid grid-cols-2 gap-5">
-                                <Link to="/profile" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-3 py-6 bg-[#BFEFFF]/5 rounded-[2rem] text-[#BFEFFF]/60 text-[10px] font-black uppercase tracking-widest border border-[#BFEFFF]/10">
-                                    <User className="w-4 h-4" /> Profile
-                                </Link>
-                                <Link to="/cart" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-3 py-6 bg-[#00E5FF] rounded-[2rem] text-[#071A2F] text-[10px] font-black uppercase tracking-widest shadow-xl">
-                                    <ShoppingCart className="w-4 h-4" /> Cart ({cartCount})
-                                </Link>
-                            </div>
                         </div>
                     </motion.div>
                 )}

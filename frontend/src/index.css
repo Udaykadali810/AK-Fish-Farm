@@ -9,6 +9,7 @@
   --dark: #071A2F;
   --bg-main: #071A2F;
   --text-main: #BFEFFF;
+  --text-secondary: #BFEFFF;
   --bg-gradient: linear-gradient(135deg, #071A2F, #0B2A4A, #001F3F);
 }
 
@@ -22,52 +23,80 @@ body {
 }
 
 /* Legibility & Glow Effects */
-* {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+p,
+span,
+div,
+label {
+  color: var(--text-secondary);
 }
 
 /* Improved Glassmorphism with Cyan Glow */
 .glass-card {
-  background: rgba(7, 26, 47, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(11, 42, 74, 0.6);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(0, 229, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .glass-card:hover {
   border-color: rgba(0, 229, 255, 0.4);
-  box-shadow: 0 12px 40px 0 rgba(0, 229, 255, 0.15);
+  box-shadow: 0 20px 60px 0 rgba(0, 229, 255, 0.15);
   transform: translateY(-5px);
 }
 
 .glow-text {
   color: var(--accent);
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5), 0 0 20px rgba(0, 229, 255, 0.2);
+  text-shadow: 0 0 15px rgba(0, 229, 255, 0.6), 0 0 30px rgba(0, 229, 255, 0.3);
 }
 
 /* Advanced Button Design: Cyan to Aqua Gradient */
 .btn-premium {
   background: linear-gradient(135deg, var(--accent), var(--secondary));
-  color: #071A2F;
+  color: #071A2F !important;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   border-radius: 9999px;
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
+  border: none;
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.btn-premium:hover::before {
+  left: 100%;
 }
 
 .btn-premium:hover {
-  box-shadow: 0 0 30px rgba(0, 229, 255, 0.6);
-  transform: scale(1.02);
-}
-
-.btn-premium:active {
-  transform: scale(0.95);
+  box-shadow: 0 12px 35px rgba(0, 229, 255, 0.5);
+  transform: scale(1.05);
 }
 
 /* Custom Utilities */
@@ -79,8 +108,11 @@ body {
   color: var(--accent);
 }
 
-.bg-deep {
-  background: var(--primary);
+/* Price Glow */
+.price-tag {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+  font-weight: 900;
 }
 
 @keyframes float {
@@ -89,7 +121,7 @@ body {
   }
 
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-15px);
   }
 
   100% {
@@ -98,29 +130,23 @@ body {
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 5s ease-in-out infinite;
 }
 
-@keyframes marquee {
+@keyframes glow-pulse {
   0% {
-    transform: translateX(0);
+    box-shadow: 0 0 5px rgba(0, 229, 255, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
   }
 
   100% {
-    transform: translateX(-50%);
+    box-shadow: 0 0 5px rgba(0, 229, 255, 0.2);
   }
 }
 
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee 30s linear infinite;
-}
-
-.bubble {
-  position: fixed;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
+.glow-pulse {
+  animation: glow-pulse 3s infinite;
 }

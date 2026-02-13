@@ -130,9 +130,11 @@ const Home = () => {
                     <h2 className="text-4xl lg:text-6xl font-black italic uppercase text-[#BFEFFF] mb-6">Aquatic <span className="text-[#00E5FF]">Categories</span></h2>
                     <div className="w-32 h-1.5 bg-gradient-to-r from-[#00E5FF] to-transparent mx-auto rounded-full blur-[1px]"></div>
                 </div>
-                <div className="flex flex-wrap justify-center gap-12 lg:gap-20">
+                <div className="flex flex-wrap justify-center gap-16 lg:gap-20 pb-20">
                     {categoriesList.map((cat, idx) => (
-                        <CategoryCard key={idx} category={cat} />
+                        <div key={idx} className="mb-12 sm:mb-0">
+                            <CategoryCard category={cat} />
+                        </div>
                     ))}
                 </div>
             </div>

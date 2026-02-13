@@ -129,7 +129,7 @@ const Contact = () => {
                     initial={{ scale: 0, x: 100 }}
                     animate={{ scale: 1, x: 0 }}
                     whileHover={{ scale: 1.1, rotate: 10 }}
-                    className="fixed bottom-10 right-10 z-[200] w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.5)] border-4 border-white/20 group"
+                    className="fixed lg:bottom-10 bottom-40 right-10 z-[200] w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.5)] border-4 border-white/20 group"
                 >
                     <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-20"></div>
                     <MessageCircle className="w-10 h-10 drop-shadow-lg" />

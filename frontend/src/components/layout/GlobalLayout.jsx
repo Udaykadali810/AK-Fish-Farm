@@ -15,7 +15,7 @@ const GlobalLayout = ({ children }) => {
             </main>
 
             {/* Bottom Nav Spacer for Mobile */}
-            <div className="h-20 lg:hidden"></div>
+            <div className="h-40 lg:hidden"></div>
         </div>
     );
 };
