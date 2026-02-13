@@ -8,7 +8,8 @@ module.exports = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const secret = process.env.JWT_SECRET || 'ak_fish_farms_secret_key_2026';
+        const decoded = jwt.verify(token, secret);
         req.adminId = decoded.id;
         next();
     } catch (error) {
