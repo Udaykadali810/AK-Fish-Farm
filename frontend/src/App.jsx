@@ -26,6 +26,7 @@ const Profile = lazy(() => import('./pages/Profile')); // New
 const MyOrders = lazy(() => import('./pages/MyOrders'));
 const AntiGravity = lazy(() => import('./pages/AntiGravity'));
 const EliteApp = lazy(() => import('./pages/EliteApp'));
+const AkProStore = lazy(() => import('./pages/AkProStore'));
 
 const Loading = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -58,6 +59,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/antigravity" element={<AntiGravity />} />
             <Route path="/elite" element={<EliteApp />} />
+            <Route path="/pro-store" element={<AkProStore />} />
           </Routes>
         </Suspense>
       </GlobalLayout>
