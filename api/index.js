@@ -6,16 +6,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Simple in-memory storage for demo (in production, use a real database like PostgreSQL/MongoDB)
-const ADMIN_EMAIL = 'admin@akfishfarms.com';
-const ADMIN_PASSWORD_HASH = bcrypt.hashSync('AKFish2026!', 10);
-
-// A simple test route to verify the backend is alive
+// 1. HEALTH CHECK: Move this to the very top so it doesn't depend on DB/Routes
 app.get('/api/test', (req, res) => {
-    res.json({ message: "Backend is working on Vercel!", status: "OK" });
+    res.json({
+        message: "API is responding!",
+        status: "UP",
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV
+    });
 });
 
-// Import and use your actual routes
+// 2. DEFENSIVE IMPORTS: Import routes after the test route
 const authRoutes = require('./routes/auth');
 const orderRoutes = require('./routes/orders');
 const offerRoutes = require('./routes/offers');
