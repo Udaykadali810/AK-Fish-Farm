@@ -1,8 +1,17 @@
 const { Sequelize } = require('sequelize');
+const pg = require('pg');
 require('dotenv').config();
 
-const sequelize = new Sequelize(process.env.POSTGRES_URL + "?sslmode=require", {
+// Ensure the connection string works with Sequelize and PG
+const connectionString = process.env.POSTGRES_URL;
+
+if (!connectionString) {
+    console.error('POSTGRES_URL is not defined in environment variables');
+}
+
+const sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
+    dialectModule: pg,
     dialectOptions: {
         ssl: {
             require: true,
@@ -20,9 +29,12 @@ const Product = require('./models/Product')(sequelize);
 const Offer = require('./models/Offer')(sequelize);
 const Inquiry = require('./models/Inquiry')(sequelize);
 
-// Sync database
-sequelize.sync({ alter: false });
+// Test connection (don't block, just log)
+sequelize.authenticate()
+    .then(() => console.log('Successfully connected to Neon Database.'))
+    .catch(err => console.error('Unable to connect to the database:', err));
 
+// Export models and sequelize
 module.exports = {
     sequelize,
     Admin,
