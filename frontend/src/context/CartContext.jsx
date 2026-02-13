@@ -16,6 +16,7 @@ export const CartProvider = ({ children }) => {
     });
 
     const [lastAddedItem, setLastAddedItem] = useState(null);
+    const [coupon, setCoupon] = useState(null);
 
     useEffect(() => {
         localStorage.setItem('akf_cart', JSON.stringify(cart));
@@ -56,6 +57,40 @@ export const CartProvider = ({ children }) => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
+    const applyCoupon = (code) => {
+        const validCoupons = {
+            'AKF10': 10,
+            'AKF20': 20,
+            'FISH25': 25,
+            'WELCOME': 15
+        };
+
+        const discountPct = validCoupons[code.toUpperCase()];
+        if (discountPct) {
+            const subtotal = getCartTotal();
+            const discountAmount = (subtotal * discountPct) / 100;
+            setCoupon({
+                code: code.toUpperCase(),
+                percent: discountPct,
+                amount: discountAmount
+            });
+            return { success: true, percent: discountPct };
+        }
+        return { success: false, message: 'Invalid Protocol Code' };
+    };
+
+    const removeCoupon = () => {
+        setCoupon(null);
+    };
+
+    const getFinalTotal = () => {
+        const subtotal = getCartTotal();
+        if (coupon) {
+            return subtotal - coupon.amount;
+        }
+        return subtotal;
+    };
+
     const clearCart = () => {
         setCart([]);
     };
@@ -86,7 +121,11 @@ export const CartProvider = ({ children }) => {
             placeOrder,
             orders,
             lastAddedItem,
-            setLastAddedItem
+            setLastAddedItem,
+            coupon,
+            applyCoupon,
+            removeCoupon,
+            getFinalTotal
         }}>
             {children}
         </CartContext.Provider>

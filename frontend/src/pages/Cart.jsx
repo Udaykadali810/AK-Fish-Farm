@@ -5,8 +5,25 @@ import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, X, ShieldCheck } from 'lu
 import { Link, useNavigate } from 'react-router-dom';
 
 const Cart = () => {
-    const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+    const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart, coupon, applyCoupon, removeCoupon, getFinalTotal } = useCart();
     const navigate = useNavigate();
+    const [couponCode, setCouponCode] = React.useState('');
+    const [couponError, setCouponError] = React.useState('');
+    const [couponSuccess, setCouponSuccess] = React.useState(false);
+
+    const handleApplyCoupon = () => {
+        if (!couponCode) return;
+        setCouponError('');
+        setCouponSuccess(false);
+        const result = applyCoupon(couponCode);
+        if (result.success) {
+            setCouponSuccess(true);
+            setCouponCode('');
+            setTimeout(() => setCouponSuccess(false), 3000);
+        } else {
+            setCouponError(result.message);
+        }
+    };
 
     if (cart.length === 0) {
         return (
@@ -100,21 +117,55 @@ const Cart = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="glass-card p-12 rounded-[4rem] border border-[#00E5FF]/20 sticky top-40 bg-gradient-to-br from-[#0B2A4A]/40 to-transparent"
                     >
-                        <h2 className="text-3xl font-black text-[#BFEFFF] italic mb-10 uppercase tracking-tighter">Logistics <span className="text-[#00E5FF]">Check</span></h2>
+                        <h2 className="text-3xl font-black text-[#BFEFFF] italic mb-10 uppercase tracking-tighter">Settlement <span className="text-[#00E5FF]">Node</span></h2>
+
+                        {/* Coupon Section */}
+                        <div className="mb-10 p-6 bg-[#071A2F]/40 rounded-3xl border border-[#00E5FF]/10">
+                            <label className="text-[10px] font-black text-[#BFEFFF]/30 uppercase tracking-[0.4em] mb-4 block ml-2">Protocol Discount</label>
+                            <div className="flex gap-3">
+                                <input
+                                    type="text"
+                                    placeholder="Enter Code"
+                                    className="flex-grow bg-[#0B2A4A]/60 border border-[#00E5FF]/20 rounded-2xl px-5 py-4 text-xs font-black text-[#BFEFFF] uppercase tracking-widest outline-none focus:border-[#00E5FF] transition-all"
+                                    value={couponCode}
+                                    onChange={(e) => setCouponCode(e.target.value)}
+                                />
+                                <button
+                                    onClick={handleApplyCoupon}
+                                    className="px-6 py-4 bg-[#00E5FF] text-[#071A2F] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                            {coupon && (
+                                <div className="mt-4 flex items-center justify-between text-green-400 text-[10px] font-black uppercase tracking-widest px-2">
+                                    <span>Code Active: {coupon.code}</span>
+                                    <button onClick={removeCoupon} className="text-[#BFEFFF]/20 hover:text-red-400">Remove</button>
+                                </div>
+                            )}
+                            {couponError && <p className="mt-4 text-red-400 text-[9px] font-black uppercase tracking-widest px-2">{couponError}</p>}
+                            {couponSuccess && <p className="mt-4 text-green-400 text-[9px] font-black uppercase tracking-widest px-2">Coupon Applied Successfully</p>}
+                        </div>
 
                         <div className="space-y-6 mb-12">
                             <div className="flex justify-between items-center text-[#BFEFFF]/50 text-xs font-bold uppercase tracking-widest">
                                 <span>Subtotal</span>
                                 <span className="text-[#BFEFFF]">₹{getCartTotal()}</span>
                             </div>
+                            {coupon && (
+                                <div className="flex justify-between items-center text-green-400 text-xs font-bold uppercase tracking-widest">
+                                    <span>Discount ({coupon.percent}%)</span>
+                                    <span>-₹{coupon.amount}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between items-center text-[#BFEFFF]/50 text-xs font-bold uppercase tracking-widest">
-                                <span>Protocol Fee</span>
+                                <span>Logistics Fee</span>
                                 <span className="text-green-500">COVERED</span>
                             </div>
                             <div className="h-px bg-[#00E5FF]/10 my-4"></div>
                             <div className="flex justify-between items-end">
-                                <span className="text-[#BFEFFF]/30 font-black text-[10px] uppercase tracking-[0.4em]">Total Settlement</span>
-                                <span className="text-5xl font-black text-[#BFEFFF] italic drop-shadow-[0_0_15px_rgba(0,229,255,0.4)] tracking-tighter">₹{getCartTotal()}</span>
+                                <span className="text-[#BFEFFF]/30 font-black text-[10px] uppercase tracking-[0.4em]">Net Settlement</span>
+                                <span className="text-5xl font-black text-[#BFEFFF] italic drop-shadow-[0_0_15px_rgba(0,229,255,0.4)] tracking-tighter">₹{getFinalTotal()}</span>
                             </div>
                         </div>
 

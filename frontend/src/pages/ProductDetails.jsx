@@ -37,42 +37,46 @@ const ProductDetails = () => {
     const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
     return (
-        <div className="bg-bg-main min-h-screen">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-[#071A2F] min-h-screen pb-32">
+            <div className="max-w-7xl mx-auto px-6 lg:px-10 py-24">
                 {/* Breadcrumbs */}
-                <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest mb-12">
-                    <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+                <div className="flex items-center gap-3 text-[10px] font-black text-[#BFEFFF]/20 uppercase tracking-[0.4em] mb-16">
+                    <Link to="/" className="hover:text-[#00E5FF] transition-colors">Home</Link>
                     <ChevronRight className="w-3 h-3" />
-                    <Link to="/shop" className="hover:text-primary transition-colors">Shop</Link>
+                    <Link to="/shop" className="hover:text-[#00E5FF] transition-colors">Inventory</Link>
                     <ChevronRight className="w-3 h-3" />
-                    <span className="text-dark">{product.name}</span>
+                    <span className="text-[#00E5FF]">{product.name}</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-                    {/* Image Section - Unchanged */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+                    {/* Image Section */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="space-y-6"
+                        className="space-y-8"
                     >
-                        <div className="relative aspect-square rounded-[3rem] overflow-hidden bg-gradient-to-br from-white to-blue-50 flex items-center justify-center border border-white/20 shadow-2xl">
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                className="flex flex-col items-center"
-                            >
-                                <div className="w-48 h-48 bg-gradient-to-tr from-primary to-accent rounded-[3rem] flex items-center justify-center shadow-xl transform rotate-6">
-                                    <span className="text-8xl font-black text-white italic">AK</span>
-                                </div>
-                                <span className="mt-8 text-lg font-black text-dark/30 uppercase tracking-[0.4em]">Fish Farms</span>
-                            </motion.div>
+                        <div className="relative aspect-[16/14] rounded-[4rem] overflow-hidden bg-[#0B2A4A]/20 border border-[#00E5FF]/10 shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex items-center justify-center">
+                            {product.image ? (
+                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <motion.div
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    className="flex flex-col items-center"
+                                >
+                                    <div className="w-48 h-48 bg-gradient-to-tr from-[#00C2D1] to-[#071A2F] rounded-[3rem] flex items-center justify-center shadow-2xl transform rotate-6 border border-[#00E5FF]/20">
+                                        <span className="text-8xl font-black text-[#BFEFFF] italic">AK</span>
+                                    </div>
+                                    <span className="mt-8 text-lg font-black text-[#BFEFFF]/20 uppercase tracking-[0.4em]">Fish Farms</span>
+                                </motion.div>
+                            )}
 
                             {product.offerPrice && (
-                                <div className="absolute top-8 left-8 bg-black text-white px-5 py-2 rounded-full font-black text-xs tracking-widest uppercase z-10">
-                                    - {Math.round((1 - product.offerPrice / product.price) * 100)}% OFF
+                                <div className="absolute top-8 left-8 bg-[#00E5FF] text-[#071A2F] px-6 py-3 rounded-2xl font-black text-[10px] tracking-widest uppercase z-10 shadow-[0_0_20px_rgba(0,229,255,0.4)]">
+                                    - {Math.round((1 - product.offerPrice / product.price) * 100)}% Protocol Save
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px]" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#071A2F]/60 to-transparent" />
                         </div>
                     </motion.div>
 
@@ -82,99 +86,95 @@ const ProductDetails = () => {
                         animate={{ opacity: 1, x: 0 }}
                         className="flex flex-col"
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-accent/30 text-secondary rounded-full w-fit text-[10px] font-black uppercase tracking-widest mb-6">
-                            <Droplets className="w-3 h-3" /> {product.category}
+                        <div className="inline-flex items-center gap-3 px-6 py-2 bg-[#00E5FF]/10 text-[#00E5FF] rounded-full w-fit text-[10px] font-black uppercase tracking-[0.3em] mb-10 border border-[#00E5FF]/20">
+                            <Droplets className="w-4 h-4" /> {product.category}
                         </div>
 
-                        <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-dark mb-6 italic">{product.name}</h1>
+                        <h1 className="text-5xl lg:text-7xl font-black text-[#BFEFFF] mb-8 italic uppercase tracking-tighter leading-none">{product.name}</h1>
 
-                        <div className="flex items-center gap-6 mb-8">
-                            <div className="flex text-yellow-500 items-center">
-                                {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-4 h-4 fill-yellow-500" />)}
-                                <span className="ml-2 font-black text-dark text-sm">5.0 (24 reviews)</span>
+                        <div className="flex items-center gap-6 mb-10">
+                            <div className="flex text-[#00E5FF] items-center gap-1">
+                                {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-4 h-4 fill-[#00E5FF]" />)}
+                                <span className="ml-3 font-black text-[#BFEFFF]/40 text-xs uppercase tracking-widest">5.0 Genetics Rating</span>
                             </div>
                         </div>
 
-                        <div className="flex items-end gap-4 mb-10">
+                        <div className="flex items-end gap-6 mb-12">
                             {product.offerPrice ? (
                                 <>
-                                    <span className="text-4xl sm:text-5xl font-black text-primary italic">₹{product.offerPrice}</span>
-                                    <span className="text-lg sm:text-xl text-gray-400 line-through mb-1">₹{product.price}</span>
+                                    <span className="text-5xl lg:text-7xl font-black text-[#00E5FF] italic glow-text tracking-tighter">₹{product.offerPrice}</span>
+                                    <span className="text-2xl text-[#BFEFFF]/20 line-through mb-2 font-black italic">₹{product.price}</span>
                                 </>
                             ) : (
-                                <span className="text-4xl sm:text-5xl font-black text-dark italic">₹{product.price}</span>
+                                <span className="text-5xl lg:text-7xl font-black text-[#BFEFFF] italic tracking-tighter">₹{product.price}</span>
                             )}
                         </div>
 
-                        <p className="text-gray-600 text-lg font-medium leading-relaxed mb-10">
+                        <p className="text-[#BFEFFF]/60 text-lg font-medium leading-relaxed mb-12 uppercase text-xs tracking-widest">
                             {product.description}
                         </p>
 
-                        {/* Quantity and Buttons - Unchanged */}
-                        <div className="flex flex-col gap-8 mb-10">
-                            <div className="flex items-center gap-6">
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Quantity</span>
-                                <div className="flex items-center bg-white/50 rounded-2xl border border-white/20 p-2">
+                        {/* Quantity and Buttons */}
+                        <div className="flex flex-col gap-10 mb-16">
+                            <div className="flex items-center gap-8">
+                                <span className="text-[10px] font-black text-[#BFEFFF]/30 uppercase tracking-[0.4em]">Inventory Qty</span>
+                                <div className="flex items-center bg-[#0B2A4A]/40 rounded-2xl border border-[#00E5FF]/10 p-2 shadow-inner">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white transition-all text-dark hover:text-primary"
+                                        className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-[#00E5FF] transition-all text-[#BFEFFF] hover:text-[#071A2F]"
                                     >
-                                        <Minus className="w-4 h-4" />
+                                        <Minus className="w-5 h-5" />
                                     </button>
-                                    <span className="w-12 text-center font-black text-lg text-dark">{quantity}</span>
+                                    <span className="w-16 text-center font-black text-2xl text-[#BFEFFF] italic">{quantity}</span>
                                     <button
                                         onClick={() => setQuantity(quantity + 1)}
-                                        className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white transition-all text-dark hover:text-primary"
+                                        className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-[#00E5FF] transition-all text-[#BFEFFF] hover:text-[#071A2F]"
                                     >
-                                        <Plus className="w-4 h-4" />
+                                        <Plus className="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="flex flex-col sm:flex-row gap-6">
                                 <button
                                     onClick={handleAddToCart}
-                                    className="flex-grow py-5 bg-primary text-white rounded-[2rem] font-black text-xl shadow-xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                    className="flex-grow h-20 bg-[#0B2A4A]/60 border border-[#00E5FF]/20 text-[#BFEFFF] rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-xl hover:border-[#00E5FF] transition-all active:scale-95 flex items-center justify-center gap-4"
                                 >
-                                    <ShoppingCart className="w-6 h-6" /> {added ? 'Added to Cart' : 'Add to Cart'}
+                                    <ShoppingCart className="w-6 h-6" /> {added ? 'Synchronized' : 'Add to Tank'}
                                 </button>
                                 <button
                                     onClick={() => {
                                         addToCart({ ...product, quantity });
                                         navigate('/checkout');
                                     }}
-                                    className="flex-grow py-5 bg-[#FF6B6B] text-white rounded-[2rem] font-black text-xl shadow-xl shadow-[#FF6B6B]/20 flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                    className="flex-grow h-20 btn-premium flex items-center justify-center gap-4 text-xs font-black"
                                 >
-                                    Buy Now
+                                    Buy Now <ArrowRight className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                            <div className="flex items-center gap-6 pt-10 border-t border-[#00E5FF]/10">
                                 <a
-                                    href={`https://wa.me/919492045766?text=I'm interested in buying ${product.name}`}
+                                    href={`https://wa.me/919492045766?text=I'm interested in buying ${product.name} from AK Fish Farms`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="flex items-center gap-2 text-[10px] font-black text-green-600 uppercase tracking-widest hover:translate-x-1 transition-transform"
+                                    className="flex items-center gap-4 text-[10px] font-black text-[#00E5FF] uppercase tracking-[0.3em] hover:translate-x-2 transition-transform opacity-60 hover:opacity-100"
                                 >
-                                    <MessageCircle className="w-4 h-4" /> Ask Expertise via WhatsApp
+                                    <MessageCircle className="w-5 h-5" /> Technical Coordination via WhatsApp
                                 </a>
-                                <button className="ml-auto p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-gray-400 hover:text-primary transition-colors">
-                                    <Share2 className="w-5 h-5" />
-                                </button>
                             </div>
                         </div>
 
-
                         {/* Features list */}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-6">
                             {[
-                                { icon: <ShieldCheck className="w-5 h-5" />, label: "Live Arrival" },
-                                { icon: <Truck className="w-5 h-5" />, label: "Fast Safe" },
-                                { icon: <Droplets className="w-5 h-5" />, label: "Eco Pack" }
+                                { icon: <ShieldCheck className="w-6 h-6" />, label: "Live Arrival" },
+                                { icon: <Truck className="w-6 h-6" />, label: "Safe Logistics" },
+                                { icon: <Droplets className="w-6 h-6" />, label: "Eco Protocol" }
                             ].map((f, i) => (
-                                <div key={i} className="flex flex-col items-center p-4 rounded-2xl border border-dashed border-gray-200">
-                                    <div className="text-primary mb-2">{f.icon}</div>
-                                    <span className="text-[10px] font-black uppercase text-gray-500">{f.label}</span>
+                                <div key={i} className="flex flex-col items-center p-6 rounded-[2rem] bg-[#0B2A4A]/20 border border-[#00E5FF]/5">
+                                    <div className="text-[#00C2D1] mb-3">{f.icon}</div>
+                                    <span className="text-[9px] font-black uppercase text-[#BFEFFF]/30 tracking-widest">{f.label}</span>
                                 </div>
                             ))}
                         </div>
@@ -182,38 +182,39 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Tabs Section */}
-                <section className="mt-24">
-                    <div className="flex gap-12 border-b border-gray-200 mb-12 overflow-x-auto pb-px">
-                        {['description', 'care-guide', 'shipping'].map(tab => (
+                <section className="mt-40">
+                    <div className="flex gap-16 border-b border-[#00E5FF]/10 mb-16 overflow-x-auto pb-px scrollbar-hide">
+                        {['description', 'biology-guide', 'logistics'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`pb-4 text-[10px] sm:text-sm font-black uppercase tracking-widest whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-primary' : 'text-gray-400 hover:text-dark'}`}
+                                className={`pb-6 text-[11px] font-black uppercase tracking-[0.4em] whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]'}`}
                             >
                                 {tab.replace('-', ' ')}
                                 {activeTab === tab && (
-                                    <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full" />
+                                    <motion.div layoutId="activeTabDetails" className="absolute bottom-0 left-0 right-0 h-1 bg-[#00E5FF] rounded-full shadow-[0_0_15px_rgba(0,229,255,0.6)]" />
                                 )}
                             </button>
                         ))}
                     </div>
 
-                    <div className="max-w-4xl font-medium leading-[2]">
+                    <div className="max-w-4xl">
                         <AnimatePresence mode='wait'>
                             {activeTab === 'description' && (
                                 <motion.div key="desc" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                                    <p className="text-lg text-gray-600">{product.description}</p>
-                                    <p className="mt-6 text-lg text-gray-600">Our {product.name} are sourced from professional breeders and undergo a strict 14 days quarantine period. This ensures they are free from common parasites and ready to adapt to your aquarium environment smoothly.</p>
+                                    <p className="text-xl text-[#BFEFFF]/60 leading-relaxed font-medium mb-8 uppercase text-xs tracking-widest">{product.description}</p>
+                                    <p className="text-xl text-[#BFEFFF]/60 leading-relaxed font-medium uppercase text-xs tracking-widest">Our {product.name} are sourced from elite breeders and undergo an rigorous biological quarantine at AK Fish Farms. This ensures maximum health and seamless adaptation to your aquatic ecosystem.</p>
                                 </motion.div>
                             )}
-                            {activeTab === 'care-guide' && (
+                            {activeTab === 'biology-guide' && (
                                 <motion.div key="care" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                                    <div className="bg-white p-10 rounded-[3.5rem] border border-gray-200">
-                                        <h4 className="text-2xl font-black text-dark mb-6 italic">Aquarium Expert's Tips</h4>
-                                        <div className="space-y-4 text-gray-600 text-lg">
-                                            <p className="flex items-center gap-3"><Droplets className="w-5 h-5 text-primary" /> {product.careInstructions || 'Standard tropical care: 24-28°C, pH 7.0'}</p>
-                                            <p className="flex items-center gap-3"><Star className="w-5 h-5 text-primary" /> Minimum Tank Size: 15 Gallons recommended</p>
-                                            <p className="flex items-center gap-3"><ShieldCheck className="w-5 h-5 text-primary" /> Diet: High protein flakes/pellets and live bloodworms</p>
+                                    <div className="bg-[#0B2A4A]/40 p-12 lg:p-16 rounded-[4rem] border border-[#00E5FF]/20 relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#00E5FF]/5 blur-[80px] group-hover:bg-[#00E5FF]/10 transition-colors" />
+                                        <h4 className="text-3xl font-black text-[#BFEFFF] mb-10 italic uppercase tracking-tighter">Species <span className="text-[#00E5FF]">Parameters</span></h4>
+                                        <div className="space-y-8 text-[#BFEFFF]/60 font-black text-xs uppercase tracking-widest">
+                                            <p className="flex items-center gap-5 bg-[#071A2F]/40 p-6 rounded-2xl border border-[#00E5FF]/5"><Droplets className="w-6 h-6 text-[#00E5FF]" /> Thermal Range: 24-28°C | Optimal pH 7.0 </p>
+                                            <p className="flex items-center gap-5 bg-[#071A2F]/40 p-6 rounded-2xl border border-[#00E5FF]/5"><Star className="w-6 h-6 text-[#00E5FF]" /> Minimum Volume: 15 Gallons recommended </p>
+                                            <p className="flex items-center gap-5 bg-[#071A2F]/40 p-6 rounded-2xl border border-[#00E5FF]/5"><ShieldCheck className="w-6 h-6 text-[#00E5FF]" /> Nutrition: AK Premium High Protein Diet </p>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -224,9 +225,12 @@ const ProductDetails = () => {
 
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (
-                    <section className="mt-32">
-                        <h2 className="text-4xl font-black text-dark italic mb-12">Related <span className="text-primary italic">Favorites</span></h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <section className="mt-40">
+                        <div className="flex items-end justify-between mb-16 px-2">
+                            <h2 className="text-4xl lg:text-6xl font-black text-[#BFEFFF] italic uppercase tracking-tighter">Similar <span className="text-[#00E5FF] italic">Species</span></h2>
+                            <Link to="/shop" className="text-[10px] font-black text-[#00E5FF] uppercase tracking-[0.4em] hover:translate-x-2 transition-transform">Browse All</Link>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
                             {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
                         </div>
                     </section>

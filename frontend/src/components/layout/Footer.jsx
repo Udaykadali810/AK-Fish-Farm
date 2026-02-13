@@ -75,7 +75,7 @@ const Footer = () => {
                                 <div className="p-3 glass-card rounded-xl text-primary group-hover:bg-primary group-hover:text-dark transition-all">
                                     <MapPin className="w-5 h-5" />
                                 </div>
-                                <p className="text-gray-400 font-bold text-sm tracking-wide">AK Fish Farm, Palakoderu,<br />Andhra Pradesh, India</p>
+                                <p className="text-gray-400 font-bold text-sm tracking-wide">AK Fish Farms, Palakoderu,<br />Andhra Pradesh, India</p>
                             </div>
                             <div className="flex items-center gap-4 group">
                                 <div className="p-3 glass-card rounded-xl text-primary group-hover:bg-primary group-hover:text-dark transition-all">

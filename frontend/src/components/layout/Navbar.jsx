@@ -28,7 +28,7 @@ const Navbar = () => {
                     {/* Logo - Neon Cyan Glow */}
                     <Link to="/" className="flex flex-shrink-0 items-center space-x-2 group">
                         <span className="text-3xl font-black italic tracking-tighter text-[#00E5FF] drop-shadow-[0_0_10px_rgba(0,229,255,0.4)]">
-                            AK <span className="text-[#00C2D1]">FISH</span>
+                            AK <span className="text-[#00C2D1]">Fish Farms</span>
                         </span>
                     </Link>
 
