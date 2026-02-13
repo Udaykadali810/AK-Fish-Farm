@@ -24,6 +24,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const Profile = lazy(() => import('./pages/Profile')); // New
 const MyOrders = lazy(() => import('./pages/MyOrders'));
+const AntiGravity = lazy(() => import('./pages/AntiGravity'));
 
 const Loading = () => (
   <div className="min-h-screen flex items-center justify-center bg-white">
@@ -54,6 +55,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/antigravity" element={<AntiGravity />} />
           </Routes>
         </Suspense>
       </GlobalLayout>
