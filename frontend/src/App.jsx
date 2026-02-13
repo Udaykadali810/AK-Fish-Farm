@@ -6,6 +6,16 @@ import Footer from './components/layout/Footer';
 import AIAssistant from './components/ui/AIAssistant';
 import CartActionToast from './components/ui/CartActionToast';
 import GlobalLayout from './components/layout/GlobalLayout';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
 // Lazy load pages for 0% hanging
 const Home = lazy(() => import('./pages/Home'));
@@ -37,6 +47,7 @@ const Loading = () => (
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Navbar />
       <GlobalLayout>
         <Suspense fallback={<Loading />}>

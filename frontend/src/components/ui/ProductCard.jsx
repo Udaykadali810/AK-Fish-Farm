@@ -5,7 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 
 const ProductCard = ({ product }) => {
-    // ... (logic same)
+    const { addToCart } = useCart();
+    const [added, setAdded] = useState(false);
+    const navigate = useNavigate();
+
+    const handleAddToCart = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(product);
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
+    };
+
+    const handleBuyNow = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(product);
+        navigate('/checkout');
+    };
 
     return (
         <motion.div
@@ -16,31 +33,33 @@ const ProductCard = ({ product }) => {
         >
             <div className="relative p-5 flex-grow flex flex-col">
                 {/* Image Section */}
-                <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-white/[0.03] mb-8 border border-white/5">
-                    {product.image ? (
-                        <img
-                            src={product.image}
-                            alt={product.name}
-                            loading="lazy"
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/10 font-black italic text-4xl">AK</div>
-                    )}
+                <Link to={`/product/${product.id}`} className="block">
+                    <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-white/[0.03] mb-8 border border-white/5">
+                        {product.image ? (
+                            <img
+                                src={product.image}
+                                alt={product.name}
+                                loading="lazy"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-white/10 font-black italic text-4xl">AK</div>
+                        )}
 
-                    {/* Floating Highlights */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent pointer-events-none"></div>
+                        {/* Floating Highlights */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent pointer-events-none"></div>
 
-                    {/* Price Tag: Vibrant Neon Cyan */}
-                    <div className="absolute top-5 right-5 bg-dark/60 backdrop-blur-3xl border border-aqua/30 neon-price px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider z-10">
-                        ₹{product.price}
+                        {/* Price Tag: Vibrant Neon Cyan */}
+                        <div className="absolute top-5 right-5 bg-dark/60 backdrop-blur-3xl border border-aqua/30 neon-price px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-wider z-10">
+                            ₹{product.price}
+                        </div>
+
+                        {/* Label: High Contrast White/Dark */}
+                        <div className="absolute bottom-5 left-5 px-5 py-2.5 bg-white text-dark rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl z-20">
+                            {product.category}
+                        </div>
                     </div>
-
-                    {/* Label: High Contrast White/Dark */}
-                    <div className="absolute bottom-5 left-5 px-5 py-2.5 bg-white text-dark rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] shadow-2xl z-20">
-                        {product.category}
-                    </div>
-                </div>
+                </Link>
 
                 {/* Info Container */}
                 <div className="px-3 pb-2 flex flex-col flex-grow">

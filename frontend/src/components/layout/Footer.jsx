@@ -33,11 +33,15 @@ const Footer = () => {
                     <div>
                         <h4 className="text-white font-black uppercase text-xs tracking-[0.3em] mb-10 italic">Collections</h4>
                         <ul className="space-y-6">
-                            {['AK Special Fish', 'AK Premium', 'Fancy Guppy'].map((item) => (
-                                <li key={item}>
-                                    <Link to="/shop" className="text-gray-400 hover:text-primary transition-all flex items-center gap-2 group font-bold">
+                            {[
+                                { name: 'AK Special Fish', path: '/shop?category=AK Special Fish Collection' },
+                                { name: 'AK Premium', path: '/shop?category=AK Premium Collection' },
+                                { name: 'Fancy Guppy', path: '/shop?category=Fancy Guppy Collection' }
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link to={item.path} className="text-gray-400 hover:text-primary transition-all flex items-center gap-2 group font-bold">
                                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item}
+                                        {item.name}
                                     </Link>
                                 </li>
                             ))}
@@ -48,11 +52,15 @@ const Footer = () => {
                     <div>
                         <h4 className="text-white font-black uppercase text-xs tracking-[0.3em] mb-10 italic">Support</h4>
                         <ul className="space-y-6">
-                            {['Track Order', 'Shipping Policy', 'Contact Us', 'Our Farms'].map((item) => (
-                                <li key={item}>
-                                    <Link to={`/${item.toLowerCase().replace(' ', '-')}`} className="text-gray-400 hover:text-primary transition-all flex items-center gap-2 group font-bold">
+                            {[
+                                { name: 'Track Order', path: '/track-order' },
+                                { name: 'Contact Us', path: '/contact' },
+                                { name: 'My Orders', path: '/my-orders' }
+                            ].map((item) => (
+                                <li key={item.name}>
+                                    <Link to={item.path} className="text-gray-400 hover:text-primary transition-all flex items-center gap-2 group font-bold">
                                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        {item}
+                                        {item.name}
                                     </Link>
                                 </li>
                             ))}

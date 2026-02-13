@@ -7,7 +7,54 @@ import { Search, Filter, SlidersHorizontal, ArrowUpDown, X, ChevronLeft, Chevron
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Shop = () => {
-    // ... (state and effects same as before)
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const initialCategory = queryParams.get('category') || 'All';
+
+    const [search, setSearch] = useState('');
+    const [category, setCategory] = useState(initialCategory);
+    const [priceRange, setPriceRange] = useState(5000);
+    const [loading, setLoading] = useState(true);
+    const [sortBy, setSortBy] = useState('Newest');
+    const [showFilters, setShowFilters] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 6;
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(location.search);
+        const cat = queryParams.get('category');
+        if (cat) {
+            // Map shorthand aliases for better UX and routing compatibility
+            const aliasMap = {
+                'guppy': 'Fancy Guppy Collection',
+                'premium': 'AK Premium Collection',
+                'special': 'AK Special Fish Collection'
+            };
+            const mappedCat = aliasMap[cat.toLowerCase()] || cat;
+            setCategory(mappedCat);
+        }
+    }, [location.search]);
+
+    useEffect(() => {
+        setTimeout(() => setLoading(false), 1000);
+    }, []);
+
+    const filteredProducts = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = category === 'All' || p.category === category;
+        const matchesPrice = p.price <= priceRange;
+        return matchesSearch && matchesCategory && matchesPrice;
+    }).sort((a, b) => {
+        if (sortBy === 'Price: Low to High') return a.price - b.price;
+        if (sortBy === 'Price: High to Low') return b.price - a.price;
+        if (sortBy === 'Rating') return b.rating - a.rating;
+        return b.id - a.id;
+    });
+
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
     const filters = (
         <div className="space-y-12">

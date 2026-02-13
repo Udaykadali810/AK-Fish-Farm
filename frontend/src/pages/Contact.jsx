@@ -16,10 +16,10 @@ const Contact = () => {
                     className="relative z-10"
                 >
                     <div className="inline-flex items-center gap-3 px-8 py-3 bg-white/5 backdrop-blur-3xl rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-12 border border-white/10 glow-border">
-                        <Droplets className="w-4 h-4 text-aqua" /> Get in Touch
+                        <Droplets className="w-4 h-4 text-aqua" /> AK Fish Farms Protocol
                     </div>
-                    <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black italic mb-10 leading-[0.9] tracking-tighter uppercase">Let's <span className="text-aqua glow-text">Talk.</span></h1>
-                    <p className="text-xl text-white/40 max-w-2xl mx-auto font-medium tracking-wide">Questions about genetics, setups, or your order? We're here to guide your journey.</p>
+                    <h1 className="text-5xl sm:text-7xl lg:text-9xl font-black italic mb-10 leading-[0.9] tracking-tighter uppercase">Contact <span className="text-aqua glow-text">Farms.</span></h1>
+                    <p className="text-xl text-white/40 max-w-2xl mx-auto font-medium tracking-wide">Headquarters: Palakoderu, Andhra Pradesh. <br />Reach our technical experts for genetics and logistics info.</p>
                 </motion.div>
             </div>
 

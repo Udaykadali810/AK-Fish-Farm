@@ -54,13 +54,30 @@ const Navbar = () => {
                                     {link.name}
                                 </Link>
                             ))}
+                            <Link
+                                to="/my-orders"
+                                className={`hover:text-aqua transition-all hover:scale-105 ${location.pathname === '/my-orders' ? 'text-aqua glow-text' : ''}`}
+                            >
+                                Orders
+                            </Link>
                         </div>
 
                         <div className="h-6 w-px bg-white/10"></div>
 
-                        <Link to="/profile" className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:border-aqua/50 transition-all text-white/40 hover:text-aqua">
-                            <User className="h-5 w-5" />
-                        </Link>
+                        <div className="flex items-center gap-4">
+                            <Link to="/cart" className="relative group p-3 bg-white/5 rounded-2xl border border-white/10 hover:border-aqua/50 transition-all text-white/40 hover:text-aqua">
+                                <ShoppingCart className="h-5 w-5" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-aqua text-dark text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(14,165,233,0.5)]">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Link>
+
+                            <Link to="/profile" className="p-3 bg-white/5 rounded-2xl border border-white/10 hover:border-aqua/50 transition-all text-white/40 hover:text-aqua">
+                                <User className="h-5 w-5" />
+                            </Link>
+                        </div>
                     </div>
 
                     {/* Mobile Controls */}
