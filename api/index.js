@@ -16,6 +16,21 @@ app.get('/api/test', (req, res) => {
     });
 });
 
+// 1b. DB DEBUG CHECK
+app.get('/api/db-check', async (req, res) => {
+    try {
+        const { sequelize } = require('./db');
+        await sequelize.authenticate();
+        res.json({ status: "Connected to Neon DB successfully!" });
+    } catch (error) {
+        res.status(500).json({
+            status: "Database connection failed",
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
+
 // 2. DEFENSIVE IMPORTS: Import routes after the test route
 const authRoutes = require('./routes/auth');
 const orderRoutes = require('./routes/orders');
