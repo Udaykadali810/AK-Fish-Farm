@@ -69,8 +69,67 @@ const Home = () => {
                 </div>
             </div>
 
+            {/* Business Banner Section - Full Responsive */}
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 w-full pt-20 sm:pt-24 mb-16 sm:mb-24">
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="text-center mb-8"
+                >
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black italic uppercase text-[#BFEFFF] mb-3">
+                        Welcome to <span className="text-[#00E5FF]">AK Fish Farms</span>
+                    </h2>
+                    <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#00E5FF] to-transparent mx-auto rounded-full blur-[1px]"></div>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                    className="w-full glass-card rounded-[2rem] sm:rounded-[3rem] p-4 sm:p-8 border border-[#00E5FF]/20 relative overflow-hidden group shadow-[0_0_60px_rgba(0,229,255,0.15)] hover:shadow-[0_0_80px_rgba(0,229,255,0.25)] transition-all duration-500"
+                >
+                    {/* Premium Aqua Glow Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#00E5FF]/5 via-transparent to-[#00C2D1]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+                    {/* Banner Image Container - Fully Responsive */}
+                    <div className="relative w-full rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-[#071A2F] to-[#0B2A4A] border border-[#00E5FF]/10">
+                        <img
+                            src="/ak-fish-farms-banner.png"
+                            alt="AK Fish Farms - Your trust is my journey. All kinds of Colour Fishes Available. Contact: 94920 45766, 97053 53646"
+                            className="w-full h-auto object-contain"
+                            loading="lazy"
+                            style={{
+                                maxWidth: '100%',
+                                height: 'auto',
+                                display: 'block',
+                                margin: '0 auto'
+                            }}
+                        />
+                    </div>
+
+                    {/* Mobile Contact Quick Access (Optional Enhancement) */}
+                    <div className="block sm:hidden mt-6 flex flex-col gap-3">
+                        <a
+                            href="tel:+919492045766"
+                            className="flex items-center justify-center gap-3 px-6 py-4 bg-[#00E5FF]/10 border border-[#00E5FF]/30 rounded-2xl text-[#00E5FF] font-black text-sm uppercase tracking-widest hover:bg-[#00E5FF] hover:text-[#071A2F] transition-all"
+                        >
+                            📞 Call: 94920 45766
+                        </a>
+                        <a
+                            href="https://wa.me/919705353646"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-3 px-6 py-4 bg-green-500/10 border border-green-500/30 rounded-2xl text-green-400 font-black text-sm uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all"
+                        >
+                            💬 WhatsApp: 97053 53646
+                        </a>
+                    </div>
+                </motion.div>
+            </div>
+
             {/* Hero Section */}
-            <div className="max-w-7xl mx-auto px-6 relative z-10 text-center mb-32 w-full pt-16">
+            <div className="max-w-7xl mx-auto px-6 relative z-10 text-center mb-32 w-full">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
