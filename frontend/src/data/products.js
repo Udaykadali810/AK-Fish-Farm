@@ -48,7 +48,7 @@ export const products = [
         category: "AK Special Collection",
         rating: 4.6,
         stock: 100,
-        image: "https://images.unsplash.com/photo-1463171515643-952cee54d42a?auto=format&fit=crop&w=600&q=80"
+        image: "https://images.unsplash.com/photo-1535591273668-578e31182c4f?auto=format&fit=crop&w=600&q=80"
     },
     {
         id: 106,
@@ -68,7 +68,7 @@ export const products = [
         category: "AK Special Collection",
         rating: 4.8,
         stock: 10,
-        image: "https://images.unsplash.com/photo-1524704796526-caee01244bb7?auto=format&fit=crop&w=600&q=80"
+        image: "https://images.unsplash.com/photo-1520990735108-c6de1a3a4ed5?auto=format&fit=crop&w=600&q=80"
     },
     {
         id: 108,
@@ -78,7 +78,7 @@ export const products = [
         category: "AK Special Collection",
         rating: 5.0,
         stock: 5,
-        image: "https://images.unsplash.com/photo-1544521848-df840003006d?auto=format&fit=crop&w=600&q=80"
+        image: "https://images.unsplash.com/photo-1520990669985-2c0ce8a4c7c5?auto=format&fit=crop&w=600&q=80"
     },
     {
         id: 109,
@@ -88,7 +88,7 @@ export const products = [
         category: "AK Special Collection",
         rating: 4.9,
         stock: 8,
-        image: "https://images.unsplash.com/photo-1524704659698-1fd30bb3a772?auto=format&fit=crop&w=600&q=80"
+        image: "https://images.unsplash.com/photo-1524704796826-f66aefed9328?auto=format&fit=crop&w=600&q=80"
     },
     {
         id: 110,
@@ -98,7 +98,7 @@ export const products = [
         category: "AK Special Collection",
         rating: 5.0,
         stock: 4,
-        image: "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=600&q=80"
+        image: "https://images.unsplash.com/photo-1520990834044-4750ee7e4187?auto=format&fit=crop&w=600&q=80"
     },
 
     // === AK PREMIUM COLLECTION ===
