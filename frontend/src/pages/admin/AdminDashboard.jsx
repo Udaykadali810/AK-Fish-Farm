@@ -324,12 +324,42 @@ const AdminDashboard = () => {
                     )}
                 </AnimatePresence>
 
-                <header className="mb-12 flex justify-between items-center">
+                <header className="mb-8 lg:mb-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                     <div>
-                        <h1 className="text-4xl font-black text-white italic mb-2 uppercase tracking-tighter shadow-2xl">{activeTab} <span className="text-aqua italic glow-text">Management</span></h1>
+                        <h1 className="text-3xl lg:text-4xl font-black text-white italic mb-2 uppercase tracking-tighter shadow-2xl">{activeTab} <span className="text-aqua italic glow-text">Management</span></h1>
                         <p className="text-white/20 font-black uppercase tracking-[0.3em] text-[10px]">Overview of business unit {activeTab}</p>
                     </div>
+
+                    {/* Mobile Quick Actions Bar */}
+                    <div className="lg:hidden flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 scrollbar-none">
+                        <button
+                            onClick={handleDownloadBackup}
+                            className={`flex-shrink-0 flex items-center gap-2 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all border ${isBackupDue() ? 'border-aqua/50 bg-aqua/10 text-aqua animate-pulse' : 'border-[#00E5FF]/20 bg-[#0B2A4A]/40 text-[#BFEFFF]'}`}
+                        >
+                            <Download className="w-4 h-4" /> Excel
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="flex-shrink-0 p-4 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </button>
+                    </div>
                 </header>
+
+                {/* Mobile Tab Quick Switcher (Horizontal Scroll) */}
+                <div className="lg:hidden flex items-center gap-2 overflow-x-auto pb-8 scrollbar-none mb-4 -mx-2 px-2">
+                    {menuItems.map(item => (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id)}
+                            className={`flex-shrink-0 flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 border ${activeTab === item.id ? 'bg-aqua text-dark border-aqua shadow-[0_0_20px_rgba(14,165,233,0.4)]' : 'bg-[#0B2A4A]/20 text-[#BFEFFF]/40 border-white/5'}`}
+                        >
+                            {item.icon}
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
 
                 <AnimatePresence mode="wait">
                     <motion.div
