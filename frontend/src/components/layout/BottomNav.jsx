@@ -74,22 +74,20 @@ const BottomNav = () => {
                     )}
                 </NavLink>
 
-                {isAdmin && (
-                    <NavLink
-                        to="/admin"
-                        className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
-                    >
-                        {({ isActive }) => (
-                            <>
-                                <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
-                                    <ShieldCheck className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
-                                </motion.div>
-                                <span className="text-[7px] font-black uppercase tracking-widest text-center">Admin</span>
-                                {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
-                            </>
-                        )}
-                    </NavLink>
-                )}
+                <NavLink
+                    to="/admin"
+                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
+                >
+                    {({ isActive }) => (
+                        <>
+                            <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
+                                <ShieldCheck className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
+                            </motion.div>
+                            <span className="text-[7px] font-black uppercase tracking-widest text-center">Admin</span>
+                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
+                        </>
+                    )}
+                </NavLink>
             </div>
         </div>
     );
