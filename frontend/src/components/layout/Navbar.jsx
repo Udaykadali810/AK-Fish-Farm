@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User, Search, MessageCircle } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, Search, MessageCircle, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,7 @@ const Navbar = () => {
     const location = useLocation();
     const { cart } = useCart();
     const { user } = useAuth();
+    const isAdmin = user?.role === 'admin';
 
     const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -60,6 +61,17 @@ const Navbar = () => {
                             >
                                 Orders
                             </Link>
+
+                            {/* Desktop Admin Panel Link */}
+                            {isAdmin && (
+                                <Link
+                                    to="/admin"
+                                    className={`transition-all hover:scale-110 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#00E5FF]/10 border border-[#00E5FF]/30 ${location.pathname === '/admin' ? 'text-[#00E5FF] drop-shadow-[0_0_8px_rgba(0,229,255,0.5)] border-[#00E5FF]' : 'text-[#00E5FF]/80 hover:text-[#00E5FF]'}`}
+                                >
+                                    <ShieldCheck className="w-4 h-4" />
+                                    Admin Panel
+                                </Link>
+                            )}
                         </div>
 
                         <div className="h-6 w-px bg-[#00E5FF]/10"></div>
@@ -88,6 +100,19 @@ const Navbar = () => {
 
                     {/* Mobile Controls */}
                     <div className="lg:hidden flex items-center gap-4">
+                        {/* Mobile Cart Icon - New Placement */}
+                        <Link
+                            to="/cart"
+                            className={`relative p-3 bg-[#0B2A4A]/40 rounded-2xl transition-all border border-[#00E5FF]/20 shadow-lg ${location.pathname === '/cart' ? 'text-[#071A2F] bg-[#00E5FF]' : 'text-[#00E5FF]'}`}
+                        >
+                            <ShoppingCart className="h-6 w-6" />
+                            {cartCount > 0 && (
+                                <span className={`absolute -top-1 -right-1 text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(0,229,255,0.4)] ${location.pathname === '/cart' ? 'bg-[#071A2F] text-[#00E5FF]' : 'bg-[#00E5FF] text-[#071A2F]'}`}>
+                                    {cartCount}
+                                </span>
+                            )}
+                        </Link>
+
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className="p-3 bg-[#0B2A4A]/40 rounded-2xl text-[#00E5FF] hover:bg-[#00E5FF] hover:text-[#071A2F] transition-all border border-[#00E5FF]/20 shadow-lg"
@@ -118,6 +143,25 @@ const Navbar = () => {
                                     {link.name}
                                 </Link>
                             ))}
+                            <Link
+                                to="/my-orders"
+                                onClick={() => setIsOpen(false)}
+                                className={`block py-6 px-10 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all ${location.pathname === '/my-orders' ? 'bg-[#00E5FF] text-[#071A2F] shadow-xl' : 'text-[#BFEFFF]/50 hover:bg-[#BFEFFF]/5'}`}
+                            >
+                                Orders
+                            </Link>
+
+                            {/* Mobile Admin Panel Link */}
+                            {isAdmin && (
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setIsOpen(false)}
+                                    className={`flex items-center gap-4 py-6 px-10 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all bg-[#00E5FF]/10 border border-[#00E5FF]/30 ${location.pathname === '/admin' ? 'bg-[#00E5FF] text-[#071A2F] shadow-xl' : 'text-[#00E5FF] hover:bg-[#00E5FF]/20'}`}
+                                >
+                                    <ShieldCheck className="w-5 h-5" />
+                                    Admin Panel
+                                </Link>
+                            )}
                         </div>
                     </motion.div>
                 )}
