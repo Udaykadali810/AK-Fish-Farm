@@ -38,7 +38,7 @@ const Inquiry = require('./models/Inquiry')(sequelize);
 sequelize.authenticate()
     .then(() => {
         console.log('Successfully connected to Neon Database.');
-        return sequelize.sync({ alter: false });
+        return sequelize.sync({ alter: true });
     })
     .then(() => console.log('Database tables synchronized.'))
     .catch(err => console.error('Database Error:', err));

@@ -11,20 +11,39 @@ const Shop = () => {
     const queryParams = new URLSearchParams(location.search);
     const initialCategory = queryParams.get('category') || 'All';
 
+    const [displayProducts, setDisplayProducts] = useState(products);
+    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState(initialCategory);
     const [priceRange, setPriceRange] = useState(5000);
-    const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState('Newest');
     const [showFilters, setShowFilters] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 6;
 
     useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await fetch('/api/admin/products');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        setDisplayProducts(data);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch live products, using catalog fallback");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const cat = queryParams.get('category');
         if (cat) {
-            // Map shorthand aliases for better UX and routing compatibility
             const aliasMap = {
                 'guppy': 'AK Guppy Collection',
                 'premium': 'AK Premium Collection',
@@ -35,11 +54,7 @@ const Shop = () => {
         }
     }, [location.search]);
 
-    useEffect(() => {
-        setTimeout(() => setLoading(false), 1000);
-    }, []);
-
-    const filteredProducts = products.filter(p => {
+    const filteredProducts = displayProducts.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
         const matchesCategory = category === 'All' || p.category === category;
         const matchesPrice = p.price <= priceRange;

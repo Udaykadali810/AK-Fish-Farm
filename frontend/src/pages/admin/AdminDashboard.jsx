@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Package, CreditCard, Tag, ShoppingBag,
     Lock, LogOut, LayoutDashboard, ChevronRight,
-    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish, Download, Calendar, CheckCircle2, XCircle
+    Search, Trash2, Eye, Edit3, Save, X, Plus, Power, Menu, Bot, Phone, User, MapPin, Fish, Download, Calendar, CheckCircle2, XCircle, Zap
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { products as localProducts } from '../../data/products';
@@ -200,6 +200,7 @@ const AdminDashboard = () => {
     const handleSyncProducts = async () => {
         // Sync with the master local inventory data
         const initialProducts = localProducts.map(p => ({
+            id: p.id.toString(),
             name: p.name,
             price: p.price,
             active: true
