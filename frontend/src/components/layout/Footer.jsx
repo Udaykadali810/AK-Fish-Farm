@@ -11,13 +11,13 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
                     {/* Brand Section */}
-                    <div className="space-y-8">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-8">
                         <Link to="/" className="inline-block group">
                             <span className="text-3xl font-black text-[#00E5FF] drop-shadow-[0_0_10px_rgba(0,229,255,0.4)] italic">
                                 AK Fish Farms
                             </span>
                         </Link>
-                        <p className="text-[#BFEFFF]/60 font-medium leading-relaxed tracking-wide text-xs uppercase tracking-[0.2em]">
+                        <p className="text-[#BFEFFF]/60 font-medium leading-relaxed tracking-wide text-xs uppercase tracking-[0.2em] max-w-sm">
                             Providing the finest aquatic companions with a focus on health, beauty, and premium care since 2026.
                         </p>
                         <div className="flex gap-4">
@@ -30,16 +30,16 @@ const Footer = () => {
                     </div>
 
                     {/* Quick Links */}
-                    <div>
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
                         <h4 className="text-[#00E5FF] font-black uppercase text-[10px] tracking-[0.5em] mb-12 italic border-b border-[#00E5FF]/10 pb-4 inline-block">Collections</h4>
-                        <ul className="space-y-6">
+                        <ul className="space-y-6 w-full">
                             {[
                                 { name: 'AK Special', path: '/shop?category=AK Special Collection' },
                                 { name: 'AK Premium', path: '/shop?category=AK Premium Collection' },
                                 { name: 'AK Guppy', path: '/shop?category=AK Guppy Collection' }
                             ].map((item) => (
                                 <li key={item.name}>
-                                    <Link to={item.path} className="text-[#BFEFFF]/40 hover:text-[#00C2D1] transition-all flex items-center gap-3 group font-black uppercase text-[10px] tracking-widest">
+                                    <Link to={item.path} className="text-[#BFEFFF]/40 hover:text-[#00C2D1] transition-all flex items-center justify-center md:justify-start gap-3 group font-black uppercase text-[10px] tracking-widest">
                                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-[#00E5FF]" />
                                         {item.name}
                                     </Link>
@@ -49,16 +49,16 @@ const Footer = () => {
                     </div>
 
                     {/* Company */}
-                    <div>
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
                         <h4 className="text-[#00E5FF] font-black uppercase text-[10px] tracking-[0.5em] mb-12 italic border-b border-[#00E5FF]/10 pb-4 inline-block">Protocol</h4>
-                        <ul className="space-y-6">
+                        <ul className="space-y-6 w-full">
                             {[
                                 { name: 'Track Order', path: '/track-order' },
                                 { name: 'Contact Us', path: '/contact' },
                                 { name: 'My Orders', path: '/my-orders' }
                             ].map((item) => (
                                 <li key={item.name}>
-                                    <Link to={item.path} className="text-[#BFEFFF]/40 hover:text-[#00C2D1] transition-all flex items-center gap-3 group font-black uppercase text-[10px] tracking-widest">
+                                    <Link to={item.path} className="text-[#BFEFFF]/40 hover:text-[#00C2D1] transition-all flex items-center justify-center md:justify-start gap-3 group font-black uppercase text-[10px] tracking-widest">
                                         <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all text-[#00E5FF]" />
                                         {item.name}
                                     </Link>
@@ -68,16 +68,16 @@ const Footer = () => {
                     </div>
 
                     {/* Contact Info */}
-                    <div className="space-y-8">
-                        <h4 className="text-[#00E5FF] font-black uppercase text-[10px] tracking-[0.5em] mb-12 italic border-b border-[#00E5FF]/10 pb-4 inline-block">Coordinates</h4>
-                        <div className="space-y-6">
-                            <div className="flex items-start gap-5 group">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-12">
+                        <h4 className="text-[#00E5FF] font-black uppercase text-[10px] tracking-[0.5em] italic border-b border-[#00E5FF]/10 pb-4 inline-block">Coordinates</h4>
+                        <div className="space-y-8 w-full">
+                            <div className="flex flex-col md:flex-row items-center md:items-start gap-5 group">
                                 <div className="p-4 glass-card rounded-2xl text-[#00E5FF] group-hover:bg-[#00E5FF] group-hover:text-[#071A2F] transition-all border border-[#00E5FF]/10 shadow-xl">
                                     <MapPin className="w-5 h-5" />
                                 </div>
                                 <p className="text-[#BFEFFF]/50 font-black text-[10px] tracking-widest leading-loose uppercase">AK Fish Farms, Palakoderu,<br />Andhra Pradesh, India</p>
                             </div>
-                            <div className="flex items-center gap-5 group">
+                            <div className="flex flex-col md:flex-row items-center md:items-center gap-5 group">
                                 <div className="p-4 glass-card rounded-2xl text-[#00E5FF] group-hover:bg-[#00E5FF] group-hover:text-[#071A2F] transition-all border border-[#00E5FF]/10 shadow-xl">
                                     <Phone className="w-5 h-5" />
                                 </div>
