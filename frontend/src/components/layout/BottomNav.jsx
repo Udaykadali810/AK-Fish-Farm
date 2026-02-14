@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Package, LayoutGrid, User } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
+import { Home, Package, LayoutGrid, User, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
 
 const BottomNav = () => {
-    const { cart } = useCart();
-    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'admin';
 
     return (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[1000] px-4 pb-6 pt-2">
@@ -16,65 +16,80 @@ const BottomNav = () => {
 
                 <NavLink
                     to="/"
-                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-4 rounded-[2rem] transition-all duration-500 relative group ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
                 >
                     {({ isActive }) => (
                         <>
                             <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
-                                <Home className={`w-6 h-6 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
+                                <Home className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
                             </motion.div>
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em]">Home</span>
-                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-8 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
+                            <span className="text-[7px] font-black uppercase tracking-widest text-center">Home</span>
+                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
                         </>
                     )}
                 </NavLink>
 
                 <NavLink
                     to="/shop"
-                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-4 rounded-[2rem] transition-all duration-500 relative group ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
                 >
                     {({ isActive }) => (
                         <>
-                            <div className="relative">
-                                <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
-                                    <LayoutGrid className={`w-6 h-6 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
-                                </motion.div>
-                            </div>
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em]">Shop</span>
-                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-8 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
+                            <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
+                                <LayoutGrid className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
+                            </motion.div>
+                            <span className="text-[7px] font-black uppercase tracking-widest text-center">Shop</span>
+                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
                         </>
                     )}
                 </NavLink>
 
                 <NavLink
                     to="/my-orders"
-                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-4 rounded-[2rem] transition-all duration-500 relative group ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
                 >
                     {({ isActive }) => (
                         <>
                             <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
-                                <Package className={`w-6 h-6 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
+                                <Package className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
                             </motion.div>
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em]">Orders</span>
-                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-8 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
+                            <span className="text-[7px] font-black uppercase tracking-widest text-center">Orders</span>
+                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
                         </>
                     )}
                 </NavLink>
 
                 <NavLink
                     to="/profile"
-                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-4 rounded-[2rem] transition-all duration-500 relative group ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
+                    className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
                 >
                     {({ isActive }) => (
                         <>
                             <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
-                                <User className={`w-6 h-6 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
+                                <User className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
                             </motion.div>
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em]">Profile</span>
-                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-8 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
+                            <span className="text-[7px] font-black uppercase tracking-widest text-center">Profile</span>
+                            {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
                         </>
                     )}
                 </NavLink>
+
+                {isAdmin && (
+                    <NavLink
+                        to="/admin"
+                        className={({ isActive }) => `flex flex-col items-center gap-1.5 py-4 px-2 rounded-[2rem] transition-all duration-500 relative group min-w-[60px] ${isActive ? 'text-[#00E5FF]' : 'text-[#BFEFFF]/20 hover:text-[#BFEFFF]/60'}`}
+                    >
+                        {({ isActive }) => (
+                            <>
+                                <motion.div animate={isActive ? { scale: 1.2, y: -2 } : { scale: 1, y: 0 }}>
+                                    <ShieldCheck className={`w-5 h-5 ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,229,255,0.6)]' : ''}`} />
+                                </motion.div>
+                                <span className="text-[7px] font-black uppercase tracking-widest text-center">Admin</span>
+                                {isActive && <motion.div layoutId="nav-glow" className="absolute -bottom-1 w-6 h-1 bg-[#00E5FF] rounded-full blur-[2px] shadow-[0_0_10px_#00E5FF]" />}
+                            </>
+                        )}
+                    </NavLink>
+                )}
             </div>
         </div>
     );
