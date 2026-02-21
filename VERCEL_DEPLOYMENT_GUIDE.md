@@ -1,127 +1,83 @@
-# 🚀 AK Fish Farms - Vercel Deployment Guide
+# 🚀 AK Fish Farms - Vercel Deployment Guide (v2.0 - Serverless)
 
-## Current Status: Troubleshooting 404 Errors
+## Current Status: Refactored & Optimized
+The site has been converted from a complex React/Node app into a high-performance **Serverless Static Site** with **Firebase Firestore**.
 
-### ✅ What's Working:
-- Frontend builds successfully locally
-- API endpoint `/api/test` works and returns proper response
-- Code is pushed to GitHub
-
-### ❌ What's Not Working:
-- Frontend pages showing 404 errors on Vercel
-- Likely a build configuration issue
+### ✅ Key Improvements:
+- **No Build Step:** Direct deployment of static files (HTML/CSS/JS).
+- **Global Real-time DB:** Firebase Firestore handles all products and orders.
+- **Root Deployment:** Files are now in the root directory for maximum compatibility.
 
 ---
 
 ## 🔧 Required Vercel Dashboard Settings
 
+**CRITICAL:** You must update these settings in your Vercel Dashboard to match the new structure.
+
 ### **Build & Development Settings:**
 
-1. **Framework Preset:** `Vite`
-2. **Root Directory:** `frontend`
-3. **Build Command:** `npm run build`
-4. **Output Directory:** `dist`
-5. **Install Command:** `npm install`
-6. **Node.js Version:** `20.x` (or latest)
+1. **Framework Preset:** `Other` (or "None")
+2. **Root Directory:** `.` (The main folder itself, NOT the old `frontend`)
+3. **Build Command:** (Leave Blank)
+4. **Output Directory:** (Leave Blank)
+5. **Install Command:** (Leave Blank)
 
 ### **How to Update:**
-1. Go to: https://vercel.com/dashboard
+1. Go to: [Vercel Dashboard](https://vercel.com/dashboard)
 2. Select your project: `ak-fish-farm`
 3. Go to: **Settings** → **General**
-4. Scroll to: **Build & Development Settings**
-5. Click **Edit** and update the values above
-6. Click **Save**
-7. Go to **Deployments** tab
-8. Click **Redeploy** (uncheck "Use existing build cache")
+4. Set **Root Directory** to `.` (if it was `frontend`)
+5. **Override** Build/Output/Install commands and leave them **empty**.
+6. Click **Save**.
+7. Go to **Deployments** tab.
+8. Click **Redeploy** on the latest commit (ensure it says "Refactor project structure...").
 
 ---
 
-## 📋 Troubleshooting Checklist
+## 🔐 Admin Panel Access
 
-### Check Build Logs:
-1. Go to Vercel Dashboard → Your Project
-2. Click on the latest deployment
-3. Click on **Build Logs** tab
-4. Look for errors related to:
-   - `npm install` failures
-   - `npm run build` failures
-   - Missing dependencies
-   - Path issues
+The admin panel is now split into Login and Dashboard for security.
 
-### Common Issues:
-
-#### Issue 1: Build Command Not Found
-**Error:** `Command "npm run build" not found`
-**Solution:** Make sure Root Directory is set to `frontend`
-
-#### Issue 2: Output Directory Not Found
-**Error:** `Error: No Output Directory named "dist" found`
-**Solution:** Check that Build Command is `npm run build` (not `vite build`)
-
-#### Issue 3: Dependencies Not Installing
-**Error:** `npm ERR! code ERESOLVE`
-**Solution:** Try setting Install Command to `npm install --legacy-peer-deps`
-
----
-
-## 🔐 Admin Credentials
-
-Once deployment is successful:
-
-**Login URL:** https://ak-fish-farm-lu3i.vercel.app/admin/login
+- **Login URL:** `/admin-login` (or `admin-login.html`)
+- **Dashboard URL:** `/admin` (or `admin-dashboard.html`) - *Protected by auth guard*
 
 **Credentials:**
-- Email: `admin@akfishfarms.com`
-- Password: `AKFish2026!`
+- **Username:** `admin`
+- **Password:** `AKFish2026`
+
+*To change these, go to the Security section within the Admin Dashboard.*
 
 ---
 
-## 📁 Project Structure
+## 📁 Optimized Project Structure
 
 ```
 AK fish Farms/
-├── frontend/              ← Root Directory in Vercel
-│   ├── dist/             ← Build output
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-├── api/                  ← Backend code (not used in current deployment)
-├── api.js                ← Serverless function (not currently working)
-├── api_functions/        ← Alternative API location
-└── vercel.json           ← Deployment config
+├── index.html            ← Homepage / Shop
+├── cart.html             ← My Cart
+├── checkout.html         ← Place Order
+├── orders.html           ← Real-time Order Tracking
+├── admin-login.html      ← Management Entry
+├── admin-dashboard.html  ← Product & Order Management
+├── assets/               ← Images & Banners
+├── styles/               ← Global CSS
+├── scripts/              ← Firebase & UI Logic
+├── vercel.json           ← Vercel Routing & Cache Config
+└── legacy_backup/        ← Archived old files
 ```
 
 ---
 
 ## 🧪 Testing After Deployment
 
-### 1. Test Homepage:
-Visit: https://ak-fish-farm-lu3i.vercel.app
-Expected: Homepage loads with navigation, products, etc.
-
-### 2. Test API:
-Visit: https://ak-fish-farm-lu3i.vercel.app/api/test
-Expected: JSON response with "Backend is working on Vercel!"
-
-### 3. Test Admin Login:
-Visit: https://ak-fish-farm-lu3i.vercel.app/admin/login
-Expected: Login page loads
-Action: Enter credentials and login
-
----
-
-## 🆘 Next Steps if Still Not Working
-
-1. **Share Build Logs:** Copy the full build log from Vercel
-2. **Check Deployment Summary:** Look for "Functions" section
-3. **Verify Settings:** Double-check all settings match this guide
-4. **Try Manual Deploy:** Use Vercel CLI to deploy locally
+1. **Visit Home:** Ensure products load (using skeletons first).
+2. **Add to Cart:** Verify items show up in the cart badge.
+3. **Checkout:** Complete a mock order; verify summary shows correctly.
+4. **Admin Login:** Log in at `/admin-login` and verify you can see the Dashboard stats.
+5. **Real-time Update:** Change a product price in the Admin panel and see it update instantly on the Shop page.
 
 ---
 
 ## 📞 Support
 
-If issues persist, we need to see:
-1. Full build logs from Vercel
-2. Screenshot of Build & Development Settings
-3. Screenshot of Deployment Summary
+The site is now optimized for Vercel's Edge network. If you see a 404, check that the **Root Directory** in Vercel settings is set to the base folder and not `frontend`.
