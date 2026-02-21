@@ -3,376 +3,533 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>Admin Panel — AK FishFarms 🐟</title>
     <meta name="robots" content="noindex,nofollow" />
-    <link rel="stylesheet" href="style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
+    <link rel="stylesheet" href="admin.css" />
 </head>
 
 <body>
 
-    <!-- ══════════════════════════════════════════════════════════
-     ADMIN LOGIN
-══════════════════════════════════════════════════════════ -->
-    <div id="admin-login-view" style="display:none;">
-        <div class="adm-login-bg">
-            <div class="adm-login-card">
-                <div class="adm-login-icon">🔐</div>
-                <h1 class="adm-login-title">Admin Panel</h1>
-                <p class="adm-login-sub">AK FishFarms Store Management</p>
-                <div id="login-err" class="adm-login-err"></div>
-                <form id="admin-login-form" novalidate>
-                    <div class="adm-field">
-                        <label class="adm-label" for="admin-pwd">Password</label>
-                        <input type="password" id="admin-pwd" class="adm-input" placeholder="Enter admin password"
+    <!-- ═══════════════════════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════════════════════ -->
+    <div id="login-screen">
+        <div class="login-card">
+            <span class="login-logo">🐟</span>
+            <div class="login-brand">AK FishFarms</div>
+            <p class="login-sub">Admin Control Panel</p>
+            <div id="login-err" class="login-err"></div>
+            <form id="login-form" novalidate>
+                <div class="lf-group">
+                    <label class="lf-label" for="l-user">Username</label>
+                    <input type="text" id="l-user" class="lf-input" placeholder="admin" autocomplete="username" />
+                </div>
+                <div class="lf-group">
+                    <label class="lf-label" for="l-pass">Password</label>
+                    <div class="lf-input-wrap">
+                        <input type="password" id="l-pass" class="lf-input has-toggle" placeholder="••••••••"
                             autocomplete="current-password" />
+                        <button type="button" class="lf-eye" id="login-eye" title="Show/hide">👁</button>
                     </div>
-                    <button type="submit" class="adm-login-btn">🔓 Login to Admin</button>
-                </form>
-                <p class="adm-hint">Default: <code>AKFish2026</code></p>
-                <a href="index.html" class="adm-back-link">← Back to Shop</a>
-            </div>
+                </div>
+                <button type="submit" class="login-btn">🔓 Login to Admin</button>
+            </form>
+            <p class="login-hint">Default: <code>admin</code> / <code>AKFish2026</code></p>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════════
-     ADMIN DASHBOARD
-══════════════════════════════════════════════════════════ -->
-    <div id="admin-dashboard-view" style="display:none;">
-        <div class="adm-shell">
+    <!-- ═══════════════════════════════════════════════
+     DASHBOARD SCREEN
+═══════════════════════════════════════════════ -->
+    <div id="dashboard-screen">
 
-            <!-- ── Sidebar ── -->
-            <aside class="adm-sidebar" id="adm-sidebar">
-                <div class="adm-sidebar-logo">
-                    <span>🐟</span>
-                    <div>
-                        <div class="adm-sidebar-brand">AK FishFarms</div>
-                        <div class="adm-sidebar-role">Admin Panel</div>
-                    </div>
+        <!-- SIDEBAR -->
+        <aside class="adm-sidebar" id="adm-sidebar">
+            <div class="sidebar-brand">
+                <span class="sb-emoji">🐟</span>
+                <div>
+                    <div class="sb-name">AK FishFarms</div>
+                    <div class="sb-role">Admin Panel</div>
                 </div>
-                <nav class="adm-sidebar-nav">
-                    <a href="#" class="adm-nav-link active" id="nav-products">
-                        <span>📦</span> Products
-                    </a>
-                    <a href="index.html" target="_blank" class="adm-nav-link">
-                        <span>🛍</span> View Shop
-                    </a>
-                    <a href="cart.html" target="_blank" class="adm-nav-link">
-                        <span>🛒</span> View Cart
-                    </a>
-                </nav>
-                <div class="adm-sidebar-foot">
-                    <button id="logout-btn" class="adm-logout-btn">🚪 Logout</button>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-section="dashboard">
+                    <span class="nav-ico">🏠</span> Dashboard
+                </button>
+                <button class="nav-item" data-section="orders">
+                    <span class="nav-ico">📋</span> Orders
+                </button>
+                <button class="nav-item" data-section="track">
+                    <span class="nav-ico">🚚</span> Track Orders
+                </button>
+                <button class="nav-item" data-section="products">
+                    <span class="nav-ico">📦</span> Products
+                </button>
+                <button class="nav-item" data-section="security">
+                    <span class="nav-ico">🔒</span> Security
+                </button>
+                <button class="nav-item" data-section="reports">
+                    <span class="nav-ico">📊</span> Reports
+                </button>
+            </nav>
+            <div class="sidebar-foot">
+                <button class="nav-item nav-logout" id="logout-btn">
+                    <span class="nav-ico">🚪</span> Logout
+                </button>
+                <div class="sb-version">v3.0 · LocalStorage</div>
+            </div>
+        </aside>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- MAIN AREA -->
+        <div class="adm-main-area">
+
+            <!-- HEADER -->
+            <header class="adm-header">
+                <div class="hd-left">
+                    <button class="hamburger-btn" id="hamburger-btn" aria-label="Menu">
+                        <span class="hb-line"></span>
+                        <span class="hb-line"></span>
+                        <span class="hb-line"></span>
+                    </button>
+                    <span class="hd-title" id="hd-title">🏠 Dashboard</span>
                 </div>
-            </aside>
-
-            <!-- Overlay (mobile) -->
-            <div class="adm-overlay" id="sidebar-overlay"></div>
-
-            <!-- ── Main ── -->
-            <div class="adm-main">
-
-                <!-- Topbar -->
-                <div class="adm-topbar">
-                    <div class="adm-topbar-left">
-                        <button id="sidebar-toggle-btn" class="adm-hamburger" aria-label="Menu">
-                            <span></span><span></span><span></span>
-                        </button>
-                        <h2 class="adm-page-title">📦 Product Management</h2>
+                <div class="hd-right">
+                    <div class="admin-pill">
+                        <span class="admin-pill-dot"></span>
+                        <span class="admin-pill-name" id="admin-pill-name">admin</span>
                     </div>
-                    <div class="adm-topbar-right">
-                        <span class="adm-brand-tag">🐟 AK FishFarms</span>
-                        <span class="adm-admin-badge">ADMIN</span>
-                    </div>
+                    <button class="logout-hd-btn" id="logout-hd-btn">🚪 Logout</button>
                 </div>
+            </header>
 
-                <!-- Content -->
-                <div class="adm-content">
+            <!-- CONTENT -->
+            <main class="adm-content">
 
-                    <!-- Stats Row -->
-                    <div class="adm-stats-row">
-                        <div class="adm-stat-card">
-                            <div class="adm-stat-icon">📦</div>
-                            <div class="adm-stat-info">
-                                <div class="adm-stat-val" id="stat-products">—</div>
-                                <div class="adm-stat-lbl">Total Products</div>
+                <!-- ── SECTION: DASHBOARD ── -->
+                <section id="sec-dashboard" class="adm-sec active">
+                    <div class="page-hd">
+                        <h1>📊 Dashboard Overview</h1>
+                        <p>Live stats from your LocalStorage database</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-ico ico-aqua">📋</div>
+                            <div>
+                                <div class="stat-val" id="ds-orders">0</div>
+                                <div class="stat-lbl">Total Orders</div>
                             </div>
                         </div>
-                        <div class="adm-stat-card">
-                            <div class="adm-stat-icon">📋</div>
-                            <div class="adm-stat-info">
-                                <div class="adm-stat-val" id="stat-orders">—</div>
-                                <div class="adm-stat-lbl">Orders Placed</div>
+                        <div class="stat-card">
+                            <div class="stat-ico ico-orange">₹</div>
+                            <div>
+                                <div class="stat-val" id="ds-revenue">0</div>
+                                <div class="stat-lbl">Total Revenue</div>
                             </div>
                         </div>
-                        <div class="adm-stat-card">
-                            <div class="adm-stat-icon">🏆</div>
-                            <div class="adm-stat-info">
-                                <div class="adm-stat-val" id="stat-special">—</div>
-                                <div class="adm-stat-lbl">Special Fish</div>
+                        <div class="stat-card">
+                            <div class="stat-ico ico-green">📦</div>
+                            <div>
+                                <div class="stat-val" id="ds-products">0</div>
+                                <div class="stat-lbl">Products</div>
                             </div>
                         </div>
-                        <div class="adm-stat-card">
-                            <div class="adm-stat-icon">🐟</div>
-                            <div class="adm-stat-info">
-                                <div class="adm-stat-val" id="stat-guppy">—</div>
-                                <div class="adm-stat-lbl">Guppy Fish</div>
+                        <div class="stat-card">
+                            <div class="stat-ico ico-yellow">⏳</div>
+                            <div>
+                                <div class="stat-val" id="ds-pending">0</div>
+                                <div class="stat-lbl">Pending Orders</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ══ ADD PRODUCT CARD ══ -->
-                    <div class="adm-card" id="pm-add-card">
-                        <div class="adm-card-header" id="pm-add-toggle" onclick="pmToggleAddCard()"
-                            style="cursor:pointer;">
-                            <div class="adm-card-header-left">
-                                <div class="adm-card-icon">➕</div>
+                    <!-- Recent Orders preview -->
+                    <div class="adm-card">
+                        <div class="card-hd">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap">📋</div>
                                 <div>
-                                    <div class="adm-card-title">Add New Product</div>
-                                    <div class="adm-card-sub">Upload image and fill details to add a fish product</div>
+                                    <div class="card-title">Recent Orders</div>
+                                    <div class="card-sub">Latest 5 orders</div>
                                 </div>
                             </div>
-                            <button class="adm-collapse-btn" id="pm-collapse-btn" type="button">▲</button>
+                            <button class="btn btn-ghost btn-sm" onclick="switchSection('orders')">View All →</button>
                         </div>
-
-                        <div class="adm-add-body" id="pm-add-body">
-                            <div class="adm-add-grid">
-                                <!-- Image Upload Col -->
-                                <div class="adm-img-col">
-                                    <div class="adm-upload-zone" id="img-upload-zone">
-                                        <input type="file" id="prod-img-file"
-                                            accept="image/jpeg,image/png,image/webp,image/gif" class="adm-file-input"
-                                            tabindex="-1" />
-                                        <div class="adm-upload-placeholder" id="img-upload-content">
-                                            <div class="adm-upload-ico">📷</div>
-                                            <p class="adm-upload-p1">Click or drag to upload</p>
-                                            <p class="adm-upload-p2">JPG · PNG · WEBP · Max 5 MB</p>
-                                        </div>
-                                    </div>
-                                    <div id="img-preview-wrap" class="adm-preview-wrap">
-                                        <img id="img-preview" src="" alt="Preview" />
-                                        <button type="button" id="clear-img-btn" class="adm-clear-btn">✕ Clear</button>
-                                    </div>
-                                    <div class="adm-or-divider"><span>OR paste image URL</span></div>
-                                    <input type="url" id="prod-img" class="adm-input"
-                                        placeholder="https://example.com/fish.jpg" />
-                                </div>
-
-                                <!-- Fields Col -->
-                                <div class="adm-fields-col">
-                                    <div class="adm-field">
-                                        <label class="adm-label" for="prod-name">Fish Name <span
-                                                class="req">*</span></label>
-                                        <input type="text" id="prod-name" class="adm-input"
-                                            placeholder="e.g. Flowerhorn (S)" maxlength="80" />
-                                    </div>
-                                    <div class="adm-field">
-                                        <label class="adm-label" for="prod-price">Price (₹) <span
-                                                class="req">*</span></label>
-                                        <input type="number" id="prod-price" class="adm-input" placeholder="e.g. 500"
-                                            min="1" step="1" />
-                                    </div>
-                                    <div class="adm-field">
-                                        <label class="adm-label" for="prod-cat">Category <span
-                                                class="req">*</span></label>
-                                        <select id="prod-cat" class="adm-input">
-                                            <option value="special">🏆 AK Special Collection</option>
-                                            <option value="premium">💎 AK Premium Collection</option>
-                                            <option value="guppy">🐟 AK Guppy Collection</option>
-                                        </select>
-                                    </div>
-                                    <div class="adm-field">
-                                        <label class="adm-label" for="prod-status">Stock Status</label>
-                                        <select id="prod-status" class="adm-input">
-                                            <option value="in_stock">✅ In Stock</option>
-                                            <option value="out_stock">❌ Out of Stock</option>
-                                        </select>
-                                    </div>
-                                    <div class="adm-field">
-                                        <label class="adm-label" for="prod-desc">Description</label>
-                                        <textarea id="prod-desc" class="adm-input" rows="2"
-                                            placeholder="Short description…" style="resize:vertical;"></textarea>
-                                    </div>
-                                    <div class="adm-add-actions">
-                                        <button id="save-prod-btn" class="adm-btn adm-btn-primary">
-                                            ✅ <span id="form-mode-title">Add Product</span>
-                                        </button>
-                                        <button id="reset-prod-btn" class="adm-btn adm-btn-ghost">
-                                            ✕ Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ══ PRODUCT INVENTORY TABLE ══ -->
-                    <div class="adm-card" style="margin-top:24px;">
-                        <div class="adm-card-header" style="cursor:default;">
-                            <div class="adm-card-header-left">
-                                <div class="adm-card-icon">🐟</div>
-                                <div>
-                                    <div class="adm-card-title">
-                                        Current Inventory
-                                        <span class="adm-count-badge" id="pm-count-badge">0</span>
-                                    </div>
-                                    <div class="adm-card-sub">Inline edit name, price · Upload image · Delete products
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="adm-search-wrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <circle cx="11" cy="11" r="8" />
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                </svg>
-                                <input type="text" id="search-input" placeholder="Search products…" />
-                            </div>
-                        </div>
-
-                        <!-- Table -->
-                        <div class="adm-table-scroll">
-                            <table class="adm-prod-table">
-                                <thead>
-                                    <tr>
-                                        <th class="col-img">Image</th>
-                                        <th class="col-name">Name</th>
-                                        <th class="col-price">Price (₹)</th>
-                                        <th class="col-cat">Category</th>
-                                        <th class="col-status">Status</th>
-                                        <th class="col-upload">Upload Image</th>
-                                        <th class="col-action">Save</th>
-                                        <th class="col-del">Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pm-product-list">
-                                    <tr>
-                                        <td colspan="8" class="adm-tbl-empty">Loading products…</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- ══ ORDERS TABLE ══ -->
-                    <div class="adm-card" style="margin-top:24px;">
-                        <div class="adm-card-header" style="cursor:default;">
-                            <div class="adm-card-header-left">
-                                <div class="adm-card-icon">📋</div>
-                                <div>
-                                    <div class="adm-card-title">Recent Orders</div>
-                                    <div class="adm-card-sub">Orders placed via WhatsApp checkout · Stored in
-                                        LocalStorage</div>
-                                </div>
-                            </div>
-                            <button onclick="renderOrdersTable()" class="adm-refresh-btn">🔄 Refresh</button>
-                        </div>
-                        <div class="adm-table-scroll">
-                            <table class="adm-prod-table">
+                        <div class="tbl-wrap">
+                            <table class="adm-table">
                                 <thead>
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Customer</th>
-                                        <th>Phone</th>
-                                        <th>Items</th>
                                         <th>Total</th>
                                         <th>Date</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="orders-tbody">
+                                <tbody id="dash-orders-tbody">
                                     <tr>
-                                        <td colspan="7" class="adm-tbl-empty">No orders yet.</td>
+                                        <td colspan="5" class="tbl-empty">
+                                            <div class="tbl-empty-ico">📭</div>No orders yet
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                </div><!-- end adm-content -->
-            </div><!-- end adm-main -->
-        </div><!-- end adm-shell -->
+                    <!-- Quick actions -->
+                    <div class="quick-actions">
+                        <button class="qa-btn" onclick="switchSection('products')">➕ Add Product</button>
+                        <button class="qa-btn" onclick="switchSection('orders')">📋 Manage Orders</button>
+                        <button class="qa-btn" onclick="switchSection('reports')">📊 Download Report</button>
+                        <button class="qa-btn" onclick="switchSection('track')">🚚 Track Orders</button>
+                    </div>
+                </section>
+
+                <!-- ── SECTION: ORDERS ── -->
+                <section id="sec-orders" class="adm-sec">
+                    <div class="page-hd">
+                        <h1>📋 Orders Management</h1>
+                        <p>Manage and update customer order statuses</p>
+                    </div>
+                    <div class="adm-card">
+                        <div class="card-hd">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap">📋</div>
+                                <div>
+                                    <div class="card-title">All Orders <span class="count-badge"
+                                            id="orders-count">0</span></div>
+                                    <div class="card-sub">Click status dropdown to update</div>
+                                </div>
+                            </div>
+                            <div class="search-bar" style="min-width:200px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
+                                <input type="text" id="orders-search" placeholder="Search orders…" />
+                            </div>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>City</th>
+                                        <th>Total (₹)</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-tbody">
+                                    <tr>
+                                        <td colspan="8" class="tbl-empty">
+                                            <div class="tbl-empty-ico">📭</div>No orders yet
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── SECTION: TRACK ORDERS ── -->
+                <section id="sec-track" class="adm-sec">
+                    <div class="page-hd">
+                        <h1>🚚 Track Orders</h1>
+                        <p>Search and update live delivery status</p>
+                    </div>
+                    <div class="adm-card" style="margin-bottom:20px;">
+                        <div class="card-hd">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap">🔍</div>
+                                <div>
+                                    <div class="card-title">Search & Update Status</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:20px;">
+                            <div class="search-bar" style="max-width:400px;margin-bottom:20px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
+                                <input type="text" id="track-search"
+                                    placeholder="Search by Order ID or customer name…" />
+                            </div>
+                            <div id="track-list" class="track-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── SECTION: PRODUCTS ── -->
+                <section id="sec-products" class="adm-sec">
+                    <div class="page-hd">
+                        <h1>📦 Product Management</h1>
+                        <p>Add, edit, and manage your fish catalog</p>
+                    </div>
+
+                    <!-- Add New Product -->
+                    <div class="adm-card" id="add-prod-card">
+                        <div class="card-hd" onclick="toggleAddCard()" style="cursor:pointer;">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap">➕</div>
+                                <div>
+                                    <div class="card-title">Add New Product</div>
+                                    <div class="card-sub">Upload image and fill details</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost btn-sm" id="add-toggle-btn" type="button">▲ Collapse</button>
+                        </div>
+                        <div id="add-prod-body" style="padding:22px;">
+                            <div class="add-prod-grid">
+                                <!-- Image col -->
+                                <div class="img-col">
+                                    <div class="upload-zone" id="add-upload-zone">
+                                        <input type="file" id="add-img-file" accept="image/jpeg,image/png,image/webp" />
+                                        <div class="upload-ico">📷</div>
+                                        <p class="upload-txt1">Click or drag to upload</p>
+                                        <p class="upload-txt2">JPG · PNG · WEBP · Max 5 MB</p>
+                                    </div>
+                                    <div class="add-img-preview" id="add-img-preview">
+                                        <img id="add-img-preview-img" src="" alt="Preview" />
+                                        <button type="button" class="btn btn-red btn-sm" id="clear-add-img"
+                                            style="margin-top:6px;width:100%;">✕ Clear Image</button>
+                                    </div>
+                                    <div class="or-divider"><span>OR</span></div>
+                                    <input type="url" class="form-input" id="add-img-url" placeholder="Paste image URL…"
+                                        style="font-size:0.8rem;" />
+                                </div>
+                                <!-- Fields col -->
+                                <div class="fields-col">
+                                    <div class="form-field"><label class="form-label">Fish Name <span
+                                                class="req">*</span></label><input type="text" class="form-input"
+                                            id="add-name" placeholder="e.g. Flowerhorn (S)" maxlength="80" /></div>
+                                    <div class="form-row-2">
+                                        <div class="form-field"><label class="form-label">Price (₹) <span
+                                                    class="req">*</span></label><input type="number" class="form-input"
+                                                id="add-price" placeholder="500" min="1" /></div>
+                                        <div class="form-field"><label class="form-label">Category</label>
+                                            <select class="form-input" id="add-cat">
+                                                <option value="special">🏆 AK Special</option>
+                                                <option value="premium">💎 AK Premium</option>
+                                                <option value="guppy">🐟 Guppy</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-field"><label class="form-label">Stock Status</label>
+                                        <select class="form-input" id="add-status">
+                                            <option value="in_stock">✅ In Stock</option>
+                                            <option value="out_stock">❌ Out of Stock</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field"><label class="form-label">Description</label><textarea
+                                            class="form-input" id="add-desc" rows="2" placeholder="Short description…"
+                                            style="resize:vertical;"></textarea></div>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                                        <button class="btn btn-aqua" id="save-prod-btn">✅ <span id="save-prod-lbl">Add
+                                                Product</span></button>
+                                        <button class="btn btn-ghost" id="cancel-prod-btn">✕ Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Table -->
+                    <div class="adm-card">
+                        <div class="card-hd">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap">🐟</div>
+                                <div>
+                                    <div class="card-title">Inventory <span class="count-badge" id="prod-count">0</span>
+                                    </div>
+                                    <div class="card-sub">Inline edit · Upload · Delete</div>
+                                </div>
+                            </div>
+                            <div class="search-bar" style="min-width:200px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
+                                <input type="text" id="prod-search" placeholder="Search products…" />
+                            </div>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table class="adm-table" style="min-width:820px;">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Price (₹)</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Upload</th>
+                                        <th>Save</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prod-tbody">
+                                    <tr>
+                                        <td colspan="8" class="tbl-empty">Loading…</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── SECTION: SECURITY ── -->
+                <section id="sec-security" class="adm-sec">
+                    <div class="page-hd">
+                        <h1>🔒 Security</h1>
+                        <p>Change your admin login credentials</p>
+                    </div>
+                    <div class="security-card">
+                        <div class="security-ico">🔐</div>
+                        <div class="security-title">Change Admin Password</div>
+                        <p class="security-sub">Your password is stored securely in LocalStorage. Update it here
+                            anytime.</p>
+                        <div class="form-field"><label class="form-label">Current Password <span
+                                    class="req">*</span></label>
+                            <div class="input-pw-wrap"><input type="password" class="form-input" id="sec-cur"
+                                    placeholder="Current password" /><button type="button" class="pw-eye"
+                                    data-target="sec-cur">👁</button></div>
+                        </div>
+                        <div class="form-field"><label class="form-label">New Password <span
+                                    class="req">*</span></label>
+                            <div class="input-pw-wrap"><input type="password" class="form-input" id="sec-new"
+                                    placeholder="New password (min 6 chars)" /><button type="button" class="pw-eye"
+                                    data-target="sec-new">👁</button></div>
+                        </div>
+                        <div class="form-field"><label class="form-label">Confirm New Password <span
+                                    class="req">*</span></label>
+                            <div class="input-pw-wrap"><input type="password" class="form-input" id="sec-confirm"
+                                    placeholder="Repeat new password" /><button type="button" class="pw-eye"
+                                    data-target="sec-confirm">👁</button></div>
+                        </div>
+                        <div id="sec-err"
+                            style="font-size:0.8rem;color:#F87171;font-weight:600;min-height:18px;margin-bottom:12px;">
+                        </div>
+                        <button class="btn btn-aqua" id="change-pw-btn" style="width:100%;">🔒 Update Password</button>
+                    </div>
+                </section>
+
+                <!-- ── SECTION: REPORTS ── -->
+                <section id="sec-reports" class="adm-sec">
+                    <div class="page-hd">
+                        <h1>📊 Download Reports</h1>
+                        <p>Export all business data to Excel or CSV</p>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">📊</div>
+                        <div class="report-info">
+                            <div class="report-title">Full Orders Report (.xlsx)</div>
+                            <p class="report-desc">Export all order data — customer name, phone, city, items ordered,
+                                total amount, date &amp; status. Opens directly in Excel or Google Sheets.</p>
+                            <div class="report-stats">
+                                <span class="report-stat">Total Orders: <strong id="rpt-order-count">0</strong></span>
+                                <span class="report-stat">Total Revenue: <strong id="rpt-revenue">₹0</strong></span>
+                            </div>
+                        </div>
+                        <div style="flex-shrink:0;">
+                            <button class="btn btn-aqua" id="dl-excel-btn" style="min-width:160px;">📥 Download
+                                Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">📄</div>
+                        <div class="report-info">
+                            <div class="report-title">CSV Backup (Fallback)</div>
+                            <p class="report-desc">Simple CSV file — compatible with all spreadsheet apps. Use this if
+                                Excel download doesn't work.</p>
+                        </div>
+                        <div style="flex-shrink:0;">
+                            <button class="btn btn-green" id="dl-csv-btn" style="min-width:160px;">📥 Download
+                                CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">📦</div>
+                        <div class="report-info">
+                            <div class="report-title">Products Export</div>
+                            <p class="report-desc">Export your full product catalog as a CSV file including names,
+                                prices, categories, and stock status.</p>
+                        </div>
+                        <div style="flex-shrink:0;">
+                            <button class="btn btn-orange" id="dl-prod-btn" style="min-width:160px;">📥 Export
+                                Products</button>
+                        </div>
+                    </div>
+                </section>
+
+            </main><!-- end adm-content -->
+        </div><!-- end adm-main-area -->
+
+        <!-- BOTTOM NAV (mobile) -->
+        <nav class="bottom-nav">
+            <div class="bottom-nav-inner">
+                <button class="bn-item active" data-section="dashboard"><span class="bn-ico">🏠</span><span
+                        class="bn-lbl">Home</span></button>
+                <button class="bn-item" data-section="orders"><span class="bn-ico">📋</span><span
+                        class="bn-lbl">Orders</span></button>
+                <button class="bn-item" data-section="products"><span class="bn-ico">📦</span><span
+                        class="bn-lbl">Products</span></button>
+                <button class="bn-item" data-section="reports"><span class="bn-ico">📊</span><span
+                        class="bn-lbl">Reports</span></button>
+                <button class="bn-item" data-section="security"><span class="bn-ico">⚙️</span><span
+                        class="bn-lbl">Settings</span></button>
+            </div>
+        </nav>
+
+    </div><!-- end dashboard-screen -->
+
+    <!-- ORDER DETAIL MODAL -->
+    <div class="modal-bg" id="order-modal">
+        <div class="modal-box">
+            <div class="modal-hd">
+                <div class="modal-title">📋 Order Details</div>
+                <button class="modal-close" id="modal-close-btn">✕</button>
+            </div>
+            <div id="order-modal-body"></div>
+        </div>
     </div>
 
-    <!-- ══ DELETE CONFIRM MODAL ══ -->
-    <div class="adm-modal-bg" id="delete-confirm-modal">
-        <div class="adm-modal">
-            <div class="adm-modal-icon">⚠️</div>
-            <h2 class="adm-modal-title">Delete Product?</h2>
-            <p class="adm-modal-msg">Are you sure you want to delete <strong id="del-product-name"></strong>? This
-                cannot be undone.</p>
-            <input type="hidden" id="del-product-id" />
-            <div class="adm-modal-btns">
-                <button id="confirm-del-btn" class="adm-btn adm-btn-danger">🗑 Yes, Delete</button>
-                <button id="cancel-del-btn" class="adm-btn adm-btn-ghost">Cancel</button>
+    <!-- DELETE CONFIRM MODAL -->
+    <div class="modal-bg" id="del-modal">
+        <div class="modal-box" style="max-width:400px;text-align:center;">
+            <div style="font-size:2.8rem;margin-bottom:12px;">⚠️</div>
+            <div class="modal-title" style="margin-bottom:8px;">Delete Product?</div>
+            <p style="font-size:0.85rem;color:#64748B;margin-bottom:24px;">Are you sure you want to delete <strong
+                    id="del-prod-name" style="color:#F87171;"></strong>? This cannot be undone.</p>
+            <input type="hidden" id="del-prod-id" />
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button class="btn btn-red" id="confirm-del-btn">🗑 Yes, Delete</button>
+                <button class="btn btn-ghost" id="cancel-del-btn">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast -->
+    <!-- TOAST -->
     <div id="toast-root"></div>
 
-    <script src="script.js"></script>
-    <script>
-        /* ── Orders Table ── */
-        function renderOrdersTable() {
-            const orders = getOrders();
-            const tbody = document.getElementById('orders-tbody');
-            if (!tbody) return;
-            if (!orders.length) {
-                tbody.innerHTML = `<tr><td colspan="7" class="adm-tbl-empty">No orders placed yet.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = orders.map(o => {
-                const date = new Date(o.date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                const items = o.items ? o.items.map(i => `${i.name} ×${i.qty}`).join(', ') : '—';
-                const st = o.status || 'Processing';
-                const stCls = st === 'Delivered' ? 'adm-status-done' : st === 'Cancelled' ? 'adm-status-cancel' : 'adm-status-proc';
-                return `
-        <tr>
-          <td class="adm-order-id">${o.id}</td>
-          <td>${o.name || '—'}</td>
-          <td>${o.phone || '—'}</td>
-          <td class="adm-items-cell">${items}</td>
-          <td><strong>₹${(o.total || 0).toLocaleString('en-IN')}</strong></td>
-          <td class="adm-date-cell">${date}</td>
-          <td><span class="${stCls}">${st}</span></td>
-        </tr>`;
-            }).join('');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initAdminPage();
-
-            /* Render orders when dashboard becomes visible */
-            const dash = document.getElementById('admin-dashboard-view');
-            const obs = new MutationObserver(() => {
-                if (dash.style.display !== 'none') { renderOrdersTable(); obs.disconnect(); }
-            });
-            obs.observe(dash, { attributes: true, attributeFilter: ['style'] });
-            if (dash.style.display !== 'none') renderOrdersTable();
-        });
-
-        /* ── Mobile sidebar ── */
-        (function initMobileSidebar() {
-            const sb = document.getElementById('adm-sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const toggleBtn = document.getElementById('sidebar-toggle-btn');
-            if (!sb || !overlay || !toggleBtn) return;
-            const open = () => { sb.classList.add('open'); overlay.classList.add('show'); };
-            const close = () => { sb.classList.remove('open'); overlay.classList.remove('show'); };
-            const check = () => { toggleBtn.style.display = window.innerWidth < 900 ? 'flex' : 'none'; if (window.innerWidth >= 900) close(); };
-            check();
-            window.addEventListener('resize', check);
-            toggleBtn.addEventListener('click', () => sb.classList.contains('open') ? close() : open());
-            overlay.addEventListener('click', close);
-            sb.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 900) close(); }));
-        })();
-    </script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.mini.min.js"></script>
+    <script src="admin-script.js"></script>
 </body>
 
 </html>
