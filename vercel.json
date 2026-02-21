@@ -32,6 +32,14 @@
             "dest": "store/cart.html"
         },
         {
+            "src": "/orders",
+            "dest": "store/orders.html"
+        },
+        {
+            "src": "/orders\\.html",
+            "dest": "store/orders.html"
+        },
+        {
             "src": "/checkout",
             "dest": "store/checkout.html"
         },
