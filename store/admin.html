@@ -5,9 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel — AK FishFarms 🐟</title>
-    <meta name="description"
-        content="AK FishFarms Admin Panel — manage products, view orders, and configure your store." />
+    <meta name="robots" content="noindex,nofollow" />
     <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>" />
 </head>
@@ -15,237 +16,263 @@
 <body>
 
     <!-- ══════════════════════════════════════════════════════════
-     ADMIN LOGIN VIEW
-     ══════════════════════════════════════════════════════════ -->
+     ADMIN LOGIN
+══════════════════════════════════════════════════════════ -->
     <div id="admin-login-view" style="display:none;">
-        <div class="admin-login-wrap">
-            <div class="admin-login-card">
-                <div class="logo-wrap">🔐</div>
-                <h1>Admin Panel</h1>
-                <p>AK FishFarms Store Management</p>
-
-                <div id="login-err" class="login-err"></div>
-
+        <div class="adm-login-bg">
+            <div class="adm-login-card">
+                <div class="adm-login-icon">🔐</div>
+                <h1 class="adm-login-title">Admin Panel</h1>
+                <p class="adm-login-sub">AK FishFarms Store Management</p>
+                <div id="login-err" class="adm-login-err"></div>
                 <form id="admin-login-form" novalidate>
-                    <div class="form-group">
-                        <label class="form-label" for="admin-pwd">Password</label>
-                        <input type="password" id="admin-pwd" class="form-input" placeholder="Enter admin password"
+                    <div class="adm-field">
+                        <label class="adm-label" for="admin-pwd">Password</label>
+                        <input type="password" id="admin-pwd" class="adm-input" placeholder="Enter admin password"
                             autocomplete="current-password" />
                     </div>
-                    <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">
-                        🔓 Login to Admin
-                    </button>
+                    <button type="submit" class="adm-login-btn">🔓 Login to Admin</button>
                 </form>
-
-                <p style="margin-top:20px;font-size:0.75rem;color:#bbb;">
-                    Default password: <code
-                        style="background:#f5f5f5;padding:2px 6px;border-radius:4px;color:#FF6B00;">AKFish2026</code>
-                </p>
-                <a href="index.html"
-                    style="display:block;margin-top:16px;font-size:0.82rem;color:#888;text-align:center;">← Back to
-                    Shop</a>
+                <p class="adm-hint">Default: <code>AKFish2026</code></p>
+                <a href="index.html" class="adm-back-link">← Back to Shop</a>
             </div>
         </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════════
-     ADMIN DASHBOARD VIEW
-     ══════════════════════════════════════════════════════════ -->
+     ADMIN DASHBOARD
+══════════════════════════════════════════════════════════ -->
     <div id="admin-dashboard-view" style="display:none;">
-        <div class="admin-wrap">
+        <div class="adm-shell">
 
             <!-- ── Sidebar ── -->
-            <aside class="admin-sidebar">
-                <div class="sidebar-logo">
-                    ⚙️ AK FishFarms
-                    <small>Admin Dashboard</small>
+            <aside class="adm-sidebar" id="adm-sidebar">
+                <div class="adm-sidebar-logo">
+                    <span>🐟</span>
+                    <div>
+                        <div class="adm-sidebar-brand">AK FishFarms</div>
+                        <div class="adm-sidebar-role">Admin Panel</div>
+                    </div>
                 </div>
-                <nav class="sidebar-nav">
-                    <a href="#" class="active" id="nav-products">📦 Products</a>
-                    <a href="index.html" target="_blank">🛍 View Shop</a>
-                    <a href="cart.html" target="_blank">🛒 View Cart</a>
+                <nav class="adm-sidebar-nav">
+                    <a href="#" class="adm-nav-link active" id="nav-products">
+                        <span>📦</span> Products
+                    </a>
+                    <a href="index.html" target="_blank" class="adm-nav-link">
+                        <span>🛍</span> View Shop
+                    </a>
+                    <a href="cart.html" target="_blank" class="adm-nav-link">
+                        <span>🛒</span> View Cart
+                    </a>
                 </nav>
-                <div class="sidebar-logout">
-                    <button id="logout-btn"
-                        style="background:rgba(255,68,68,0.15);color:#ff6b6b;border:none;width:100%;padding:10px 14px;border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:inherit;transition:background 0.2s;"
-                        onmouseover="this.style.background='rgba(255,68,68,0.25)'"
-                        onmouseout="this.style.background='rgba(255,68,68,0.15)'">
-                        🚪 Logout
-                    </button>
+                <div class="adm-sidebar-foot">
+                    <button id="logout-btn" class="adm-logout-btn">🚪 Logout</button>
                 </div>
             </aside>
 
-            <!-- Sidebar overlay (mobile tap-to-close) -->
-            <div class="admin-sidebar-overlay" id="sidebar-overlay"></div>
+            <!-- Overlay (mobile) -->
+            <div class="adm-overlay" id="sidebar-overlay"></div>
 
-            <!-- ── Main Content ── -->
-            <div class="admin-main">
+            <!-- ── Main ── -->
+            <div class="adm-main">
 
                 <!-- Topbar -->
-                <div class="admin-topbar">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <button id="sidebar-toggle-btn" aria-label="Open menu"
-                            style="background:none;border:none;cursor:pointer;font-size:1.3rem;padding:4px 6px;color:#FF6B00;display:none;">☰</button>
-                        <h2>📦 Product Management</h2>
+                <div class="adm-topbar">
+                    <div class="adm-topbar-left">
+                        <button id="sidebar-toggle-btn" class="adm-hamburger" aria-label="Menu">
+                            <span></span><span></span><span></span>
+                        </button>
+                        <h2 class="adm-page-title">📦 Product Management</h2>
                     </div>
-                    <div class="topbar-right">
-                        <span>🐟 AK FishFarms</span>
-                        <span
-                            style="background:#FFD84D;color:#1A1A1A;padding:3px 10px;border-radius:50px;font-weight:700;font-size:0.75rem;">ADMIN</span>
+                    <div class="adm-topbar-right">
+                        <span class="adm-brand-tag">🐟 AK FishFarms</span>
+                        <span class="adm-admin-badge">ADMIN</span>
                     </div>
                 </div>
 
                 <!-- Content -->
-                <div class="admin-content">
+                <div class="adm-content">
 
-                    <!-- ── Stats Row ── -->
-                    <div class="admin-stats">
-                        <div class="stat-card">
-                            <div class="s-label">Total Products</div>
-                            <div class="s-val orange" id="stat-products">—</div>
+                    <!-- Stats Row -->
+                    <div class="adm-stats-row">
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon">📦</div>
+                            <div class="adm-stat-info">
+                                <div class="adm-stat-val" id="stat-products">—</div>
+                                <div class="adm-stat-lbl">Total Products</div>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="s-label">Orders Placed</div>
-                            <div class="s-val green" id="stat-orders">—</div>
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon">📋</div>
+                            <div class="adm-stat-info">
+                                <div class="adm-stat-val" id="stat-orders">—</div>
+                                <div class="adm-stat-lbl">Orders Placed</div>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="s-label">Special Fish</div>
-                            <div class="s-val" id="stat-special">—</div>
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon">🏆</div>
+                            <div class="adm-stat-info">
+                                <div class="adm-stat-val" id="stat-special">—</div>
+                                <div class="adm-stat-lbl">Special Fish</div>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="s-label">Guppy Fish</div>
-                            <div class="s-val" id="stat-guppy">—</div>
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon">🐟</div>
+                            <div class="adm-stat-info">
+                                <div class="adm-stat-val" id="stat-guppy">—</div>
+                                <div class="adm-stat-lbl">Guppy Fish</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- ══ PRODUCTS MANAGEMENT (Modern Full-Width Layout) ══ -->
-                    <div class="pm-section">
-
-                        <!-- ── ADD NEW PRODUCT CARD ── -->
-                        <div class="pm-add-card" id="pm-add-card">
-                            <div class="pm-add-header">
-                                <div class="pm-add-title">
-                                    <span class="pm-add-icon">➕</span>
-                                    <div>
-                                        <div class="pm-add-h">Add New Product</div>
-                                        <div class="pm-add-sub">Fill in the details and upload a fish image</div>
-                                    </div>
+                    <!-- ══ ADD PRODUCT CARD ══ -->
+                    <div class="adm-card" id="pm-add-card">
+                        <div class="adm-card-header" id="pm-add-toggle" onclick="pmToggleAddCard()"
+                            style="cursor:pointer;">
+                            <div class="adm-card-header-left">
+                                <div class="adm-card-icon">➕</div>
+                                <div>
+                                    <div class="adm-card-title">Add New Product</div>
+                                    <div class="adm-card-sub">Upload image and fill details to add a fish product</div>
                                 </div>
-                                <button class="pm-collapse-btn" id="pm-collapse-btn" onclick="pmToggleAddCard()"
-                                    title="Collapse">▲</button>
                             </div>
+                            <button class="adm-collapse-btn" id="pm-collapse-btn" type="button">▲</button>
+                        </div>
 
-                            <div class="pm-add-body" id="pm-add-body">
-                                <!-- Image upload area (left) + fields (right) -->
-                                <div class="pm-add-grid">
-                                    <!-- Image column -->
-                                    <div class="pm-img-col">
-                                        <div class="pm-upload-zone" id="img-upload-zone">
-                                            <input type="file" id="prod-img-file"
-                                                accept="image/jpeg,image/png,image/webp,image/gif"
-                                                class="img-file-input" tabindex="-1" />
-                                            <div class="pm-upload-placeholder" id="img-upload-content">
-                                                <div style="font-size:2.4rem;line-height:1;">📷</div>
-                                                <p
-                                                    style="margin:8px 0 2px;font-weight:700;font-size:0.82rem;color:#374151;">
-                                                    Click to upload</p>
-                                                <p style="margin:0;font-size:0.7rem;color:#9CA3AF;">JPG · PNG · WEBP ·
-                                                    Max 5 MB</p>
-                                            </div>
+                        <div class="adm-add-body" id="pm-add-body">
+                            <div class="adm-add-grid">
+                                <!-- Image Upload Col -->
+                                <div class="adm-img-col">
+                                    <div class="adm-upload-zone" id="img-upload-zone">
+                                        <input type="file" id="prod-img-file"
+                                            accept="image/jpeg,image/png,image/webp,image/gif" class="adm-file-input"
+                                            tabindex="-1" />
+                                        <div class="adm-upload-placeholder" id="img-upload-content">
+                                            <div class="adm-upload-ico">📷</div>
+                                            <p class="adm-upload-p1">Click or drag to upload</p>
+                                            <p class="adm-upload-p2">JPG · PNG · WEBP · Max 5 MB</p>
                                         </div>
-                                        <div id="img-preview-wrap" class="img-preview-wrap" style="margin-top:8px;">
-                                            <img id="img-preview" src="" alt="Preview"
-                                                onerror="this.src='${PLACEHOLDER_IMG}'" />
-                                            <button type="button" id="clear-img-btn" class="img-clear-btn">✕
-                                                Clear</button>
-                                        </div>
-                                        <div class="img-or-divider"><span>OR paste URL</span></div>
-                                        <input type="url" id="prod-img" class="form-input" placeholder="https://..."
-                                            style="font-size:0.78rem;" />
                                     </div>
+                                    <div id="img-preview-wrap" class="adm-preview-wrap">
+                                        <img id="img-preview" src="" alt="Preview" />
+                                        <button type="button" id="clear-img-btn" class="adm-clear-btn">✕ Clear</button>
+                                    </div>
+                                    <div class="adm-or-divider"><span>OR paste image URL</span></div>
+                                    <input type="url" id="prod-img" class="adm-input"
+                                        placeholder="https://example.com/fish.jpg" />
+                                </div>
 
-                                    <!-- Fields column -->
-                                    <div class="pm-fields-col">
-                                        <div class="pm-field-row">
-                                            <label class="form-label" for="prod-name">Fish Name *</label>
-                                            <input type="text" id="prod-name" class="form-input"
-                                                placeholder="e.g. Flowerhorn (S)" maxlength="80" />
-                                        </div>
-                                        <div class="pm-field-row">
-                                            <label class="form-label" for="prod-price">Price (₹) *</label>
-                                            <input type="number" id="prod-price" class="form-input"
-                                                placeholder="e.g. 500" min="1" step="1" />
-                                        </div>
-                                        <div class="pm-field-row">
-                                            <label class="form-label" for="prod-cat">Category *</label>
-                                            <select id="prod-cat" class="form-input">
-                                                <option value="special">🏆 AK Special Collection</option>
-                                                <option value="premium">💎 AK Premium Collection</option>
-                                                <option value="guppy">🐟 AK Guppy Collection</option>
-                                            </select>
-                                        </div>
-                                        <div class="pm-field-row">
-                                            <label class="form-label" for="prod-status">Stock Status</label>
-                                            <select id="prod-status" class="form-input">
-                                                <option value="in_stock">✅ In Stock</option>
-                                                <option value="out_stock">❌ Out of Stock</option>
-                                            </select>
-                                        </div>
-                                        <div class="pm-field-row">
-                                            <label class="form-label" for="prod-desc">Description</label>
-                                            <textarea id="prod-desc" class="form-input" rows="2"
-                                                placeholder="Short description…" style="resize:vertical;"></textarea>
-                                        </div>
-                                        <div class="pm-add-actions">
-                                            <button id="save-prod-btn" class="btn btn-primary pm-save-btn">
-                                                ✅ <span id="form-mode-title">Add Product</span>
-                                            </button>
-                                            <button id="reset-prod-btn" class="btn btn-outline pm-cancel-btn">✕
-                                                Cancel</button>
-                                        </div>
+                                <!-- Fields Col -->
+                                <div class="adm-fields-col">
+                                    <div class="adm-field">
+                                        <label class="adm-label" for="prod-name">Fish Name <span
+                                                class="req">*</span></label>
+                                        <input type="text" id="prod-name" class="adm-input"
+                                            placeholder="e.g. Flowerhorn (S)" maxlength="80" />
+                                    </div>
+                                    <div class="adm-field">
+                                        <label class="adm-label" for="prod-price">Price (₹) <span
+                                                class="req">*</span></label>
+                                        <input type="number" id="prod-price" class="adm-input" placeholder="e.g. 500"
+                                            min="1" step="1" />
+                                    </div>
+                                    <div class="adm-field">
+                                        <label class="adm-label" for="prod-cat">Category <span
+                                                class="req">*</span></label>
+                                        <select id="prod-cat" class="adm-input">
+                                            <option value="special">🏆 AK Special Collection</option>
+                                            <option value="premium">💎 AK Premium Collection</option>
+                                            <option value="guppy">🐟 AK Guppy Collection</option>
+                                        </select>
+                                    </div>
+                                    <div class="adm-field">
+                                        <label class="adm-label" for="prod-status">Stock Status</label>
+                                        <select id="prod-status" class="adm-input">
+                                            <option value="in_stock">✅ In Stock</option>
+                                            <option value="out_stock">❌ Out of Stock</option>
+                                        </select>
+                                    </div>
+                                    <div class="adm-field">
+                                        <label class="adm-label" for="prod-desc">Description</label>
+                                        <textarea id="prod-desc" class="adm-input" rows="2"
+                                            placeholder="Short description…" style="resize:vertical;"></textarea>
+                                    </div>
+                                    <div class="adm-add-actions">
+                                        <button id="save-prod-btn" class="adm-btn adm-btn-primary">
+                                            ✅ <span id="form-mode-title">Add Product</span>
+                                        </button>
+                                        <button id="reset-prod-btn" class="adm-btn adm-btn-ghost">
+                                            ✕ Cancel
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- ── PRODUCT LIST ── -->
-                        <div class="pm-list-card">
-                            <div class="pm-list-header">
-                                <div class="pm-list-title">
-                                    🐟 Current Inventory
-                                    <span class="pm-count-badge" id="pm-count-badge">0</span>
-                                </div>
-                                <div class="pm-list-controls">
-                                    <div class="search-wrap" style="min-width:200px;">
-                                        <svg class="si" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="11" cy="11" r="8" />
-                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                        </svg>
-                                        <input type="text" id="search-input" placeholder="Search…" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Product Cards List -->
-                            <div class="pm-product-list" id="pm-product-list">
-                                <div class="tbl-empty" style="padding:40px;">Loading products…</div>
-                            </div>
-                        </div>
-
                     </div>
-                    <!-- ══ end PRODUCTS MANAGEMENT ══ -->
 
-                    <!-- ── Orders Table ── -->
-                    <div class="admin-table-wrap" style="margin-top:28px;">
-                        <div class="admin-table-head">
-                            <h3>📋 Recent Orders (from LocalStorage)</h3>
-                            <button onclick="renderOrdersTable()"
-                                style="font-size:0.78rem;background:none;border:none;color:#FF6B00;font-weight:700;cursor:pointer;">🔄
-                                Refresh</button>
+                    <!-- ══ PRODUCT INVENTORY TABLE ══ -->
+                    <div class="adm-card" style="margin-top:24px;">
+                        <div class="adm-card-header" style="cursor:default;">
+                            <div class="adm-card-header-left">
+                                <div class="adm-card-icon">🐟</div>
+                                <div>
+                                    <div class="adm-card-title">
+                                        Current Inventory
+                                        <span class="adm-count-badge" id="pm-count-badge">0</span>
+                                    </div>
+                                    <div class="adm-card-sub">Inline edit name, price · Upload image · Delete products
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="adm-search-wrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg>
+                                <input type="text" id="search-input" placeholder="Search products…" />
+                            </div>
                         </div>
-                        <div style="overflow-x:auto;">
-                            <table class="prod-table">
+
+                        <!-- Table -->
+                        <div class="adm-table-scroll">
+                            <table class="adm-prod-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-img">Image</th>
+                                        <th class="col-name">Name</th>
+                                        <th class="col-price">Price (₹)</th>
+                                        <th class="col-cat">Category</th>
+                                        <th class="col-status">Status</th>
+                                        <th class="col-upload">Upload Image</th>
+                                        <th class="col-action">Save</th>
+                                        <th class="col-del">Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pm-product-list">
+                                    <tr>
+                                        <td colspan="8" class="adm-tbl-empty">Loading products…</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ══ ORDERS TABLE ══ -->
+                    <div class="adm-card" style="margin-top:24px;">
+                        <div class="adm-card-header" style="cursor:default;">
+                            <div class="adm-card-header-left">
+                                <div class="adm-card-icon">📋</div>
+                                <div>
+                                    <div class="adm-card-title">Recent Orders</div>
+                                    <div class="adm-card-sub">Orders placed via WhatsApp checkout · Stored in
+                                        LocalStorage</div>
+                                </div>
+                            </div>
+                            <button onclick="renderOrdersTable()" class="adm-refresh-btn">🔄 Refresh</button>
+                        </div>
+                        <div class="adm-table-scroll">
+                            <table class="adm-prod-table">
                                 <thead>
                                     <tr>
                                         <th>Order ID</th>
@@ -259,110 +286,92 @@
                                 </thead>
                                 <tbody id="orders-tbody">
                                     <tr>
-                                        <td colspan="7" class="tbl-empty">No orders yet.</td>
+                                        <td colspan="7" class="adm-tbl-empty">No orders yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                </div>
-                <!-- end admin-content -->
-            </div>
-            <!-- end admin-main -->
-
-        </div>
-        <!-- end admin-wrap -->
+                </div><!-- end adm-content -->
+            </div><!-- end adm-main -->
+        </div><!-- end adm-shell -->
     </div>
 
-    <!-- ══ DELETE CONFIRM MODAL ══════════════════════════════════ -->
-    <div class="modal-overlay" id="delete-confirm-modal">
-        <div class="modal">
-            <div class="modal-icon">⚠️</div>
-            <h2>Delete Product?</h2>
-            <p>Are you sure you want to delete <strong id="del-product-name"></strong>? This cannot be undone.</p>
+    <!-- ══ DELETE CONFIRM MODAL ══ -->
+    <div class="adm-modal-bg" id="delete-confirm-modal">
+        <div class="adm-modal">
+            <div class="adm-modal-icon">⚠️</div>
+            <h2 class="adm-modal-title">Delete Product?</h2>
+            <p class="adm-modal-msg">Are you sure you want to delete <strong id="del-product-name"></strong>? This
+                cannot be undone.</p>
             <input type="hidden" id="del-product-id" />
-            <div class="modal-actions">
-                <button id="confirm-del-btn" class="btn btn-danger">🗑 Yes, Delete</button>
-                <button id="cancel-del-btn" class="btn btn-outline" style="border-radius:50px;">Cancel</button>
+            <div class="adm-modal-btns">
+                <button id="confirm-del-btn" class="adm-btn adm-btn-danger">🗑 Yes, Delete</button>
+                <button id="cancel-del-btn" class="adm-btn adm-btn-ghost">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Root -->
+    <!-- Toast -->
     <div id="toast-root"></div>
 
     <script src="script.js"></script>
     <script>
-        /* ── Orders table renderer (admin-only) ── */
+        /* ── Orders Table ── */
         function renderOrdersTable() {
             const orders = getOrders();
             const tbody = document.getElementById('orders-tbody');
             if (!tbody) return;
             if (!orders.length) {
-                tbody.innerHTML = `<tr><td colspan="7" class="tbl-empty">No orders placed yet.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="adm-tbl-empty">No orders placed yet.</td></tr>`;
                 return;
             }
             tbody.innerHTML = orders.map(o => {
                 const date = new Date(o.date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
                 const items = o.items ? o.items.map(i => `${i.name} ×${i.qty}`).join(', ') : '—';
+                const st = o.status || 'Processing';
+                const stCls = st === 'Delivered' ? 'adm-status-done' : st === 'Cancelled' ? 'adm-status-cancel' : 'adm-status-proc';
                 return `
         <tr>
-          <td style="font-weight:700;color:#FF6B00;">${o.id}</td>
+          <td class="adm-order-id">${o.id}</td>
           <td>${o.name || '—'}</td>
           <td>${o.phone || '—'}</td>
-          <td style="max-width:220px;font-size:0.78rem;color:#555;">${items}</td>
+          <td class="adm-items-cell">${items}</td>
           <td><strong>₹${(o.total || 0).toLocaleString('en-IN')}</strong></td>
-          <td style="font-size:0.78rem;color:#888;">${date}</td>
-          <td><span style="background:#ECFDF5;color:#059669;padding:3px 9px;border-radius:50px;font-size:0.72rem;font-weight:700;">${o.status || 'Processing'}</span></td>
+          <td class="adm-date-cell">${date}</td>
+          <td><span class="${stCls}">${st}</span></td>
         </tr>`;
             }).join('');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             initAdminPage();
-            /* Also render orders table after dashboard is shown */
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('admin-dashboard-view').style.display !== 'none') {
-                    renderOrdersTable();
-                    observer.disconnect();
-                }
+
+            /* Render orders when dashboard becomes visible */
+            const dash = document.getElementById('admin-dashboard-view');
+            const obs = new MutationObserver(() => {
+                if (dash.style.display !== 'none') { renderOrdersTable(); obs.disconnect(); }
             });
-            observer.observe(document.getElementById('admin-dashboard-view'), { attributes: true, attributeFilter: ['style'] });
-            /* Immediate check */
-            if (document.getElementById('admin-dashboard-view').style.display !== 'none') {
-                renderOrdersTable();
-            }
+            obs.observe(dash, { attributes: true, attributeFilter: ['style'] });
+            if (dash.style.display !== 'none') renderOrdersTable();
         });
 
-        /* ── Mobile sidebar toggle (CSS class-based) ── */
-        function initMobileSidebar() {
-            const sb = document.querySelector('.admin-sidebar');
+        /* ── Mobile sidebar ── */
+        (function initMobileSidebar() {
+            const sb = document.getElementById('adm-sidebar');
             const overlay = document.getElementById('sidebar-overlay');
             const toggleBtn = document.getElementById('sidebar-toggle-btn');
             if (!sb || !overlay || !toggleBtn) return;
-
-            function openSidebar() { sb.classList.add('open'); overlay.classList.add('show'); }
-            function closeSidebar() { sb.classList.remove('open'); overlay.classList.remove('show'); }
-
-            /* Show toggle button only on mobile */
-            function checkSize() {
-                toggleBtn.style.display = window.innerWidth < 900 ? 'inline-flex' : 'none';
-                if (window.innerWidth >= 900) closeSidebar();
-            }
-            checkSize();
-            window.addEventListener('resize', checkSize);
-
-            toggleBtn.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
-            overlay.addEventListener('click', closeSidebar);
-
-            /* Close sidebar when a nav link is clicked on mobile */
-            sb.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-                if (window.innerWidth < 900) closeSidebar();
-            }));
-        }
-
-        initMobileSidebar();
+            const open = () => { sb.classList.add('open'); overlay.classList.add('show'); };
+            const close = () => { sb.classList.remove('open'); overlay.classList.remove('show'); };
+            const check = () => { toggleBtn.style.display = window.innerWidth < 900 ? 'flex' : 'none'; if (window.innerWidth >= 900) close(); };
+            check();
+            window.addEventListener('resize', check);
+            toggleBtn.addEventListener('click', () => sb.classList.contains('open') ? close() : open());
+            overlay.addEventListener('click', close);
+            sb.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 900) close(); }));
+        })();
     </script>
 </body>
 

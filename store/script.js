@@ -645,8 +645,8 @@ function initAdminPage() {
 /* ══════════════════════════════════════════════════════════
    ADMIN — PRODUCTS MANAGEMENT  (Full rebuild — Modern UI)
    ══════════════════════════════════════════════════════════ */
-let editingId    = null;   // null = add mode; number = edit mode
-let searchQuery  = '';
+let editingId = null;   // null = add mode; number = edit mode
+let searchQuery = '';
 let currentImgData = '';   // Base64 or URL for the Add/Edit form
 
 /* ── CATEGORY LABELS already defined above, but safe alias ── */
@@ -654,7 +654,7 @@ const CAT_LABEL = k => CATEGORY_LABELS[k] || k;
 
 /* ── STOCK STATUS labels ── */
 const STOCK_LABEL = s => s === 'out_stock' ? '<span class="stock-badge out">Out of Stock</span>'
-                                           : '<span class="stock-badge in">In Stock</span>';
+    : '<span class="stock-badge in">In Stock</span>';
 
 /* ──────────────────────────────────────────────
    INIT
@@ -669,12 +669,12 @@ function initAdminDashboard() {
 
 function updateAdminStats() {
     const products = getProducts();
-    const orders   = getOrders();
+    const orders = getOrders();
     const el = id => document.getElementById(id);
     if (el('stat-products')) el('stat-products').textContent = products.length;
-    if (el('stat-orders'))   el('stat-orders').textContent   = orders.length;
-    if (el('stat-special'))  el('stat-special').textContent  = products.filter(p => p.category === 'special').length;
-    if (el('stat-guppy'))    el('stat-guppy').textContent    = products.filter(p => p.category === 'guppy').length;
+    if (el('stat-orders')) el('stat-orders').textContent = orders.length;
+    if (el('stat-special')) el('stat-special').textContent = products.filter(p => p.category === 'special').length;
+    if (el('stat-guppy')) el('stat-guppy').textContent = products.filter(p => p.category === 'guppy').length;
 }
 
 /* ──────────────────────────────────────────────
@@ -687,83 +687,105 @@ function renderProductList(query) {
         p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)
     ) : products;
 
-    const list = document.getElementById('pm-product-list');
-    if (!list) return;
+    const tbody = document.getElementById('pm-product-list');
+    if (!tbody) return;
 
     /* Update count badge */
     const badge = document.getElementById('pm-count-badge');
     if (badge) badge.textContent = filtered.length;
 
     if (!filtered.length) {
-        list.innerHTML = '<div class="tbl-empty" style="padding:32px;">No products found. Add one above!</div>';
+        tbody.innerHTML = `<tr><td colspan="8" class="adm-tbl-empty">No products found. Add one above!</td></tr>`;
         return;
     }
 
-    list.innerHTML = filtered.map(p => {
-        const imgSrc   = p.img || PLACEHOLDER_IMG;
+    tbody.innerHTML = filtered.map(p => {
+        const imgSrc = p.img || PLACEHOLDER_IMG;
         const stockVal = p.status || 'in_stock';
+        const inStock = stockVal === 'in_stock';
+        const catLabel = { special: '🏆 Special', premium: '💎 Premium', guppy: '🐟 Guppy' }[p.category] || p.category;
         return `
-        <div class="pm-row" id="pm-row-${p.id}">
-            <!-- Thumbnail + Upload -->
-            <div class="pm-row-img">
-                <img class="pm-thumb" id="pm-thumb-${p.id}"
+        <tr id="pm-row-${p.id}" class="adm-prod-row">
+            <!-- Image -->
+            <td class="col-img">
+                <img class="adm-prod-thumb" id="pm-thumb-${p.id}"
                      src="${imgSrc}" alt="${p.name}"
-                     onerror="this.src='${PLACEHOLDER_IMG}'"
-                     style="transition:transform .2s,opacity .2s;">
-                <label class="pm-upload-lbl" title="Upload image from device">
-                    <input type="file" accept="image/jpeg,image/png,image/webp"
-                           class="pm-img-input" data-id="${p.id}" />
-                    📷 Change
-                </label>
-            </div>
+                     onerror="this.src='${PLACEHOLDER_IMG}'">
+            </td>
 
-            <!-- Editable Fields -->
-            <div class="pm-row-fields">
-                <input class="pm-inline-input" type="text" data-field="name" data-id="${p.id}"
+            <!-- Name -->
+            <td class="col-name">
+                <input class="adm-tbl-input" type="text"
+                       data-field="name" data-id="${p.id}"
                        value="${p.name}" placeholder="Fish name" maxlength="80" />
-                <div class="pm-row-sub">
-                    <input class="pm-inline-input pm-price-input" type="number"
+            </td>
+
+            <!-- Price -->
+            <td class="col-price">
+                <div class="adm-price-wrap">
+                    <span class="adm-rupee">₹</span>
+                    <input class="adm-tbl-input adm-price-input" type="number"
                            data-field="price" data-id="${p.id}"
-                           value="${p.price}" placeholder="Price" min="1" />
-                    <select class="pm-inline-select pm-cat-select" data-field="category" data-id="${p.id}">
-                        <option value="special"  ${p.category === 'special'  ? 'selected' : ''}>Special</option>
-                        <option value="premium"  ${p.category === 'premium'  ? 'selected' : ''}>Premium</option>
-                        <option value="guppy"    ${p.category === 'guppy'    ? 'selected' : ''}>Guppy</option>
-                    </select>
+                           value="${p.price}" placeholder="0" min="1" />
                 </div>
-            </div>
+            </td>
 
-            <!-- Status Toggle -->
-            <div class="pm-row-status">
-                <label class="pm-toggle-wrap" title="Toggle Stock">
-                    <input type="checkbox" class="pm-toggle-input" data-id="${p.id}"
-                           ${stockVal === 'in_stock' ? 'checked' : ''} />
-                    <span class="pm-toggle-track">
-                        <span class="pm-toggle-thumb"></span>
-                    </span>
+            <!-- Category -->
+            <td class="col-cat">
+                <select class="adm-tbl-select" data-field="category" data-id="${p.id}">
+                    <option value="special" ${p.category === 'special' ? 'selected' : ''}>🏆 Special</option>
+                    <option value="premium" ${p.category === 'premium' ? 'selected' : ''}>💎 Premium</option>
+                    <option value="guppy"   ${p.category === 'guppy' ? 'selected' : ''}>🐟 Guppy</option>
+                </select>
+            </td>
+
+            <!-- Status -->
+            <td class="col-status">
+                <label class="adm-toggle" title="Toggle Stock Status">
+                    <input type="checkbox" class="adm-toggle-cb" data-id="${p.id}" ${inStock ? 'checked' : ''} />
+                    <span class="adm-toggle-slider"></span>
                 </label>
-                <span class="pm-stock-lbl" id="pm-slbl-${p.id}">${stockVal === 'in_stock' ? 'In Stock' : 'Out of Stock'}</span>
-            </div>
+                <span class="adm-stock-txt ${inStock ? 'in' : 'out'}" id="pm-slbl-${p.id}">
+                    ${inStock ? 'In Stock' : 'Out of Stock'}
+                </span>
+            </td>
 
-            <!-- Actions -->
-            <div class="pm-row-actions">
-                <button class="pm-save-row-btn" data-id="${p.id}" title="Save changes">&#x1F4BE; Save</button>
-                <button class="pm-del-row-btn"  data-id="${p.id}" title="Delete product">&#x1F5D1;</button>
-            </div>
-        </div>`;
+            <!-- Upload Image -->
+            <td class="col-upload">
+                <label class="adm-upload-row-btn" title="Upload image from device">
+                    <input type="file" accept="image/jpeg,image/png,image/webp"
+                           class="pm-img-input" data-id="${p.id}" style="display:none;" />
+                    📷 Upload
+                </label>
+            </td>
+
+            <!-- Save -->
+            <td class="col-action">
+                <button class="adm-save-btn pm-save-row-btn" data-id="${p.id}" title="Save changes">
+                    💾 Save
+                </button>
+            </td>
+
+            <!-- Delete -->
+            <td class="col-del">
+                <button class="adm-del-btn pm-del-row-btn" data-id="${p.id}" title="Delete product">
+                    🗑
+                </button>
+            </td>
+        </tr>`;
     }).join('');
 
     /* ── Attach event listeners ── */
 
     /* Image upload (per row) */
-    list.querySelectorAll('.pm-img-input').forEach(input => {
+    tbody.querySelectorAll('.pm-img-input').forEach(input => {
         input.addEventListener('change', function () {
             const file = this.files && this.files[0];
             if (!file) return;
             const pid = +this.dataset.id;
-            const allowed = ['image/jpeg','image/png','image/webp','image/jpg'];
-            if (!allowed.includes(file.type)) { showToast('Only JPG, PNG or WEBP allowed.','error'); this.value=''; return; }
-            if (file.size > 2 * 1024 * 1024)  { showToast('Image must be under 2 MB.','error');     this.value=''; return; }
+            const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+            if (!allowed.includes(file.type)) { showToast('Only JPG, PNG or WEBP allowed.', 'error'); this.value = ''; return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('Image must be under 2 MB.', 'error'); this.value = ''; return; }
             const reader = new FileReader();
             reader.onload = ev => {
                 const b64 = ev.target.result;
@@ -772,55 +794,61 @@ function renderProductList(query) {
                 if (idx >= 0) { prods[idx].img = b64; saveProducts(prods); }
                 const thumb = document.getElementById('pm-thumb-' + pid);
                 if (thumb) {
-                    thumb.style.transform='scale(0.8)'; thumb.style.opacity='0.3';
-                    setTimeout(() => { thumb.src=b64; thumb.style.transform='scale(1)'; thumb.style.opacity='1'; }, 200);
+                    thumb.style.opacity = '0.4';
+                    setTimeout(() => { thumb.src = b64; thumb.style.opacity = '1'; }, 200);
                 }
-                showToast('\u2705 Image Updated Successfully!', 'success');
+                showToast('\u2705 Image updated!', 'success');
                 this.value = '';
             };
-            reader.onerror = () => showToast('Could not read file.','error');
+            reader.onerror = () => showToast('Could not read file.', 'error');
             reader.readAsDataURL(file);
         });
     });
 
-    /* Stock toggle */
-    list.querySelectorAll('.pm-toggle-input').forEach(tog => {
+    /* Stock toggle — update label text + colour */
+    tbody.querySelectorAll('.adm-toggle-cb').forEach(tog => {
         tog.addEventListener('change', function () {
             const pid = +this.dataset.id;
             const lbl = document.getElementById('pm-slbl-' + pid);
-            if (lbl) lbl.textContent = this.checked ? 'In Stock' : 'Out of Stock';
+            if (!lbl) return;
+            lbl.textContent = this.checked ? 'In Stock' : 'Out of Stock';
+            lbl.className = 'adm-stock-txt ' + (this.checked ? 'in' : 'out');
         });
     });
 
     /* Save row */
-    list.querySelectorAll('.pm-save-row-btn').forEach(btn => {
+    tbody.querySelectorAll('.pm-save-row-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const pid = +btn.dataset.id;
             const row = document.getElementById('pm-row-' + pid);
             if (!row) return;
-            const nameEl   = row.querySelector('[data-field="name"]');
-            const priceEl  = row.querySelector('[data-field="price"]');
-            const catEl    = row.querySelector('[data-field="category"]');
-            const togEl    = row.querySelector('.pm-toggle-input');
-            const name     = nameEl  ? nameEl.value.trim()   : '';
-            const price    = priceEl ? parseFloat(priceEl.value) : NaN;
-            const category = catEl   ? catEl.value  : 'special';
-            const status   = togEl   ? (togEl.checked ? 'in_stock' : 'out_stock') : 'in_stock';
-            if (!name)                    { showToast('Name cannot be empty!','error'); return; }
-            if (isNaN(price) || price<=0) { showToast('Enter a valid price!','error'); return; }
+            const nameEl = row.querySelector('[data-field="name"]');
+            const priceEl = row.querySelector('[data-field="price"]');
+            const catEl = row.querySelector('[data-field="category"]');
+            const togEl = row.querySelector('.adm-toggle-cb');
+            const name = nameEl ? nameEl.value.trim() : '';
+            const price = priceEl ? parseFloat(priceEl.value) : NaN;
+            const category = catEl ? catEl.value : 'special';
+            const status = togEl ? (togEl.checked ? 'in_stock' : 'out_stock') : 'in_stock';
+            if (!name) { showToast('Name cannot be empty!', 'error'); return; }
+            if (isNaN(price) || price <= 0) { showToast('Enter a valid price!', 'error'); return; }
             const prods = getProducts();
             const idx = prods.findIndex(p => p.id === pid);
             if (idx >= 0) {
                 prods[idx] = { ...prods[idx], name, price, category, status };
                 saveProducts(prods);
-                showToast('\u2705 Product Updated Successfully!', 'success');
+                /* Flash the save button green */
+                btn.textContent = '✅ Saved!';
+                btn.style.background = '#10B981';
+                setTimeout(() => { btn.textContent = '💾 Save'; btn.style.background = ''; }, 1800);
+                showToast('\u2705 Product updated!', 'success');
                 updateAdminStats();
             }
         });
     });
 
     /* Delete row */
-    list.querySelectorAll('.pm-del-row-btn').forEach(btn => {
+    tbody.querySelectorAll('.pm-del-row-btn').forEach(btn => {
         btn.addEventListener('click', () => confirmDeleteProduct(+btn.dataset.id));
     });
 }
@@ -833,7 +861,7 @@ function renderProductTable(query) { renderProductList(query); }
 ────────────────────────────────────────────── */
 function pmToggleAddCard() {
     const body = document.getElementById('pm-add-body');
-    const btn  = document.getElementById('pm-collapse-btn');
+    const btn = document.getElementById('pm-collapse-btn');
     if (!body) return;
     const collapsed = body.style.display === 'none';
     body.style.display = collapsed ? '' : 'none';
@@ -856,9 +884,9 @@ function initAdminSearch() {
    ADD / EDIT FORM
 ────────────────────────────────────────────── */
 function initAdminPanelForm() {
-    const saveBtn  = document.getElementById('save-prod-btn');
+    const saveBtn = document.getElementById('save-prod-btn');
     const resetBtn = document.getElementById('reset-prod-btn');
-    if (saveBtn)  saveBtn.addEventListener('click', saveProduct);
+    if (saveBtn) saveBtn.addEventListener('click', saveProduct);
     if (resetBtn) resetBtn.addEventListener('click', resetProductForm);
 
     /* Delete confirm modal */
@@ -866,10 +894,14 @@ function initAdminPanelForm() {
     if (confirmDel) confirmDel.addEventListener('click', () => {
         const id = +document.getElementById('del-product-id').value;
         deleteProduct(id);
-        hideModal('delete-confirm-modal');
+        const m = document.getElementById('delete-confirm-modal');
+        if (m) m.classList.remove('open');
     });
     const cancelDel = document.getElementById('cancel-del-btn');
-    if (cancelDel) cancelDel.addEventListener('click', () => hideModal('delete-confirm-modal'));
+    if (cancelDel) cancelDel.addEventListener('click', () => {
+        const m = document.getElementById('delete-confirm-modal');
+        if (m) m.classList.remove('open');
+    });
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -877,9 +909,9 @@ function initAdminPanelForm() {
    ══════════════════════════════════════════════════════════ */
 function initImageUpload() {
     const fileInput = document.getElementById('prod-img-file');
-    const urlInput  = document.getElementById('prod-img');
-    const zone      = document.getElementById('img-upload-zone');
-    const clearBtn  = document.getElementById('clear-img-btn');
+    const urlInput = document.getElementById('prod-img');
+    const zone = document.getElementById('img-upload-zone');
+    const clearBtn = document.getElementById('clear-img-btn');
     if (!zone) return;
 
     zone.addEventListener('click', () => fileInput && fileInput.click());
@@ -896,49 +928,49 @@ function initImageUpload() {
     if (urlInput) urlInput.addEventListener('input', () => {
         const url = urlInput.value.trim();
         if (url) { currentImgData = url; showImagePreview(url); }
-        else if (currentImgData && !currentImgData.startsWith('data:')) { currentImgData=''; hideImagePreview(); }
+        else if (currentImgData && !currentImgData.startsWith('data:')) { currentImgData = ''; hideImagePreview(); }
     });
     if (clearBtn) clearBtn.addEventListener('click', () => {
-        currentImgData='';
-        if (urlInput)  urlInput.value='';
-        if (fileInput) fileInput.value='';
+        currentImgData = '';
+        if (urlInput) urlInput.value = '';
+        if (fileInput) fileInput.value = '';
         hideImagePreview();
         zone.classList.remove('has-img');
-        showToast('Image cleared','info');
+        showToast('Image cleared', 'info');
     });
 }
 
 function processImageFile(file) {
-    const allowed = ['image/jpeg','image/png','image/webp','image/gif','image/jpg'];
-    if (!allowed.includes(file.type)) { showToast('Only JPG, PNG or WEBP images are allowed.','error'); return; }
-    if (file.size > 5*1024*1024)      { showToast('Image must be under 5 MB.','error'); return; }
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
+    if (!allowed.includes(file.type)) { showToast('Only JPG, PNG or WEBP images are allowed.', 'error'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5 MB.', 'error'); return; }
     const reader = new FileReader();
     reader.onload = e => {
         currentImgData = e.target.result;
         showImagePreview(currentImgData);
         const urlInput = document.getElementById('prod-img');
         if (urlInput) urlInput.value = '';
-        showToast('\u2705 Image uploaded successfully!','success');
+        showToast('\u2705 Image uploaded successfully!', 'success');
     };
-    reader.onerror = () => showToast('Failed to read image file.','error');
+    reader.onerror = () => showToast('Failed to read image file.', 'error');
     reader.readAsDataURL(file);
 }
 
 function showImagePreview(src) {
-    const preview  = document.getElementById('img-preview');
+    const preview = document.getElementById('img-preview');
     const previewW = document.getElementById('img-preview-wrap');
-    const zone     = document.getElementById('img-upload-zone');
-    if (preview)  preview.src = src;
+    const zone = document.getElementById('img-upload-zone');
+    if (preview) preview.src = src;
     if (previewW) previewW.classList.add('has-img');
-    if (zone)     zone.classList.add('has-img');
+    if (zone) zone.classList.add('has-img');
 }
 function hideImagePreview() {
-    const preview  = document.getElementById('img-preview');
+    const preview = document.getElementById('img-preview');
     const previewW = document.getElementById('img-preview-wrap');
-    const zone     = document.getElementById('img-upload-zone');
-    if (preview)  preview.src = '';
+    const zone = document.getElementById('img-upload-zone');
+    if (preview) preview.src = '';
     if (previewW) previewW.classList.remove('has-img');
-    if (zone)     zone.classList.remove('has-img');
+    if (zone) zone.classList.remove('has-img');
 }
 
 /* ──────────────────────────────────────────────
@@ -948,16 +980,16 @@ function loadProductIntoForm(id) {
     const p = getProducts().find(x => x.id === id);
     if (!p) return;
     editingId = id;
-    document.getElementById('prod-name').value  = p.name;
+    document.getElementById('prod-name').value = p.name;
     document.getElementById('prod-price').value = p.price;
-    document.getElementById('prod-cat').value   = p.category;
-    document.getElementById('prod-desc').value  = p.description || '';
+    document.getElementById('prod-cat').value = p.category;
+    document.getElementById('prod-desc').value = p.description || '';
     const statusEl = document.getElementById('prod-status');
     if (statusEl) statusEl.value = p.status || 'in_stock';
     currentImgData = p.img || '';
-    const urlInput  = document.getElementById('prod-img');
+    const urlInput = document.getElementById('prod-img');
     const fileInput = document.getElementById('prod-img-file');
-    if (urlInput)  urlInput.value  = currentImgData.startsWith('data:') ? '' : currentImgData;
+    if (urlInput) urlInput.value = currentImgData.startsWith('data:') ? '' : currentImgData;
     if (fileInput) fileInput.value = '';
     if (currentImgData) showImagePreview(currentImgData);
     const titleEl = document.getElementById('form-mode-title');
@@ -967,20 +999,20 @@ function loadProductIntoForm(id) {
     const colBtn = document.getElementById('pm-collapse-btn');
     if (body) body.style.display = '';
     if (colBtn) colBtn.textContent = '▲';
-    document.getElementById('pm-add-card')?.scrollIntoView({ behavior:'smooth', block:'start' });
+    document.getElementById('pm-add-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function resetProductForm() {
     editingId = null; currentImgData = '';
-    ['prod-name','prod-price','prod-cat','prod-desc'].forEach(id => {
+    ['prod-name', 'prod-price', 'prod-cat', 'prod-desc'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.value = (id==='prod-cat') ? 'special' : '';
+        if (el) el.value = (id === 'prod-cat') ? 'special' : '';
     });
     const statusEl = document.getElementById('prod-status');
     if (statusEl) statusEl.value = 'in_stock';
-    const urlInput  = document.getElementById('prod-img');
+    const urlInput = document.getElementById('prod-img');
     const fileInput = document.getElementById('prod-img-file');
-    if (urlInput)  urlInput.value  = '';
+    if (urlInput) urlInput.value = '';
     if (fileInput) fileInput.value = '';
     hideImagePreview();
     const titleEl = document.getElementById('form-mode-title');
@@ -988,26 +1020,26 @@ function resetProductForm() {
 }
 
 function saveProduct() {
-    const name   = document.getElementById('prod-name').value.trim();
-    const price  = parseFloat(document.getElementById('prod-price').value);
-    const cat    = document.getElementById('prod-cat').value;
-    const desc   = document.getElementById('prod-desc').value.trim();
+    const name = document.getElementById('prod-name').value.trim();
+    const price = parseFloat(document.getElementById('prod-price').value);
+    const cat = document.getElementById('prod-cat').value;
+    const desc = document.getElementById('prod-desc').value.trim();
     const statusEl = document.getElementById('prod-status');
     const status = statusEl ? statusEl.value : 'in_stock';
-    const img    = (currentImgData || '').trim() || PLACEHOLDER_IMG;
-    if (!name)                      { showToast('Product name is required.','error');  return; }
-    if (isNaN(price) || price <= 0) { showToast('Enter a valid price.','error');       return; }
+    const img = (currentImgData || '').trim() || PLACEHOLDER_IMG;
+    if (!name) { showToast('Product name is required.', 'error'); return; }
+    if (isNaN(price) || price <= 0) { showToast('Enter a valid price.', 'error'); return; }
     const products = getProducts();
     if (editingId !== null) {
         const idx = products.findIndex(p => p.id === editingId);
         if (idx >= 0) {
-            products[idx] = { ...products[idx], name, price, img, category:cat, description:desc, status };
+            products[idx] = { ...products[idx], name, price, img, category: cat, description: desc, status };
             saveProducts(products);
             showToast('\u2705 Product Updated Successfully!', 'success');
         }
     } else {
         const newId = Math.max(0, ...products.map(p => p.id)) + 1;
-        products.push({ id:newId, name, price, img, category:cat, description:desc, status });
+        products.push({ id: newId, name, price, img, category: cat, description: desc, status });
         saveProducts(products);
         showToast('\u2705 Product Added Successfully!', 'success');
     }
@@ -1024,7 +1056,8 @@ function confirmDeleteProduct(id) {
     const p = getProducts().find(x => x.id === id);
     const nameEl = document.getElementById('del-product-name');
     if (nameEl) nameEl.textContent = p ? p.name : `Product #${id}`;
-    showModal('delete-confirm-modal');
+    const modal = document.getElementById('delete-confirm-modal');
+    if (modal) modal.classList.add('open');
 }
 
 function deleteProduct(id) {
@@ -1034,5 +1067,4 @@ function deleteProduct(id) {
     updateAdminStats();
     renderProductList();
     if (editingId === id) resetProductForm();
-}
 }
