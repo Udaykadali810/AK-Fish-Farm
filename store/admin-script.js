@@ -165,6 +165,49 @@ function renderDashboard() {
       <td><span class="sbadge ${cls}">${st}</span></td>
     </tr>`;
     }).join('');
+
+    initAdminBannerFeature();
+}
+
+/**
+ * Hero Banner Management Logic
+ */
+function initAdminBannerFeature() {
+    const input = document.getElementById('custom-banner-input');
+    const saveBtn = document.getElementById('save-banner-btn');
+    const resetBtn = document.getElementById('reset-banner-btn');
+    const previewBox = document.getElementById('banner-preview-box');
+    const previewImg = document.getElementById('admin-banner-preview');
+
+    if (!input || !saveBtn || !resetBtn) return;
+
+    const currentBanner = localStorage.getItem('akf_custom_banner');
+    if (currentBanner) {
+        input.value = currentBanner;
+        previewBox.style.display = 'block';
+        previewImg.src = currentBanner;
+    }
+
+    saveBtn.onclick = () => {
+        const val = input.value.trim();
+        if (val) {
+            localStorage.setItem('akf_custom_banner', val);
+            previewBox.style.display = 'block';
+            previewImg.src = val;
+            showToast('Banner updated successfully!');
+        } else {
+            localStorage.removeItem('akf_custom_banner');
+            previewBox.style.display = 'none';
+            showToast('Banner cleared (using default)');
+        }
+    };
+
+    resetBtn.onclick = () => {
+        localStorage.removeItem('akf_custom_banner');
+        input.value = '';
+        previewBox.style.display = 'none';
+        showToast('Banner reset to default');
+    };
 }
 
 /* 

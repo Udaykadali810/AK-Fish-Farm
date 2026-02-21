@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Admin Panel  AK FishFarms </title>
+    <title>Admin Panel AK FishFarms </title>
     <meta name="robots" content="noindex,nofollow" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
@@ -81,7 +81,7 @@
                 <button class="nav-item nav-logout" id="logout-btn">
                     <span class="nav-ico"></span> Logout
                 </button>
-                <div class="sb-version">v3.0  LocalStorage</div>
+                <div class="sb-version">v3.0 LocalStorage</div>
             </div>
         </aside>
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -182,12 +182,45 @@
                         </div>
                     </div>
 
+                    <!-- Hero Banner Management -->
+                    <div class="adm-card" style="margin-top:20px;">
+                        <div class="card-hd">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap"></div>
+                                <div>
+                                    <div class="card-title">Home Hero Banner</div>
+                                    <div class="card-sub">Change the main banner shown on the homepage</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding:22px;">
+                            <div class="form-field">
+                                <label class="form-label">Custom Banner URL (Paste link or data URI)</label>
+                                <div style="display:flex;gap:10px;">
+                                    <input type="text" id="custom-banner-input" class="form-input"
+                                        placeholder="https://example.com/banner.jpg" />
+                                    <button class="btn btn-aqua" id="save-banner-btn" style="white-space:nowrap;">Save
+                                        Banner</button>
+                                </div>
+                                <p style="font-size:0.75rem;color:#888;margin-top:8px;">Leave blank to use the default
+                                    business banner.</p>
+                            </div>
+                            <div id="banner-preview-box" style="margin-top:15px; display:none;">
+                                <p style="font-size:0.8rem; margin-bottom:5px;">Preview:</p>
+                                <img id="admin-banner-preview" src=""
+                                    style="width:100%; max-width:400px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);" />
+                                <button class="btn btn-red btn-sm" id="reset-banner-btn" style="margin-top:10px;">Reset
+                                    to Default</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Quick actions -->
                     <div class="quick-actions">
-                        <button class="qa-btn" onclick="switchSection('products')"> Add Product</button>
-                        <button class="qa-btn" onclick="switchSection('orders')"> Manage Orders</button>
-                        <button class="qa-btn" onclick="switchSection('reports')"> Download Report</button>
-                        <button class="qa-btn" onclick="switchSection('track')"> Track Orders</button>
+                        <button class="qa-btn" onclick="switchSection('products')">Add Product</button>
+                        <button class="qa-btn" onclick="switchSection('orders')">Manage Orders</button>
+                        <button class="qa-btn" onclick="switchSection('reports')">Download Report</button>
+                        <button class="qa-btn" onclick="switchSection('track')">Track Orders</button>
                     </div>
                 </section>
 
@@ -299,7 +332,7 @@
                                         <input type="file" id="add-img-file" accept="image/jpeg,image/png,image/webp" />
                                         <div class="upload-ico"></div>
                                         <p class="upload-txt1">Click or drag to upload</p>
-                                        <p class="upload-txt2">JPG  PNG  WEBP  Max 5 MB</p>
+                                        <p class="upload-txt2">JPG PNG WEBP Max 5 MB</p>
                                     </div>
                                     <div class="add-img-preview" id="add-img-preview">
                                         <img id="add-img-preview-img" src="" alt="Preview" />
@@ -354,7 +387,7 @@
                                 <div>
                                     <div class="card-title">Inventory <span class="count-badge" id="prod-count">0</span>
                                     </div>
-                                    <div class="card-sub">Inline edit  Upload  Delete</div>
+                                    <div class="card-sub">Inline edit Upload Delete</div>
                                 </div>
                             </div>
                             <div class="search-bar" style="min-width:200px;">
@@ -437,7 +470,7 @@
                         <div class="report-icon"></div>
                         <div class="report-info">
                             <div class="report-title">Full Orders Report (.xlsx)</div>
-                            <p class="report-desc">Export all order data  customer name, phone, city, items ordered,
+                            <p class="report-desc">Export all order data customer name, phone, city, items ordered,
                                 total amount, date &amp; status. Opens directly in Excel or Google Sheets.</p>
                             <div class="report-stats">
                                 <span class="report-stat">Total Orders: <strong id="rpt-order-count">0</strong></span>
@@ -454,7 +487,7 @@
                         <div class="report-icon"></div>
                         <div class="report-info">
                             <div class="report-title">CSV Backup (Fallback)</div>
-                            <p class="report-desc">Simple CSV file  compatible with all spreadsheet apps. Use this if
+                            <p class="report-desc">Simple CSV file compatible with all spreadsheet apps. Use this if
                                 Excel download doesn't work.</p>
                         </div>
                         <div style="flex-shrink:0;">
