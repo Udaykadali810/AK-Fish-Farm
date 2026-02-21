@@ -2,39 +2,38 @@
     "version": 2,
     "builds": [
         {
-            "src": "api/index.js",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "frontend/package.json",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "dist"
-            }
-        },
-        {
             "src": "store/**",
             "use": "@vercel/static"
         }
     ],
     "routes": [
         {
-            "src": "/api/(.*)",
-            "dest": "api/index.js"
-        },
-        {
             "src": "/store/(.*)",
             "dest": "store/$1"
         },
         {
-            "src": "/(.*)",
-            "dest": "frontend/$1",
-            "check": true
+            "src": "/",
+            "dest": "store/index.html"
+        },
+        {
+            "src": "/cart",
+            "dest": "store/cart.html"
+        },
+        {
+            "src": "/checkout",
+            "dest": "store/checkout.html"
+        },
+        {
+            "src": "/admin",
+            "dest": "store/admin.html"
+        },
+        {
+            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
+            "dest": "store/$1"
         },
         {
             "src": "/(.*)",
-            "status": 404,
-            "dest": "frontend/index.html"
+            "dest": "store/index.html"
         }
     ]
 }
