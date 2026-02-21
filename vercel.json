@@ -11,12 +11,20 @@
             "config": {
                 "distDir": "dist"
             }
+        },
+        {
+            "src": "store/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/api/(.*)",
             "dest": "api/index.js"
+        },
+        {
+            "src": "/store/(.*)",
+            "dest": "store/$1"
         },
         {
             "src": "/(.*)",
