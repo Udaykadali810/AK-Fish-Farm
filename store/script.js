@@ -172,10 +172,10 @@ function saveOrder(order) {
 /* 
    WHATSAPP  (used by checkout.html)
     */
-function buildWhatsAppURL() {
+function buildWhatsAppURL(custName = '', custPhone = '', custCity = '') {
     const cart = getCart();
     const lines = cart.map((item, i) =>
-        `${i + 1}. ${item.name} - Qty: ${item.qty} - ${item.price}`
+        `${i + 1}. ${item.name} - Qty: ${item.qty} - ₹${item.price}`
     ).join('\n');
 
     const subtotal = getCartTotal();
@@ -186,11 +186,14 @@ function buildWhatsAppURL() {
         else total -= coupon.val;
     }
 
+    const customerInfo = custName ? `\n\nCustomer Details:\nName: ${custName}\nPhone: ${custPhone}\nCity: ${custCity}` : '';
+
     const msg =
         `New Order - AK Fish Farms\n\n` +
         `Items:\n\n${lines}\n\n` +
-        `Total Amount: ₹${Math.max(0, total)}\n\n` +
-        `Customer Order from Website`;
+        `Total Amount: ₹${Math.max(0, total)}` +
+        customerInfo +
+        `\n\nCustomer Order from Website`;
     return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -482,9 +485,31 @@ function renderCartPage() {
     const deliveryBtn = document.getElementById('initiate-delivery-btn');
     if (deliveryBtn) {
         deliveryBtn.onclick = () => {
-            const url = buildWhatsAppURL();
+            showModal('delivery-modal');
+        };
+    }
+
+    const confirmBtn = document.getElementById('confirm-delivery-btn');
+    if (confirmBtn) {
+        confirmBtn.onclick = () => {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const city = document.getElementById('cust-city').value.trim();
+
+            if (!name || !phone || !city) {
+                showToast('Please fill all details', 'error');
+                return;
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                showToast('Please enter a valid 10-digit phone number', 'error');
+                return;
+            }
+
+            const url = buildWhatsAppURL(name, phone, city);
             sessionStorage.setItem('akf_return_thanks', '1');
             window.open(url, '_blank');
+
+            hideModal('delivery-modal');
             clearCart();
             clearCoupon();
             renderCartPage();

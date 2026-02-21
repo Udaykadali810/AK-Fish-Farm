@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Cart  AK Fish Farms</title>
+    <title>My Cart AK Fish Farms</title>
     <meta name="description" content="Review your cart and proceed to checkout at AK Fish Farms." />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>" />
@@ -159,7 +159,7 @@
                         <div class="secure-icon"></div>
                         <div>
                             <strong>Secure & Free Delivery</strong><br>
-                            Pay on delivery via Cash / UPI. Your order is confirmed via WhatsApp  no upfront payment
+                            Pay on delivery via Cash / UPI. Your order is confirmed via WhatsApp no upfront payment
                             needed.
                         </div>
                     </div>
@@ -171,6 +171,47 @@
 
     <!-- Toast Root -->
     <div id="toast-root"></div>
+
+    </a>
+
+    <!-- Delivery Details Modal -->
+    <div id="delivery-modal" class="modal-bg">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-hd">
+                <div class="modal-title">Delivery Details</div>
+                <button class="modal-close"
+                    onclick="document.getElementById('delivery-modal').classList.remove('show')">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px;">Please provide your delivery info to
+                    proceed to WhatsApp.</p>
+
+                <div class="form-field" style="margin-bottom: 16px;">
+                    <label class="form-label"
+                        style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #f1f5f9;">Full
+                        Name</label>
+                    <input type="text" id="cust-name" class="form-input" placeholder="Your Name" style="width: 100%;" />
+                </div>
+
+                <div class="form-field" style="margin-bottom: 16px;">
+                    <label class="form-label"
+                        style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #f1f5f9;">Phone
+                        Number</label>
+                    <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit Mobile Number"
+                        style="width: 100%;" />
+                </div>
+
+                <div class="form-field" style="margin-bottom: 24px;">
+                    <label class="form-label"
+                        style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #f1f5f9;">City
+                        / Locality</label>
+                    <input type="text" id="cust-city" class="form-input" placeholder="Your City" style="width: 100%;" />
+                </div>
+
+                <button id="confirm-delivery-btn" class="btn btn-primary btn-full">Submit & Chat on WhatsApp</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Floating WA -->
     <a href="https://wa.me/919492045766" target="_blank" class="fab-wa" aria-label="Chat on WhatsApp">
