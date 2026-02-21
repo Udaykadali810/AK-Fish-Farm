@@ -250,6 +250,19 @@ function initNavbar() {
     }
 }
 
+/**
+ * Dynamically load hero banner from LocalStorage if user uploaded one
+ */
+function initHeroBanner() {
+    const bannerImg = document.querySelector('.hero-banner-img');
+    if (!bannerImg) return;
+
+    const custom = localStorage.getItem('akf_custom_banner');
+    if (custom) {
+        bannerImg.src = custom;
+    }
+}
+
 /* 
    SCROLL REVEAL
     */
@@ -270,6 +283,7 @@ function initScrollReveal() {
 function initShopPage() {
     initNavbar();
     initProducts();
+    initHeroBanner();
 
     const grid = document.getElementById('product-grid');
     const tabRow = document.getElementById('tab-row');
