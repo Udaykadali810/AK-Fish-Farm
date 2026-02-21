@@ -56,9 +56,9 @@ const DEFAULT_PRODUCTS = [
 
 const CATEGORY_LABELS = {
     all: 'All Collections',
-    special: '🏆 AK Special Collection',
-    premium: '💎 AK Premium Collection',
-    guppy: '🐟 AK Guppy Collection',
+    special: 'AK Special Collection',
+    premium: 'AK Premium Collection',
+    guppy: 'AK Guppy Collection',
 };
 
 /* ══════════════════════════════════════════════════════════
@@ -158,20 +158,25 @@ function saveOrder(order) {
 /* ══════════════════════════════════════════════════════════
    WHATSAPP  (used by checkout.html)
    ══════════════════════════════════════════════════════════ */
-function buildWhatsAppURL(name, phone, address) {
+function buildWhatsAppURL() {
     const cart = getCart();
     const lines = cart.map((item, i) =>
-        `${i + 1}. ${item.name} – Qty: ${item.qty} – ₹${item.price * item.qty}`
+        `${i + 1}. ${item.name} - Qty: ${item.qty} - ₹${item.price}`
     ).join('\n');
-    const total = getCartTotal();
+
+    const subtotal = getCartTotal();
+    const coupon = getAppliedCoupon();
+    let total = subtotal;
+    if (coupon) {
+        if (coupon.type === 'percent') total -= (subtotal * coupon.val / 100);
+        else total -= coupon.val;
+    }
+
     const msg =
-        `🛒 New Order – AK FishFarms 🐟\n\n` +
-        `Customer Name: ${name}\n` +
-        `Phone: ${phone}\n` +
-        `Address: ${address}\n\n` +
-        `Order Details:\n${lines}\n\n` +
-        `Total Amount: ₹${total}\n\n` +
-        `Thank you for shopping in AK FishFarms 🐟`;
+        `🛒 New Order - AK Fish Farms\n\n` +
+        `Items:\n\n${lines}\n\n` +
+        `Total Amount: ₹${Math.max(0, total)}\n\n` +
+        `Customer Order from Website`;
     return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -222,11 +227,13 @@ function initNavbar() {
             mob.classList.toggle('open');
         });
     }
-    /* Highlight active link */
-    const path = window.location.pathname.replace(/.*\//, '');
-    document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(a => {
-        if (a.getAttribute('href') === path) a.classList.add('active');
-    });
+    /* Check for return thanks */
+    if (sessionStorage.getItem('akf_return_thanks')) {
+        sessionStorage.removeItem('akf_return_thanks');
+        setTimeout(() => {
+            showToast('Thank you for shopping with AK Fish Farms 🐟', 'success');
+        }, 800);
+    }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -428,24 +435,90 @@ function renderCartPage() {
         }, { once: true }); /* once:true — re-added after each renderCartPage call */
     }
 
-    /* "Initiate Delivery" → checkout.html */
-    const deliveryBtn = document.getElementById('initiate-delivery-btn');
-    if (deliveryBtn) {
-        deliveryBtn.addEventListener('click', () => {
-            window.location.href = '/checkout';
-        });
-    }
-
     /* Clear cart */
     const clearBtn = document.getElementById('clear-cart-btn');
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if (confirm('Remove all items from cart?')) {
                 clearCart();
+                clearCoupon();
                 renderCartPage();
                 showToast('Cart cleared', 'info');
             }
         });
+    }
+
+    initCouponFeature();
+
+    /* Direct WhatsApp Flow */
+    const deliveryBtn = document.getElementById('initiate-delivery-btn');
+    if (deliveryBtn) {
+        deliveryBtn.onclick = () => {
+            const url = buildWhatsAppURL();
+            sessionStorage.setItem('akf_return_thanks', '1');
+            window.open(url, '_blank');
+            clearCart();
+            clearCoupon();
+            renderCartPage();
+        };
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   COUPON SYSTEM
+   ══════════════════════════════════════════════════════════ */
+const COUPONS = {
+    'AK10': { type: 'percent', val: 10 },
+    'FISH50': { type: 'flat', val: 50 }
+};
+
+function getAppliedCoupon() {
+    try { return JSON.parse(localStorage.getItem('akf_coupon')) || null; }
+    catch { return null; }
+}
+function saveCoupon(c) { localStorage.setItem('akf_coupon', JSON.stringify(c)); }
+function clearCoupon() { localStorage.removeItem('akf_coupon'); }
+
+function initCouponFeature() {
+    const btn = document.getElementById('apply-coupon-btn');
+    const input = document.getElementById('coupon-input');
+    const msg = document.getElementById('coupon-msg');
+
+    if (!btn || !input) return;
+
+    btn.addEventListener('click', () => {
+        const code = input.value.trim().toUpperCase();
+        if (!code) return;
+
+        if (COUPONS[code]) {
+            saveCoupon(COUPONS[code]);
+            input.value = '';
+            msg.textContent = `Coupon "${code}" applied successfully!`;
+            msg.style.color = '#25D366';
+            renderCartPage();
+            showToast('Discount applied!', 'success');
+        } else {
+            msg.textContent = 'Invalid coupon code';
+            msg.style.color = '#ff4444';
+        }
+    });
+
+    /* Refresh UI if coupon exists */
+    const applied = getAppliedCoupon();
+    if (applied) {
+        const row = document.getElementById('discount-row');
+        const valEl = document.getElementById('discount-amount');
+        const subtotal = getCartTotal();
+        let disc = 0;
+        if (applied.type === 'percent') disc = (subtotal * applied.val / 100);
+        else disc = applied.val;
+
+        if (row && valEl) {
+            row.style.display = 'flex';
+            valEl.textContent = `-₹${Math.round(disc).toLocaleString('en-IN')}`;
+            const totalEl = document.getElementById('cart-total');
+            if (totalEl) totalEl.textContent = `₹${Math.max(0, subtotal - disc).toLocaleString('en-IN')}`;
+        }
     }
 }
 
