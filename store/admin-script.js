@@ -1,12 +1,12 @@
 /* ============================================================
-   AK FishFarms — Admin Panel Script  (admin-script.js)
-   All logic: Auth · Orders · Products · Tracking · Reports
+   AK FishFarms  Admin Panel Script  (admin-script.js)
+   All logic: Auth  Orders  Products  Tracking  Reports
    ============================================================ */
 'use strict';
 
-/* ══════════════════════════════════════════════════════════
+/* 
    CONSTANTS & KEYS
-══════════════════════════════════════════════════════════ */
+ */
 const LS = {
     products: 'akf_products',   // matches script.js LS_PRODUCTS
     orders: 'akf_orders',     // matches script.js LS_ORDERS
@@ -17,9 +17,9 @@ const PLACEHOLDER = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be
 const STATUS_LIST = ['Pending', 'Processing', 'Out for Delivery', 'Delivered', 'Cancelled'];
 const STATUS_CLS = { 'Pending': 'sb-pending', 'Processing': 'sb-processing', 'Out for Delivery': 'sb-out', 'Delivered': 'sb-delivered', 'Cancelled': 'sb-cancelled' };
 
-/* ══════════════════════════════════════════════════════════
+/* 
    DATA HELPERS
-══════════════════════════════════════════════════════════ */
+ */
 const getProducts = () => { try { return JSON.parse(localStorage.getItem(LS.products)) || []; } catch { return []; } };
 const saveProducts = (d) => localStorage.setItem(LS.products, JSON.stringify(d));
 const getOrders = () => { try { return JSON.parse(localStorage.getItem(LS.orders)) || []; } catch { return []; } };
@@ -30,23 +30,23 @@ const getCreds = () => {
 const getDefaultCreds = () => ({ username: 'admin', password: 'AKFish2026' });
 const saveCreds = (c) => localStorage.setItem(LS.creds, JSON.stringify(c));
 
-/* ══════════════════════════════════════════════════════════
+/* 
    TOAST NOTIFICATIONS
-══════════════════════════════════════════════════════════ */
+ */
 function showToast(msg, type = 'success') {
     const root = document.getElementById('toast-root');
     if (!root) return;
-    const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+    const icons = { success: '', error: '', info: '', warning: '' };
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    t.innerHTML = `<span class="toast-ico">${icons[type] || 'ℹ️'}</span><span class="toast-msg">${msg}</span>`;
+    t.innerHTML = `<span class="toast-ico">${icons[type] || ''}</span><span class="toast-msg">${msg}</span>`;
     root.appendChild(t);
     setTimeout(() => { t.style.animation = 'toastOut .35s ease forwards'; setTimeout(() => t.remove(), 370); }, 3200);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    AUTH
-══════════════════════════════════════════════════════════ */
+ */
 function checkAuth() {
     return sessionStorage.getItem(LS.session) === '1';
 }
@@ -59,16 +59,16 @@ function doLogout() {
     location.reload();
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    NAVIGATION
-══════════════════════════════════════════════════════════ */
+ */
 const SECTION_TITLES = {
-    dashboard: '🏠 Dashboard',
-    orders: '📋 Orders',
-    track: '🚚 Track Orders',
-    products: '📦 Products',
-    security: '🔒 Security',
-    reports: '📊 Reports',
+    dashboard: ' Dashboard',
+    orders: ' Orders',
+    track: ' Track Orders',
+    products: ' Products',
+    security: ' Security',
+    reports: ' Reports',
 };
 
 let currentSection = 'dashboard';
@@ -108,15 +108,15 @@ function switchSection(name) {
     window.scrollTo(0, 0);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    SIDEBAR (MOBILE)
-══════════════════════════════════════════════════════════ */
+ */
 function openSidebar() { document.getElementById('adm-sidebar')?.classList.add('open'); document.getElementById('sidebar-overlay')?.classList.add('show'); }
 function closeSidebar() { document.getElementById('adm-sidebar')?.classList.remove('open'); document.getElementById('sidebar-overlay')?.classList.remove('show'); }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    ANIMATED COUNTER
-══════════════════════════════════════════════════════════ */
+ */
 function animateCounter(el, target, prefix = '', suffix = '') {
     if (!el) return;
     const dur = 900, step = 16;
@@ -132,9 +132,9 @@ function animateCounter(el, target, prefix = '', suffix = '') {
     requestAnimationFrame(update);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    DASHBOARD
-══════════════════════════════════════════════════════════ */
+ */
 function renderDashboard() {
     const orders = getOrders();
     const products = getProducts();
@@ -142,7 +142,7 @@ function renderDashboard() {
     const pending = orders.filter(o => !o.status || o.status === 'Pending').length;
 
     animateCounter(document.getElementById('ds-orders'), orders.length);
-    animateCounter(document.getElementById('ds-revenue'), revenue, '₹');
+    animateCounter(document.getElementById('ds-revenue'), revenue, '');
     animateCounter(document.getElementById('ds-products'), products.length);
     animateCounter(document.getElementById('ds-pending'), pending);
 
@@ -151,7 +151,7 @@ function renderDashboard() {
     if (!tbody) return;
     const recent = [...orders].reverse().slice(0, 5);
     if (!recent.length) {
-        tbody.innerHTML = '<tr><td colspan="5" class="tbl-empty"><span class="tbl-empty-ico">📭</span>No orders yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="tbl-empty"><span class="tbl-empty-ico"></span>No orders yet</td></tr>';
         return;
     }
     tbody.innerHTML = recent.map(o => {
@@ -159,17 +159,17 @@ function renderDashboard() {
         const cls = STATUS_CLS[st] || 'sb-pending';
         return `<tr>
       <td style="font-weight:800;color:#00D4FF;">${o.id}</td>
-      <td>${o.name || '—'}</td>
-      <td><strong>₹${(o.total || 0).toLocaleString('en-IN')}</strong></td>
+      <td>${o.name || ''}</td>
+      <td><strong>${(o.total || 0).toLocaleString('en-IN')}</strong></td>
       <td style="font-size:.76rem;color:#475569;">${fmtDate(o.date)}</td>
       <td><span class="sbadge ${cls}">${st}</span></td>
     </tr>`;
     }).join('');
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    ORDERS
-══════════════════════════════════════════════════════════ */
+ */
 let ordersFilter = '';
 
 function renderOrders(query) {
@@ -189,7 +189,7 @@ function renderOrders(query) {
     const tbody = document.getElementById('orders-tbody');
     if (!tbody) return;
     if (!orders.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="tbl-empty"><span class="tbl-empty-ico">📭</span>No orders yet</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="tbl-empty"><span class="tbl-empty-ico"></span>No orders yet</td></tr>';
         return;
     }
 
@@ -199,10 +199,10 @@ function renderOrders(query) {
         const opts = STATUS_LIST.map(s => `<option value="${s}" ${s === st ? 'selected' : ''}>${s}</option>`).join('');
         return `<tr id="orow-${o.id}">
       <td style="font-weight:800;color:#00D4FF;font-size:.8rem;">${o.id}</td>
-      <td>${o.name || '—'}</td>
-      <td>${o.phone || '—'}</td>
-      <td style="font-size:.79rem;">${o.city || o.address || '—'}</td>
-      <td><strong>₹${(o.total || 0).toLocaleString('en-IN')}</strong></td>
+      <td>${o.name || ''}</td>
+      <td>${o.phone || ''}</td>
+      <td style="font-size:.79rem;">${o.city || o.address || ''}</td>
+      <td><strong>${(o.total || 0).toLocaleString('en-IN')}</strong></td>
       <td style="font-size:.76rem;color:#475569;white-space:nowrap;">${fmtDate(o.date)}</td>
       <td>
         <select class="status-sel" data-oid="${o.id}">
@@ -210,7 +210,7 @@ function renderOrders(query) {
         </select>
       </td>
       <td>
-        <button class="btn btn-ghost btn-sm view-order-btn" data-oid="${o.id}">👁 View</button>
+        <button class="btn btn-ghost btn-sm view-order-btn" data-oid="${o.id}"> View</button>
       </td>
     </tr>`;
     }).join('');
@@ -224,7 +224,7 @@ function renderOrders(query) {
             if (idx >= 0) {
                 orders2[idx].status = this.value;
                 saveOrders(orders2);
-                showToast(`Order ${oid} → ${this.value}`, 'success');
+                showToast(`Order ${oid}  ${this.value}`, 'success');
             }
         });
     });
@@ -233,31 +233,31 @@ function renderOrders(query) {
     });
 }
 
-/* ── Order Detail Modal ── */
+/*  Order Detail Modal  */
 function openOrderModal(oid) {
     const o = getOrders().find(x => x.id === oid);
     if (!o) return;
     const items = (o.items || []).map(i => `
     <div class="modal-item">
-      <span class="modal-item-n">${i.name} × ${i.qty || 1}</span>
-      <span class="modal-item-p">₹${((i.price || 0) * (i.qty || 1)).toLocaleString('en-IN')}</span>
+      <span class="modal-item-n">${i.name}  ${i.qty || 1}</span>
+      <span class="modal-item-p">${((i.price || 0) * (i.qty || 1)).toLocaleString('en-IN')}</span>
     </div>`).join('');
     document.getElementById('order-modal-body').innerHTML = `
     <div class="modal-row"><div class="modal-lbl">Order ID</div><div class="modal-val" style="color:#00D4FF;font-weight:800;">${o.id}</div></div>
-    <div class="modal-row"><div class="modal-lbl">Customer</div><div class="modal-val">${o.name || '—'}</div></div>
-    <div class="modal-row"><div class="modal-lbl">Phone</div><div class="modal-val">${o.phone || '—'}</div></div>
-    <div class="modal-row"><div class="modal-lbl">City / Address</div><div class="modal-val">${o.city || o.address || '—'}</div></div>
+    <div class="modal-row"><div class="modal-lbl">Customer</div><div class="modal-val">${o.name || ''}</div></div>
+    <div class="modal-row"><div class="modal-lbl">Phone</div><div class="modal-val">${o.phone || ''}</div></div>
+    <div class="modal-row"><div class="modal-lbl">City / Address</div><div class="modal-val">${o.city || o.address || ''}</div></div>
     <div class="modal-row"><div class="modal-lbl">Status</div><div class="modal-val"><span class="sbadge ${STATUS_CLS[o.status] || 'sb-pending'}">${o.status || 'Pending'}</span></div></div>
     <div class="modal-row"><div class="modal-lbl">Date</div><div class="modal-val">${fmtDate(o.date)}</div></div>
-    <div class="modal-row"><div class="modal-lbl">Items</div><div class="modal-val"><div class="modal-items">${items || '—'}</div></div></div>
-    <div class="modal-row"><div class="modal-lbl">Total</div><div class="modal-val" style="font-size:1rem;font-weight:900;color:#00D4FF;">₹${(o.total || 0).toLocaleString('en-IN')}</div></div>
+    <div class="modal-row"><div class="modal-lbl">Items</div><div class="modal-val"><div class="modal-items">${items || ''}</div></div></div>
+    <div class="modal-row"><div class="modal-lbl">Total</div><div class="modal-val" style="font-size:1rem;font-weight:900;color:#00D4FF;">${(o.total || 0).toLocaleString('en-IN')}</div></div>
   `;
     document.getElementById('order-modal').classList.add('open');
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    TRACK ORDERS
-══════════════════════════════════════════════════════════ */
+ */
 let trackFilter = '';
 
 function renderTrackList(query) {
@@ -272,7 +272,7 @@ function renderTrackList(query) {
     const list = document.getElementById('track-list');
     if (!list) return;
     if (!orders.length) {
-        list.innerHTML = '<div class="track-empty">📭 No orders found.</div>';
+        list.innerHTML = '<div class="track-empty"> No orders found.</div>';
         return;
     }
 
@@ -281,10 +281,10 @@ function renderTrackList(query) {
         const opts = STATUS_LIST.map(s => `<option value="${s}" ${s === st ? 'selected' : ''}>${s}</option>`).join('');
         return `<div class="track-card">
         <div class="track-id">${o.id}</div>
-        <div class="track-name">${o.name || '—'} · ₹${(o.total || 0).toLocaleString('en-IN')}</div>
+        <div class="track-name">${o.name || ''}  ${(o.total || 0).toLocaleString('en-IN')}</div>
         <div class="track-date">${fmtDate(o.date)}</div>
         <select class="track-sel" data-oid="${o.id}">${opts}</select>
-        <button class="track-save-btn" data-oid="${o.id}">💾 Update</button>
+        <button class="track-save-btn" data-oid="${o.id}"> Update</button>
       </div>`;
     }).join('');
 
@@ -299,18 +299,18 @@ function renderTrackList(query) {
             if (idx >= 0) {
                 orders2[idx].status = newStatus;
                 saveOrders(orders2);
-                this.textContent = '✅ Updated!';
+                this.textContent = ' Updated!';
                 this.style.background = '#10B981';
-                setTimeout(() => { this.textContent = '💾 Update'; this.style.background = ''; }, 1800);
-                showToast(`${oid} → ${newStatus}`, 'success');
+                setTimeout(() => { this.textContent = ' Update'; this.style.background = ''; }, 1800);
+                showToast(`${oid}  ${newStatus}`, 'success');
             }
         });
     });
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    PRODUCTS
-══════════════════════════════════════════════════════════ */
+ */
 let editingProductId = null;
 let addImgData = '';
 let prodFilter = '';
@@ -330,7 +330,7 @@ function renderProductTable(query) {
         return;
     }
 
-    const catLabel = { special: '🏆 Special', premium: '💎 Premium', guppy: '🐟 Guppy' };
+    const catLabel = { special: ' Special', premium: ' Premium', guppy: ' Guppy' };
 
     tbody.innerHTML = products.map(p => {
         const imgSrc = p.img || PLACEHOLDER;
@@ -340,16 +340,16 @@ function renderProductTable(query) {
       <td><input class="inline-inp" type="text" data-field="name" data-id="${p.id}" value="${escHtml(p.name)}" maxlength="80"/></td>
       <td>
         <div style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.08);border-radius:8px;padding:0 8px;">
-          <span style="color:#F59E0B;font-weight:700;font-size:.85rem;">₹</span>
+          <span style="color:#F59E0B;font-weight:700;font-size:.85rem;"></span>
           <input class="inline-inp" type="number" data-field="price" data-id="${p.id}" value="${p.price}" min="1"
             style="background:none;border:none;width:70px;padding:7px 4px;"/>
         </div>
       </td>
       <td>
         <select class="inline-sel" data-field="category" data-id="${p.id}">
-          <option value="special" ${p.category === 'special' ? 'selected' : ''}>🏆 Special</option>
-          <option value="premium" ${p.category === 'premium' ? 'selected' : ''}>💎 Premium</option>
-          <option value="guppy"   ${p.category === 'guppy' ? 'selected' : ''}>🐟 Guppy</option>
+          <option value="special" ${p.category === 'special' ? 'selected' : ''}> Special</option>
+          <option value="premium" ${p.category === 'premium' ? 'selected' : ''}> Premium</option>
+          <option value="guppy"   ${p.category === 'guppy' ? 'selected' : ''}> Guppy</option>
         </select>
       </td>
       <td>
@@ -364,14 +364,14 @@ function renderProductTable(query) {
       <td>
         <label class="prod-upload-lbl">
           <input type="file" accept="image/jpeg,image/png,image/webp" class="row-img-inp" data-id="${p.id}" style="display:none;"/>
-          📷 Upload
+           Upload
         </label>
       </td>
       <td>
-        <button class="save-row-btn" data-id="${p.id}">💾 Save</button>
+        <button class="save-row-btn" data-id="${p.id}"> Save</button>
       </td>
       <td>
-        <button class="del-row-btn" data-id="${p.id}" title="Delete">🗑</button>
+        <button class="del-row-btn" data-id="${p.id}" title="Delete"></button>
       </td>
     </tr>`;
     }).join('');
@@ -401,7 +401,7 @@ function renderProductTable(query) {
                 if (idx >= 0) { prods[idx].img = b64; saveProducts(prods); }
                 const thumb = document.getElementById('pthumb-' + pid);
                 if (thumb) { thumb.style.opacity = '.3'; setTimeout(() => { thumb.src = b64; thumb.style.opacity = '1'; }, 200); }
-                showToast('✅ Image updated!', 'success');
+                showToast(' Image updated!', 'success');
             };
             reader.readAsDataURL(file);
         });
@@ -424,8 +424,8 @@ function renderProductTable(query) {
             if (idx >= 0) {
                 prods[idx] = { ...prods[idx], name, price, category: cat, status };
                 saveProducts(prods);
-                this.textContent = '✅ Saved!'; this.style.background = '#10B981';
-                setTimeout(() => { this.textContent = '💾 Save'; this.style.background = ''; }, 1800);
+                this.textContent = ' Saved!'; this.style.background = '#10B981';
+                setTimeout(() => { this.textContent = ' Save'; this.style.background = ''; }, 1800);
                 showToast('Product updated!', 'success');
                 renderDashboardStats();
             }
@@ -444,12 +444,12 @@ function renderDashboardStats() {
     const pending = orders.filter(o => !o.status || o.status === 'Pending').length;
     const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     setText('ds-orders', orders.length);
-    setText('ds-revenue', '₹' + revenue.toLocaleString('en-IN'));
+    setText('ds-revenue', '' + revenue.toLocaleString('en-IN'));
     setText('ds-products', products.length);
     setText('ds-pending', pending);
 }
 
-/* ── Add / Edit product form ── */
+/*  Add / Edit product form  */
 function initAddProductForm() {
     const saveBtn = document.getElementById('save-prod-btn');
     const cancelBtn = document.getElementById('cancel-prod-btn');
@@ -516,12 +516,12 @@ function saveProduct() {
         const idx = prods.findIndex(p => p.id === editingProductId);
         if (idx >= 0) { prods[idx] = { ...prods[idx], name, price, img, category: cat, description: desc, status }; }
         saveProducts(prods);
-        showToast('✅ Product updated!', 'success');
+        showToast(' Product updated!', 'success');
     } else {
         const newId = prods.length ? Math.max(...prods.map(p => p.id)) + 1 : 1;
         prods.push({ id: newId, name, price, img, category: cat, description: desc, status });
         saveProducts(prods);
-        showToast('✅ Product added!', 'success');
+        showToast(' Product added!', 'success');
     }
     resetAddForm();
     renderProductTable();
@@ -543,7 +543,7 @@ function toggleAddCard() {
     if (!body) return;
     const collapsed = body.style.display === 'none';
     body.style.display = collapsed ? '' : 'none';
-    if (btn) btn.textContent = collapsed ? '▲ Collapse' : '▼ Expand';
+    if (btn) btn.textContent = collapsed ? ' Collapse' : ' Expand';
 }
 
 /* Delete modal */
@@ -555,9 +555,9 @@ function openDelModal(pid) {
 }
 function closeDelModal() { document.getElementById('del-modal').classList.remove('open'); }
 
-/* ══════════════════════════════════════════════════════════
-   SECURITY — CHANGE PASSWORD
-══════════════════════════════════════════════════════════ */
+/* 
+   SECURITY  CHANGE PASSWORD
+ */
 function initSecurity() {
     const btn = document.getElementById('change-pw-btn');
     if (!btn) return;
@@ -570,14 +570,14 @@ function initSecurity() {
         setErr('');
 
         const creds = getCreds() || getDefaultCreds();
-        if (cur !== creds.password) { setErr('❌ Current password is incorrect.'); return; }
-        if (!newPw || newPw.length < 6) { setErr('❌ New password must be at least 6 characters.'); return; }
-        if (newPw !== confirm) { setErr('❌ Passwords do not match.'); return; }
+        if (cur !== creds.password) { setErr(' Current password is incorrect.'); return; }
+        if (!newPw || newPw.length < 6) { setErr(' New password must be at least 6 characters.'); return; }
+        if (newPw !== confirm) { setErr(' Passwords do not match.'); return; }
 
         saveCreds({ username: creds.username, password: newPw });
         setErr('');
         ['sec-cur', 'sec-new', 'sec-confirm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-        showToast('🔒 Password updated successfully!', 'success');
+        showToast(' Password updated successfully!', 'success');
     });
 
     /* pw-eye toggles */
@@ -586,19 +586,19 @@ function initSecurity() {
             const inp = document.getElementById(this.dataset.target);
             if (!inp) return;
             inp.type = inp.type === 'password' ? 'text' : 'password';
-            this.textContent = inp.type === 'password' ? '👁' : '🙈';
+            this.textContent = inp.type === 'password' ? '' : '';
         });
     });
 }
 
-/* ══════════════════════════════════════════════════════════
-   REPORTS — EXCEL / CSV EXPORT
-══════════════════════════════════════════════════════════ */
+/* 
+   REPORTS  EXCEL / CSV EXPORT
+ */
 function renderReportStats() {
     const orders = getOrders();
     const revenue = orders.reduce((s, o) => s + (o.total || 0), 0);
     const rc = document.getElementById('rpt-order-count'); if (rc) rc.textContent = orders.length;
-    const rr = document.getElementById('rpt-revenue'); if (rr) rr.textContent = '₹' + revenue.toLocaleString('en-IN');
+    const rr = document.getElementById('rpt-revenue'); if (rr) rr.textContent = '' + revenue.toLocaleString('en-IN');
 }
 
 function buildOrdersRows() {
@@ -608,7 +608,7 @@ function buildOrdersRows() {
         'Phone': o.phone || '',
         'City / Address': o.city || o.address || '',
         'Items Ordered': (o.items || []).map(i => `${i.name} x${i.qty || 1}`).join('; '),
-        'Total Amount (₹)': o.total || 0,
+        'Total Amount ()': o.total || 0,
         'Date & Time': fmtDate(o.date),
         'Status': o.status || 'Pending',
     }));
@@ -626,9 +626,9 @@ function downloadExcel() {
         const cols = Object.keys(rows[0]).map(k => ({ wch: Math.max(k.length, 18) }));
         ws['!cols'] = cols;
         XLSX.writeFile(wb, 'AK_FishFarms_Orders_Report.xlsx');
-        showToast('📥 Excel downloaded!', 'success');
+        showToast(' Excel downloaded!', 'success');
     } catch (e) {
-        showToast('Excel failed — downloading CSV instead.', 'warning');
+        showToast('Excel failed  downloading CSV instead.', 'warning');
         downloadCSV();
     }
 }
@@ -643,18 +643,18 @@ function downloadCSV() {
     ];
     const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
     triggerDownload(blob, 'AK_FishFarms_Orders_Report.csv');
-    showToast('📄 CSV downloaded!', 'success');
+    showToast(' CSV downloaded!', 'success');
 }
 
 function downloadProductsCsv() {
     const products = getProducts();
     if (!products.length) { showToast('No products!', 'warning'); return; }
-    const headers = ['ID', 'Name', 'Price (₹)', 'Category', 'Stock Status', 'Description'];
+    const headers = ['ID', 'Name', 'Price ()', 'Category', 'Stock Status', 'Description'];
     const catMap = { special: 'AK Special', premium: 'AK Premium', guppy: 'Guppy' };
     const rows = products.map(p => [p.id, p.name, p.price, catMap[p.category] || p.category, p.status === 'in_stock' ? 'In Stock' : 'Out of Stock', p.description || '']);
     const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
     triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'AK_FishFarms_Products.csv');
-    showToast('📦 Products CSV downloaded!', 'success');
+    showToast(' Products CSV downloaded!', 'success');
 }
 
 function triggerDownload(blob, filename) {
@@ -666,11 +666,11 @@ function triggerDownload(blob, filename) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    UTILITY
-══════════════════════════════════════════════════════════ */
+ */
 function fmtDate(d) {
-    if (!d) return '—';
+    if (!d) return '';
     try { return new Date(d).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }); }
     catch { return d; }
 }
@@ -678,34 +678,34 @@ function escHtml(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    INITIALISE
-══════════════════════════════════════════════════════════ */
+ */
 document.addEventListener('DOMContentLoaded', () => {
 
-    /* ── Ensure default credentials exist ── */
+    /*  Ensure default credentials exist  */
     if (!getCreds()) saveCreds(getDefaultCreds());
 
-    /* ── AUTH GUARD ── */
+    /*  AUTH GUARD  */
     if (checkAuth()) {
         showDashboard();
     } else {
         document.getElementById('login-screen').classList.remove('hidden');
     }
 
-    /* ── LOGIN FORM ── */
+    /*  LOGIN FORM  */
     document.getElementById('login-form')?.addEventListener('submit', e => {
         e.preventDefault();
         const username = document.getElementById('l-user')?.value.trim();
         const password = document.getElementById('l-pass')?.value;
         const errEl = document.getElementById('login-err');
-        if (!username || !password) { if (errEl) errEl.textContent = '❌ Enter username and password.'; return; }
+        if (!username || !password) { if (errEl) errEl.textContent = ' Enter username and password.'; return; }
         if (doLogin(username, password)) {
             sessionStorage.setItem(LS.session, '1');
             if (errEl) errEl.textContent = '';
             showDashboard();
         } else {
-            if (errEl) errEl.textContent = '❌ Wrong username or password.';
+            if (errEl) errEl.textContent = ' Wrong username or password.';
             document.getElementById('l-pass').value = '';
             document.getElementById('l-pass').focus();
         }
@@ -716,29 +716,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const inp = document.getElementById('l-pass');
         if (!inp) return;
         inp.type = inp.type === 'password' ? 'text' : 'password';
-        this.textContent = inp.type === 'password' ? '👁' : '🙈';
+        this.textContent = inp.type === 'password' ? '' : '';
     });
 
-    /* ── SIDEBAR NAV ── */
+    /*  SIDEBAR NAV  */
     document.querySelectorAll('.nav-item[data-section]').forEach(btn => {
         btn.addEventListener('click', () => switchSection(btn.dataset.section));
     });
 
-    /* ── BOTTOM NAV ── */
+    /*  BOTTOM NAV  */
     document.querySelectorAll('.bn-item[data-section]').forEach(btn => {
         btn.addEventListener('click', () => switchSection(btn.dataset.section));
     });
 
-    /* ── LOGOUT ── */
+    /*  LOGOUT  */
     ['logout-btn', 'logout-hd-btn'].forEach(id => {
         document.getElementById(id)?.addEventListener('click', doLogout);
     });
 
-    /* ── HAMBURGER ── */
+    /*  HAMBURGER  */
     document.getElementById('hamburger-btn')?.addEventListener('click', openSidebar);
     document.getElementById('sidebar-overlay')?.addEventListener('click', closeSidebar);
 
-    /* ── MODALS ── */
+    /*  MODALS  */
     document.getElementById('modal-close-btn')?.addEventListener('click', () => document.getElementById('order-modal').classList.remove('open'));
     document.getElementById('order-modal')?.addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
     document.getElementById('cancel-del-btn')?.addEventListener('click', closeDelModal);
@@ -748,31 +748,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const prods = getProducts().filter(p => p.id !== pid);
         saveProducts(prods);
         closeDelModal();
-        showToast('🗑 Product deleted.', 'error');
+        showToast(' Product deleted.', 'error');
         renderProductTable();
     });
 
-    /* ── ORDERS SEARCH ── */
+    /*  ORDERS SEARCH  */
     document.getElementById('orders-search')?.addEventListener('input', function () { renderOrders(this.value); });
 
-    /* ── TRACK SEARCH ── */
+    /*  TRACK SEARCH  */
     document.getElementById('track-search')?.addEventListener('input', function () { renderTrackList(this.value); });
 
-    /* ── PRODUCT SEARCH ── */
+    /*  PRODUCT SEARCH  */
     document.getElementById('prod-search')?.addEventListener('input', function () { renderProductTable(this.value); });
 
-    /* ── PRODUCTS FORM ── */
+    /*  PRODUCTS FORM  */
     initAddProductForm();
 
-    /* ── SECURITY ── */
+    /*  SECURITY  */
     initSecurity();
 
-    /* ── REPORTS BUTTONS ── */
+    /*  REPORTS BUTTONS  */
     document.getElementById('dl-excel-btn')?.addEventListener('click', downloadExcel);
     document.getElementById('dl-csv-btn')?.addEventListener('click', downloadCSV);
     document.getElementById('dl-prod-btn')?.addEventListener('click', downloadProductsCsv);
 
-    /* ── MOBILE: resize handler ── */
+    /*  MOBILE: resize handler  */
     window.addEventListener('resize', () => { if (window.innerWidth >= 900) closeSidebar(); });
 });
 

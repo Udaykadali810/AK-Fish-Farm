@@ -1,5 +1,5 @@
 /* ============================================================
-   AK FishFarms — Admin Panel CSS  (admin.css)
+   AK FishFarms  Admin Panel CSS  (admin.css)
    Theme: Deep Dark + Aqua Cyan + Orange
    Font: Inter (Google Fonts)
    ============================================================ */
@@ -58,7 +58,7 @@ textarea {
     background: #334155;
 }
 
-/* ── DESIGN TOKENS ── */
+/*  DESIGN TOKENS  */
 :root {
     --aqua: #00D4FF;
     --orange: #FF6B00;
@@ -78,9 +78,9 @@ textarea {
     --ease: 0.25s ease;
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    LOGIN SCREEN
-══════════════════════════════════════════════════════════ */
+ */
 #login-screen {
     position: fixed;
     inset: 0;
@@ -272,9 +272,9 @@ textarea {
     font-size: .75rem;
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    DASHBOARD LAYOUT
-══════════════════════════════════════════════════════════ */
+ */
 #dashboard-screen {
     display: none;
     min-height: 100vh;
@@ -284,7 +284,7 @@ textarea {
     display: flex;
 }
 
-/* ── SIDEBAR ── */
+/*  SIDEBAR  */
 .adm-sidebar {
     width: 240px;
     flex-shrink: 0;
@@ -403,7 +403,7 @@ textarea {
     display: block;
 }
 
-/* ── MAIN AREA ── */
+/*  MAIN AREA  */
 .adm-main-area {
     margin-left: 240px;
     flex: 1;
@@ -413,7 +413,7 @@ textarea {
     min-height: 100vh;
 }
 
-/* ── HEADER ── */
+/*  HEADER  */
 .adm-header {
     display: flex;
     align-items: center;
@@ -525,7 +525,7 @@ textarea {
     border-radius: 2px;
 }
 
-/* ── CONTENT ── */
+/*  CONTENT  */
 .adm-content {
     flex: 1;
     padding: 24px;
@@ -540,7 +540,7 @@ textarea {
     display: block;
 }
 
-/* ── PAGE HEADER ── */
+/*  PAGE HEADER  */
 .page-hd {
     margin-bottom: 22px;
 }
@@ -557,7 +557,7 @@ textarea {
     margin-top: 4px;
 }
 
-/* ── STATS GRID ── */
+/*  STATS GRID  */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -625,7 +625,7 @@ textarea {
     margin-top: 4px;
 }
 
-/* ── CARDS ── */
+/*  CARDS  */
 .adm-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -687,7 +687,7 @@ textarea {
     color: var(--aqua);
 }
 
-/* ── BUTTONS ── */
+/*  BUTTONS  */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -748,7 +748,7 @@ textarea {
     border-radius: 8px;
 }
 
-/* ── QUICK ACTIONS ── */
+/*  QUICK ACTIONS  */
 .quick-actions {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -777,7 +777,7 @@ textarea {
     transform: translateY(-2px);
 }
 
-/* ── TABLE ── */
+/*  TABLE  */
 .tbl-wrap {
     overflow-x: auto;
 }
@@ -901,7 +901,7 @@ textarea {
     background: var(--card);
 }
 
-/* ── SEARCH BAR ── */
+/*  SEARCH BAR  */
 .search-bar {
     display: flex;
     align-items: center;
@@ -936,7 +936,7 @@ textarea {
     color: #334155;
 }
 
-/* ── FORM ── */
+/*  FORM  */
 .form-field {
     display: flex;
     flex-direction: column;
@@ -1007,7 +1007,7 @@ select.form-input option {
     color: var(--aqua);
 }
 
-/* ── ADD PRODUCT ── */
+/*  ADD PRODUCT  */
 .add-prod-grid {
     display: grid;
     grid-template-columns: 200px 1fr;
@@ -1116,7 +1116,7 @@ select.form-input option {
     background: rgba(255, 255, 255, 0.06);
 }
 
-/* ── PRODUCT TABLE ROW CONTROLS ── */
+/*  PRODUCT TABLE ROW CONTROLS  */
 .prod-thumb {
     width: 50px;
     height: 46px;
@@ -1282,7 +1282,7 @@ select.form-input option {
     transform: scale(1.1);
 }
 
-/* ── TRACK ORDERS ── */
+/*  TRACK ORDERS  */
 .track-list {
     display: flex;
     flex-direction: column;
@@ -1375,7 +1375,7 @@ select.form-input option {
     font-size: .9rem;
 }
 
-/* ── SECURITY ── */
+/*  SECURITY  */
 .security-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -1403,7 +1403,7 @@ select.form-input option {
     line-height: 1.7;
 }
 
-/* ── REPORTS ── */
+/*  REPORTS  */
 .report-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -1461,7 +1461,7 @@ select.form-input option {
     color: var(--aqua);
 }
 
-/* ── MODAL ── */
+/*  MODAL  */
 .modal-bg {
     position: fixed;
     inset: 0;
@@ -1587,7 +1587,7 @@ select.form-input option {
     color: var(--aqua);
 }
 
-/* ── TOAST ── */
+/*  TOAST  */
 #toast-root {
     position: fixed;
     bottom: 24px;
@@ -1668,7 +1668,7 @@ select.form-input option {
     flex: 1;
 }
 
-/* ── BOTTOM NAV (mobile) ── */
+/*  BOTTOM NAV (mobile)  */
 .bottom-nav {
     display: none;
     position: fixed;
@@ -1721,7 +1721,7 @@ select.form-input option {
     color: var(--aqua);
 }
 
-/* ── RESPONSIVE ── */
+/*  RESPONSIVE  */
 @media(max-width:900px) {
     .adm-sidebar {
         transform: translateX(-100%);

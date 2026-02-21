@@ -1,14 +1,14 @@
 /* ============================================================
-   AK FishFarms — Shared JS Engine  |  script.js
-   Pages: index.html · cart.html · checkout.html · admin.html
+   AK FishFarms  Shared JS Engine  |  script.js
+   Pages: index.html  cart.html  checkout.html  admin.html
    Backend: 100% LocalStorage (FREE)
    ============================================================ */
 
 'use strict';
 
-/* ══════════════════════════════════════════════════════════
+/* 
    CONSTANTS
-   ══════════════════════════════════════════════════════════ */
+    */
 const WA_NUMBER = '919492045766';
 const ADMIN_PASS = 'AKFish2026';
 const LS_PRODUCTS = 'akf_products';
@@ -17,34 +17,34 @@ const LS_ORDERS = 'akf_orders';
 const LS_ADMIN_AUTH = 'akf_admin_auth';
 const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
 
-/* ══════════════════════════════════════════════════════════
+/* 
    DEFAULT PRODUCT CATALOGUE  (used on first load)
-   ══════════════════════════════════════════════════════════ */
+    */
 const DEFAULT_PRODUCTS = [
-    /* ── AK Special Collection ─────────────────────────────── */
-    { id: 1, name: 'Flowerhorn (S)', category: 'special', price: 500, description: 'Baby Flowerhorn – premium hump.', img: 'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80' },
-    { id: 2, name: 'Flowerhorn (B)', category: 'special', price: 1500, description: 'Adult Flowerhorn – vibrant colours.', img: 'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80' },
-    { id: 3, name: 'Arowana (S)', category: 'special', price: 2000, description: 'Silver Arowana – planted tank gem.', img: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80' },
-    { id: 4, name: 'Arowana (B)', category: 'special', price: 6000, description: 'Silver Arowana – black background beauty.', img: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80' },
-    { id: 5, name: 'Oscar Fish', category: 'special', price: 300, description: 'Tiger Oscar – energetic & bold.', img: 'https://images.unsplash.com/photo-1592419186946-e81df7d4dd5a?auto=format&fit=crop&w=400&q=80' },
-    { id: 6, name: 'Parrot Fish', category: 'special', price: 250, description: 'Blood Parrot – peaceful cichlid.', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80' },
-    { id: 7, name: 'Betta Fish', category: 'special', price: 200, description: 'Halfmoon Betta – stunning fins.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
-    { id: 8, name: 'Goldfish', category: 'special', price: 150, description: 'Fancy Goldfish – classic beauty.', img: 'https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80' },
-    { id: 9, name: 'Koi', category: 'special', price: 800, description: 'Japanese Koi – pond royalty.', img: 'https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80' },
-    /* ── AK Premium Collection ──────────────────────────────── */
-    { id: 10, name: 'Discus Blue', category: 'premium', price: 1200, description: 'Royal Blue Discus – the King of Aquarium.', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=400&q=80' },
-    { id: 11, name: 'Discus Red', category: 'premium', price: 1400, description: 'Red Discus – fiery & majestic.', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=400&q=80' },
-    { id: 12, name: 'Altum Angelfish', category: 'premium', price: 900, description: 'Altum Angelfish – rare & elegant.', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80' },
-    { id: 13, name: 'German Ram', category: 'premium', price: 350, description: 'German Blue Ram – jewel of the tank.', img: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80' },
-    { id: 14, name: 'Peacock Cichlid', category: 'premium', price: 450, description: 'Aulonocara – African beauty.', img: 'https://images.unsplash.com/photo-1592419186946-e81df7d4dd5a?auto=format&fit=crop&w=400&q=80' },
-    { id: 15, name: 'Frontosa Cichlid', category: 'premium', price: 600, description: 'Giant Frontosa – majestic slow swimmer.', img: 'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80' },
+    /*  AK Special Collection  */
+    { id: 1, name: 'Flowerhorn (S)', category: 'special', price: 500, description: 'Baby Flowerhorn  premium hump.', img: 'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80' },
+    { id: 2, name: 'Flowerhorn (B)', category: 'special', price: 1500, description: 'Adult Flowerhorn  vibrant colours.', img: 'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80' },
+    { id: 3, name: 'Arowana (S)', category: 'special', price: 2000, description: 'Silver Arowana  planted tank gem.', img: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80' },
+    { id: 4, name: 'Arowana (B)', category: 'special', price: 6000, description: 'Silver Arowana  black background beauty.', img: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80' },
+    { id: 5, name: 'Oscar Fish', category: 'special', price: 300, description: 'Tiger Oscar  energetic & bold.', img: 'https://images.unsplash.com/photo-1592419186946-e81df7d4dd5a?auto=format&fit=crop&w=400&q=80' },
+    { id: 6, name: 'Parrot Fish', category: 'special', price: 250, description: 'Blood Parrot  peaceful cichlid.', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80' },
+    { id: 7, name: 'Betta Fish', category: 'special', price: 200, description: 'Halfmoon Betta  stunning fins.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
+    { id: 8, name: 'Goldfish', category: 'special', price: 150, description: 'Fancy Goldfish  classic beauty.', img: 'https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80' },
+    { id: 9, name: 'Koi', category: 'special', price: 800, description: 'Japanese Koi  pond royalty.', img: 'https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80' },
+    /*  AK Premium Collection  */
+    { id: 10, name: 'Discus Blue', category: 'premium', price: 1200, description: 'Royal Blue Discus  the King of Aquarium.', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=400&q=80' },
+    { id: 11, name: 'Discus Red', category: 'premium', price: 1400, description: 'Red Discus  fiery & majestic.', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=400&q=80' },
+    { id: 12, name: 'Altum Angelfish', category: 'premium', price: 900, description: 'Altum Angelfish  rare & elegant.', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80' },
+    { id: 13, name: 'German Ram', category: 'premium', price: 350, description: 'German Blue Ram  jewel of the tank.', img: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80' },
+    { id: 14, name: 'Peacock Cichlid', category: 'premium', price: 450, description: 'Aulonocara  African beauty.', img: 'https://images.unsplash.com/photo-1592419186946-e81df7d4dd5a?auto=format&fit=crop&w=400&q=80' },
+    { id: 15, name: 'Frontosa Cichlid', category: 'premium', price: 600, description: 'Giant Frontosa  majestic slow swimmer.', img: 'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80' },
     { id: 16, name: 'L-Number Pleco', category: 'premium', price: 750, description: 'Rare L-series Plecostomus.', img: 'https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80' },
-    { id: 17, name: 'Electric Blue Acara', category: 'premium', price: 550, description: 'Vibrant blue – beginner friendly.', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=400&q=80' },
-    { id: 18, name: 'Geophagus', category: 'premium', price: 500, description: 'Earth-eater cichlid – fascinating behaviour.', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80' },
-    /* ── AK Guppy Collection ───────────────────────────────── */
+    { id: 17, name: 'Electric Blue Acara', category: 'premium', price: 550, description: 'Vibrant blue  beginner friendly.', img: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&w=400&q=80' },
+    { id: 18, name: 'Geophagus', category: 'premium', price: 500, description: 'Earth-eater cichlid  fascinating behaviour.', img: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80' },
+    /*  AK Guppy Collection  */
     { id: 19, name: 'Moscow Blue Guppy', category: 'guppy', price: 120, description: 'Stunning Moscow Blue show guppy.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
     { id: 20, name: 'Flamingo Guppy', category: 'guppy', price: 130, description: 'Pink Flamingo delta-tail guppy.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
-    { id: 21, name: 'Full Red Guppy', category: 'guppy', price: 140, description: 'Albino full-red guppy – show quality.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
+    { id: 21, name: 'Full Red Guppy', category: 'guppy', price: 140, description: 'Albino full-red guppy  show quality.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
     { id: 22, name: 'Half Black Guppy', category: 'guppy', price: 110, description: 'Classic half-black body guppy.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
     { id: 23, name: 'Yellow Cobra Guppy', category: 'guppy', price: 125, description: 'Yellow Cobra snake-skin pattern.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
     { id: 24, name: 'Neon Blue Guppy', category: 'guppy', price: 115, description: 'Striking neon blue delta guppy.', img: 'https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80' },
@@ -61,9 +61,9 @@ const CATEGORY_LABELS = {
     guppy: 'AK Guppy Collection',
 };
 
-/* ══════════════════════════════════════════════════════════
+/* 
    PRODUCT STORAGE
-   ══════════════════════════════════════════════════════════ */
+    */
 function getProducts() {
     try {
         const raw = localStorage.getItem(LS_PRODUCTS);
@@ -75,12 +75,26 @@ function saveProducts(arr) {
     localStorage.setItem(LS_PRODUCTS, JSON.stringify(arr));
 }
 function initProducts() {
+    /* Auto-clean existing products in storage from symbols */
+    let products = getProducts();
+    let changed = false;
+    products = products.map(p => {
+        const cleanName = p.name.replace(/[^\x00-\x7F]/g, '').trim();
+        const cleanDesc = (p.description || '').replace(/[^\x00-\x7F]/g, '').trim();
+        if (cleanName !== p.name || cleanDesc !== p.description) {
+            p.name = cleanName;
+            p.description = cleanDesc;
+            changed = true;
+        }
+        return p;
+    });
+    if (changed) saveProducts(products);
     if (!localStorage.getItem(LS_PRODUCTS)) saveProducts(DEFAULT_PRODUCTS);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    CART STORAGE
-   ══════════════════════════════════════════════════════════ */
+    */
 function getCart() {
     try { return JSON.parse(localStorage.getItem(LS_CART)) || []; }
     catch { return []; }
@@ -142,9 +156,9 @@ function updateCartBadge() {
     });
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    ORDERS STORAGE
-   ══════════════════════════════════════════════════════════ */
+    */
 function getOrders() {
     try { return JSON.parse(localStorage.getItem(LS_ORDERS)) || []; }
     catch { return []; }
@@ -155,13 +169,13 @@ function saveOrder(order) {
     localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    WHATSAPP  (used by checkout.html)
-   ══════════════════════════════════════════════════════════ */
+    */
 function buildWhatsAppURL() {
     const cart = getCart();
     const lines = cart.map((item, i) =>
-        `${i + 1}. ${item.name} - Qty: ${item.qty} - ₹${item.price}`
+        `${i + 1}. ${item.name} - Qty: ${item.qty} - ${item.price}`
     ).join('\n');
 
     const subtotal = getCartTotal();
@@ -173,32 +187,32 @@ function buildWhatsAppURL() {
     }
 
     const msg =
-        `🛒 New Order - AK Fish Farms\n\n` +
+        `New Order - AK Fish Farms\n\n` +
         `Items:\n\n${lines}\n\n` +
         `Total Amount: ₹${Math.max(0, total)}\n\n` +
         `Customer Order from Website`;
     return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    TOAST NOTIFICATIONS
-   ══════════════════════════════════════════════════════════ */
+    */
 function showToast(msg, type = 'info') {
     const root = document.getElementById('toast-root');
     if (!root) return;
-    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    const icons = { success: '', error: '', info: '' };
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+    t.innerHTML = `<span>${icons[type] || ''}</span><span>${msg}</span>`;
     root.appendChild(t);
     const remove = () => { t.classList.add('leaving'); setTimeout(() => t.remove(), 320); };
     t.addEventListener('click', remove);
     setTimeout(remove, 3500);
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    MODAL UTILITIES
-   ══════════════════════════════════════════════════════════ */
+    */
 function showModal(id) {
     const el = document.getElementById(id);
     if (el) el.classList.add('show');
@@ -208,9 +222,9 @@ function hideModal(id) {
     if (el) el.classList.remove('show');
 }
 
-/* ══════════════════════════════════════════════════════════
-   NAVBAR – shared init
-   ══════════════════════════════════════════════════════════ */
+/* 
+   NAVBAR  shared init
+    */
 function initNavbar() {
     updateCartBadge();
     /* Scroll effect */
@@ -231,14 +245,14 @@ function initNavbar() {
     if (sessionStorage.getItem('akf_return_thanks')) {
         sessionStorage.removeItem('akf_return_thanks');
         setTimeout(() => {
-            showToast('Thank you for shopping with AK Fish Farms 🐟', 'success');
+            showToast('Thank you for shopping with AK Fish Farms ', 'success');
         }, 800);
     }
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    SCROLL REVEAL
-   ══════════════════════════════════════════════════════════ */
+    */
 function initScrollReveal() {
     if (!('IntersectionObserver' in window)) {
         document.querySelectorAll('.fiu').forEach(el => el.classList.add('vis'));
@@ -250,9 +264,9 @@ function initScrollReveal() {
     document.querySelectorAll('.fiu').forEach(el => obs.observe(el));
 }
 
-/* ══════════════════════════════════════════════════════════
-   ██████  INDEX.HTML — Shop Page
-   ══════════════════════════════════════════════════════════ */
+/* 
+     INDEX.HTML  Shop Page
+    */
 function initShopPage() {
     initNavbar();
     initProducts();
@@ -269,7 +283,7 @@ function initShopPage() {
         if (countLabel) countLabel.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
 
         if (!filtered.length) {
-            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="es-icon">🐠</span><p>No products in this category yet.</p></div>`;
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="es-icon"></span><p>No products in this category yet.</p></div>`;
             return;
         }
 
@@ -284,12 +298,12 @@ function initShopPage() {
           <div class="pc-body">
             <div class="pc-name">${p.name}</div>
             <div class="pc-desc">${p.description || ''}</div>
-            <div class="pc-stars">★★★★★</div>
+            <div class="pc-stars"></div>
             <div class="pc-bottom">
-              <div class="pc-price">₹${p.price.toLocaleString('en-IN')} <small>/ pair</small></div>
+              <div class="pc-price">${p.price.toLocaleString('en-IN')} <small>/ pair</small></div>
             </div>
             <div class="qty-sel" style="margin:8px 0;">
-              <button class="qty-btn card-minus" data-id="${p.id}">−</button>
+              <button class="qty-btn card-minus" data-id="${p.id}"></button>
               <span class="qty-val" id="cqty-${p.id}">${qty}</span>
               <button class="qty-btn card-plus" data-id="${p.id}">+</button>
             </div>
@@ -329,10 +343,10 @@ function initShopPage() {
                 const id = +btn.dataset.id;
                 const qty = cardQtyMap[id] || 1;
                 addToCart(id, qty);
-                showToast('🐟 Added to cart!', 'success');
+                showToast(' Added to cart!', 'success');
                 /* Flash button */
                 btn.classList.add('added');
-                btn.innerHTML = '✅ Added!';
+                btn.innerHTML = ' Added!';
                 setTimeout(() => {
                     btn.classList.remove('added');
                     btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Add to Cart`;
@@ -359,9 +373,9 @@ function initShopPage() {
     initScrollReveal();
 }
 
-/* ══════════════════════════════════════════════════════════
-   ██████  CART.HTML — Cart Page
-   ══════════════════════════════════════════════════════════ */
+/* 
+     CART.HTML  Cart Page
+    */
 function initCartPage() {
     initNavbar();
     renderCartPage();
@@ -388,7 +402,7 @@ function renderCartPage() {
     const countEl = document.getElementById('item-count');
 
     if (countEl) countEl.textContent = cart.reduce((s, i) => s + i.qty, 0);
-    if (totalEl) totalEl.textContent = `₹${getCartTotal().toLocaleString('en-IN')}`;
+    if (totalEl) totalEl.textContent = `${getCartTotal().toLocaleString('en-IN')}`;
 
     if (itemsEl) {
         itemsEl.innerHTML = cart.map(item => `
@@ -409,7 +423,7 @@ function renderCartPage() {
         </div>
       </div>`).join('');
 
-        /* ── Single delegated handler — works reliably on mobile ── */
+        /*  Single delegated handler  works reliably on mobile  */
         itemsEl.addEventListener('click', function handleCartClick(e) {
             const minusBtn = e.target.closest('.ci-minus');
             const plusBtn = e.target.closest('.ci-plus');
@@ -432,7 +446,7 @@ function renderCartPage() {
                 showToast('Item removed from cart', 'error');
                 renderCartPage();
             }
-        }, { once: true }); /* once:true — re-added after each renderCartPage call */
+        }, { once: true }); /* once:true  re-added after each renderCartPage call */
     }
 
     /* Clear cart */
@@ -464,9 +478,9 @@ function renderCartPage() {
     }
 }
 
-/* ══════════════════════════════════════════════════════════
+/* 
    COUPON SYSTEM
-   ══════════════════════════════════════════════════════════ */
+    */
 const COUPONS = {
     'AK10': { type: 'percent', val: 10 },
     'FISH50': { type: 'flat', val: 50 }
@@ -515,16 +529,16 @@ function initCouponFeature() {
 
         if (row && valEl) {
             row.style.display = 'flex';
-            valEl.textContent = `-₹${Math.round(disc).toLocaleString('en-IN')}`;
+            valEl.textContent = `-${Math.round(disc).toLocaleString('en-IN')}`;
             const totalEl = document.getElementById('cart-total');
-            if (totalEl) totalEl.textContent = `₹${Math.max(0, subtotal - disc).toLocaleString('en-IN')}`;
+            if (totalEl) totalEl.textContent = `${Math.max(0, subtotal - disc).toLocaleString('en-IN')}`;
         }
     }
 }
 
-/* ══════════════════════════════════════════════════════════
-   ██████  CHECKOUT.HTML — Checkout Page
-   ══════════════════════════════════════════════════════════ */
+/* 
+     CHECKOUT.HTML  Checkout Page
+    */
 function initCheckoutPage() {
     initNavbar();
 
@@ -558,10 +572,10 @@ function renderOrderSummary(cart) {
         <div class="osi-name">${item.name}</div>
         <div class="osi-qty">Qty: ${item.qty}</div>
       </div>
-      <div class="osi-price">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
+      <div class="osi-price">${(item.price * item.qty).toLocaleString('en-IN')}</div>
     </div>`).join('');
 
-    if (totalEl) totalEl.textContent = `₹${getCartTotal().toLocaleString('en-IN')}`;
+    if (totalEl) totalEl.textContent = `${getCartTotal().toLocaleString('en-IN')}`;
     if (countEl) countEl.textContent = `${cart.reduce((s, i) => s + i.qty, 0)} item(s)`;
 }
 
@@ -598,7 +612,7 @@ function handlePlaceOrder(e) {
     /* Loading state */
     const btn = document.getElementById('place-order-btn');
     btn.disabled = true;
-    btn.innerHTML = `<span class="spinner"></span> Processing…`;
+    btn.innerHTML = `<span class="spinner"></span> Processing`;
 
     setTimeout(() => {
         /* Save order */
@@ -651,11 +665,11 @@ function initCheckoutValidation() {
     });
 }
 
-/* ══════════════════════════════════════════════════════════
-   ██████  ADMIN.HTML — Admin Panel
-   ══════════════════════════════════════════════════════════ */
+/* 
+     ADMIN.HTML  Admin Panel
+    */
 
-/* ── Admin Auth ── */
+/*  Admin Auth  */
 function adminIsLoggedIn() {
     return sessionStorage.getItem(LS_ADMIN_AUTH) === '1';
 }
@@ -701,7 +715,7 @@ function initAdminPage() {
             } else {
                 const errEl = document.getElementById('login-err');
                 if (errEl) {
-                    errEl.textContent = '❌ Wrong password. Hint: AKFish2026';
+                    errEl.textContent = ' Wrong password. Hint: AKFish2026';
                     errEl.classList.add('show');
                     setTimeout(() => errEl.classList.remove('show'), 3500);
                 }
@@ -715,23 +729,23 @@ function initAdminPage() {
     if (logoutBtn) logoutBtn.addEventListener('click', adminLogout);
 }
 
-/* ══════════════════════════════════════════════════════════
-   ADMIN — PRODUCTS MANAGEMENT  (Full rebuild — Modern UI)
-   ══════════════════════════════════════════════════════════ */
+/* 
+   ADMIN  PRODUCTS MANAGEMENT  (Full rebuild  Modern UI)
+    */
 let editingId = null;   // null = add mode; number = edit mode
 let searchQuery = '';
 let currentImgData = '';   // Base64 or URL for the Add/Edit form
 
-/* ── CATEGORY LABELS already defined above, but safe alias ── */
+/*  CATEGORY LABELS already defined above, but safe alias  */
 const CAT_LABEL = k => CATEGORY_LABELS[k] || k;
 
-/* ── STOCK STATUS labels ── */
+/*  STOCK STATUS labels  */
 const STOCK_LABEL = s => s === 'out_stock' ? '<span class="stock-badge out">Out of Stock</span>'
     : '<span class="stock-badge in">In Stock</span>';
 
-/* ──────────────────────────────────────────────
+/* 
    INIT
-────────────────────────────────────────────── */
+ */
 function initAdminDashboard() {
     updateAdminStats();
     renderProductList();
@@ -750,9 +764,9 @@ function updateAdminStats() {
     if (el('stat-guppy')) el('stat-guppy').textContent = products.filter(p => p.category === 'guppy').length;
 }
 
-/* ──────────────────────────────────────────────
+/* 
    PRODUCT LIST CARDS  ("Current Inventory")
-────────────────────────────────────────────── */
+ */
 function renderProductList(query) {
     const products = getProducts();
     const q = (query || searchQuery || '').toLowerCase();
@@ -776,7 +790,7 @@ function renderProductList(query) {
         const imgSrc = p.img || PLACEHOLDER_IMG;
         const stockVal = p.status || 'in_stock';
         const inStock = stockVal === 'in_stock';
-        const catLabel = { special: '🏆 Special', premium: '💎 Premium', guppy: '🐟 Guppy' }[p.category] || p.category;
+        const catLabel = { special: ' Special', premium: ' Premium', guppy: ' Guppy' }[p.category] || p.category;
         return `
         <tr id="pm-row-${p.id}" class="adm-prod-row">
             <!-- Image -->
@@ -796,7 +810,7 @@ function renderProductList(query) {
             <!-- Price -->
             <td class="col-price">
                 <div class="adm-price-wrap">
-                    <span class="adm-rupee">₹</span>
+                    <span class="adm-rupee"></span>
                     <input class="adm-tbl-input adm-price-input" type="number"
                            data-field="price" data-id="${p.id}"
                            value="${p.price}" placeholder="0" min="1" />
@@ -806,9 +820,9 @@ function renderProductList(query) {
             <!-- Category -->
             <td class="col-cat">
                 <select class="adm-tbl-select" data-field="category" data-id="${p.id}">
-                    <option value="special" ${p.category === 'special' ? 'selected' : ''}>🏆 Special</option>
-                    <option value="premium" ${p.category === 'premium' ? 'selected' : ''}>💎 Premium</option>
-                    <option value="guppy"   ${p.category === 'guppy' ? 'selected' : ''}>🐟 Guppy</option>
+                    <option value="special" ${p.category === 'special' ? 'selected' : ''}> Special</option>
+                    <option value="premium" ${p.category === 'premium' ? 'selected' : ''}> Premium</option>
+                    <option value="guppy"   ${p.category === 'guppy' ? 'selected' : ''}> Guppy</option>
                 </select>
             </td>
 
@@ -828,27 +842,27 @@ function renderProductList(query) {
                 <label class="adm-upload-row-btn" title="Upload image from device">
                     <input type="file" accept="image/jpeg,image/png,image/webp"
                            class="pm-img-input" data-id="${p.id}" style="display:none;" />
-                    📷 Upload
+                     Upload
                 </label>
             </td>
 
             <!-- Save -->
             <td class="col-action">
                 <button class="adm-save-btn pm-save-row-btn" data-id="${p.id}" title="Save changes">
-                    💾 Save
+                     Save
                 </button>
             </td>
 
             <!-- Delete -->
             <td class="col-del">
                 <button class="adm-del-btn pm-del-row-btn" data-id="${p.id}" title="Delete product">
-                    🗑
+                    
                 </button>
             </td>
         </tr>`;
     }).join('');
 
-    /* ── Attach event listeners ── */
+    /*  Attach event listeners  */
 
     /* Image upload (per row) */
     tbody.querySelectorAll('.pm-img-input').forEach(input => {
@@ -878,7 +892,7 @@ function renderProductList(query) {
         });
     });
 
-    /* Stock toggle — update label text + colour */
+    /* Stock toggle  update label text + colour */
     tbody.querySelectorAll('.adm-toggle-cb').forEach(tog => {
         tog.addEventListener('change', function () {
             const pid = +this.dataset.id;
@@ -911,9 +925,9 @@ function renderProductList(query) {
                 prods[idx] = { ...prods[idx], name, price, category, status };
                 saveProducts(prods);
                 /* Flash the save button green */
-                btn.textContent = '✅ Saved!';
+                btn.textContent = ' Saved!';
                 btn.style.background = '#10B981';
-                setTimeout(() => { btn.textContent = '💾 Save'; btn.style.background = ''; }, 1800);
+                setTimeout(() => { btn.textContent = ' Save'; btn.style.background = ''; }, 1800);
                 showToast('\u2705 Product updated!', 'success');
                 updateAdminStats();
             }
@@ -929,21 +943,21 @@ function renderProductList(query) {
 /* Backwards-compat alias (called by delete modal) */
 function renderProductTable(query) { renderProductList(query); }
 
-/* ──────────────────────────────────────────────
+/* 
    ADD-CARD COLLAPSE TOGGLE
-────────────────────────────────────────────── */
+ */
 function pmToggleAddCard() {
     const body = document.getElementById('pm-add-body');
     const btn = document.getElementById('pm-collapse-btn');
     if (!body) return;
     const collapsed = body.style.display === 'none';
     body.style.display = collapsed ? '' : 'none';
-    if (btn) btn.textContent = collapsed ? '▲' : '▼';
+    if (btn) btn.textContent = collapsed ? '' : '';
 }
 
-/* ──────────────────────────────────────────────
+/* 
    SEARCH
-────────────────────────────────────────────── */
+ */
 function initAdminSearch() {
     const inp = document.getElementById('search-input');
     if (!inp) return;
@@ -953,9 +967,9 @@ function initAdminSearch() {
     });
 }
 
-/* ──────────────────────────────────────────────
+/* 
    ADD / EDIT FORM
-────────────────────────────────────────────── */
+ */
 function initAdminPanelForm() {
     const saveBtn = document.getElementById('save-prod-btn');
     const resetBtn = document.getElementById('reset-prod-btn');
@@ -977,9 +991,9 @@ function initAdminPanelForm() {
     });
 }
 
-/* ══════════════════════════════════════════════════════════
-   IMAGE UPLOAD — FileReader API (100% free, no backend)
-   ══════════════════════════════════════════════════════════ */
+/* 
+   IMAGE UPLOAD  FileReader API (100% free, no backend)
+    */
 function initImageUpload() {
     const fileInput = document.getElementById('prod-img-file');
     const urlInput = document.getElementById('prod-img');
@@ -1046,9 +1060,9 @@ function hideImagePreview() {
     if (zone) zone.classList.remove('has-img');
 }
 
-/* ──────────────────────────────────────────────
+/* 
    LOAD PRODUCT INTO FORM (edit mode)
-────────────────────────────────────────────── */
+ */
 function loadProductIntoForm(id) {
     const p = getProducts().find(x => x.id === id);
     if (!p) return;
@@ -1071,7 +1085,7 @@ function loadProductIntoForm(id) {
     const body = document.getElementById('pm-add-body');
     const colBtn = document.getElementById('pm-collapse-btn');
     if (body) body.style.display = '';
-    if (colBtn) colBtn.textContent = '▲';
+    if (colBtn) colBtn.textContent = '';
     document.getElementById('pm-add-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -1121,9 +1135,9 @@ function saveProduct() {
     renderProductList();
 }
 
-/* ──────────────────────────────────────────────
+/* 
    DELETE
-────────────────────────────────────────────── */
+ */
 function confirmDeleteProduct(id) {
     document.getElementById('del-product-id').value = id;
     const p = getProducts().find(x => x.id === id);
