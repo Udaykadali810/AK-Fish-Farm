@@ -86,7 +86,7 @@ export const CartProvider = ({ children }) => {
     const getFinalTotal = () => {
         const subtotal = getCartTotal();
         if (coupon) {
-            return subtotal - coupon.amount;
+            return Math.round(subtotal - coupon.amount);
         }
         return subtotal;
     };
@@ -110,6 +110,63 @@ export const CartProvider = ({ children }) => {
         return newOrder;
     };
 
+    /**
+     * initiateWhatsAppOrder
+     * Builds a pre-filled WhatsApp message, saves the order to localStorage,
+     * clears the cart, opens wa.me, and returns the saved order object.
+     */
+    const initiateWhatsAppOrder = ({ customerName, phone, place }) => {
+        const WHATSAPP_NUMBER = '919492045766';
+        const finalTotal = getFinalTotal();
+        const orderId = `AKF-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+
+        // Build numbered order lines
+        const orderLines = cart
+            .map((item, i) => `${i + 1}. ${item.name} - Qty: ${item.quantity} - ₹${item.price * item.quantity}`)
+            .join('\n');
+
+        // Optional coupon line
+        const couponLine = coupon
+            ? `\nCoupon (${coupon.code} -${coupon.percent}%): -₹${Math.round(coupon.amount)}`
+            : '';
+
+        // Full formatted WhatsApp message
+        const message =
+            `🛒 New Order - AK FishFarms\n\n` +
+            `Order ID: ${orderId}\n` +
+            `Customer Name: ${customerName}\n` +
+            `Phone: ${phone}\n` +
+            `Address: ${place}\n\n` +
+            `Order Details:\n${orderLines}${couponLine}\n\n` +
+            `Total Amount: ₹${finalTotal}\n\n` +
+            `Thank you for shopping in AK FishFarms 🐟`;
+
+        // Persist order to localStorage
+        const newOrder = {
+            id: orderId,
+            customerName,
+            phone,
+            place,
+            items: [...cart],
+            total: finalTotal,
+            coupon: coupon || null,
+            date: new Date().toISOString(),
+            status: 'Processing',
+            timeline: ['Order Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered']
+        };
+        setOrders(prev => [...prev, newOrder]);
+
+        // Clear cart and coupon
+        clearCart();
+        setCoupon(null);
+
+        // Open WhatsApp in new tab
+        const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank');
+
+        return newOrder;
+    };
+
     return (
         <CartContext.Provider value={{
             cart,
@@ -119,6 +176,7 @@ export const CartProvider = ({ children }) => {
             getCartTotal,
             clearCart,
             placeOrder,
+            initiateWhatsAppOrder,
             orders,
             lastAddedItem,
             setLastAddedItem,
