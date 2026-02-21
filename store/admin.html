@@ -75,12 +75,19 @@
                 </div>
             </aside>
 
+            <!-- Sidebar overlay (mobile tap-to-close) -->
+            <div class="admin-sidebar-overlay" id="sidebar-overlay"></div>
+
             <!-- ── Main Content ── -->
             <div class="admin-main">
 
                 <!-- Topbar -->
                 <div class="admin-topbar">
-                    <h2>📦 Product Management</h2>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <button id="sidebar-toggle-btn" aria-label="Open menu"
+                            style="background:none;border:none;cursor:pointer;font-size:1.3rem;padding:4px 6px;color:#FF6B00;display:none;">☰</button>
+                        <h2>📦 Product Management</h2>
+                    </div>
                     <div class="topbar-right">
                         <span>🐟 AK FishFarms</span>
                         <span
@@ -309,27 +316,34 @@
             }
         });
 
-        /* ── Mobile sidebar toggle ── */
-        const sidebarToggle = document.createElement('button');
-        sidebarToggle.textContent = '☰';
-        sidebarToggle.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:500;background:#FF6B00;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 18px rgba(255,107,0,0.4);display:none;';
-        document.body.appendChild(sidebarToggle);
-        if (window.innerWidth < 900) sidebarToggle.style.display = 'flex';
-        sidebarToggle.style.alignItems = 'center';
-        sidebarToggle.style.justifyContent = 'center';
-        window.addEventListener('resize', () => {
-            sidebarToggle.style.display = window.innerWidth < 900 ? 'flex' : 'none';
-        });
-        sidebarToggle.addEventListener('click', () => {
+        /* ── Mobile sidebar toggle (CSS class-based) ── */
+        function initMobileSidebar() {
             const sb = document.querySelector('.admin-sidebar');
-            if (!sb) return;
-            const isOpen = sb.style.display === 'block';
-            sb.style.display = isOpen ? '' : 'block';
-            sb.style.position = 'fixed';
-            sb.style.inset = '0 auto 0 0';
-            sb.style.zIndex = '1000';
-            sb.style.width = '220px';
-        });
+            const overlay = document.getElementById('sidebar-overlay');
+            const toggleBtn = document.getElementById('sidebar-toggle-btn');
+            if (!sb || !overlay || !toggleBtn) return;
+
+            function openSidebar() { sb.classList.add('open'); overlay.classList.add('show'); }
+            function closeSidebar() { sb.classList.remove('open'); overlay.classList.remove('show'); }
+
+            /* Show toggle button only on mobile */
+            function checkSize() {
+                toggleBtn.style.display = window.innerWidth < 900 ? 'inline-flex' : 'none';
+                if (window.innerWidth >= 900) closeSidebar();
+            }
+            checkSize();
+            window.addEventListener('resize', checkSize);
+
+            toggleBtn.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
+            overlay.addEventListener('click', closeSidebar);
+
+            /* Close sidebar when a nav link is clicked on mobile */
+            sb.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+                if (window.innerWidth < 900) closeSidebar();
+            }));
+        }
+
+        initMobileSidebar();
     </script>
 </body>
 
