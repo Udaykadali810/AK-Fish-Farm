@@ -644,6 +644,7 @@ function initAdminPage() {
 /* ── Admin Dashboard (Products CRUD) ── */
 let editingId = null;   // null = add mode; id = edit mode
 let searchQuery = '';
+let currentImgData = ''; // Base64 string or URL for the current form image
 
 function initAdminDashboard() {
     updateAdminStats();
@@ -711,24 +712,8 @@ function initAdminSearch() {
 }
 
 function initAdminPanelForm() {
-    /* Image URL → live preview */
-    const imgInput = document.getElementById('prod-img');
-    const preview = document.getElementById('img-preview');
-    const previewW = document.getElementById('img-preview-wrap');
-    if (imgInput && preview) {
-        imgInput.addEventListener('input', () => {
-            const url = imgInput.value.trim();
-            if (url) {
-                preview.src = url;
-                previewW.classList.add('has-img');
-            } else {
-                previewW.classList.remove('has-img');
-            }
-        });
-        preview.addEventListener('error', () => {
-            preview.src = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
-        });
-    }
+    /* Initialise image upload (FileReader + drag-drop) */
+    initImageUpload();
 
     /* Save button */
     const saveBtn = document.getElementById('save-prod-btn');
@@ -751,68 +736,172 @@ function initAdminPanelForm() {
     if (cancelDel) cancelDel.addEventListener('click', () => hideModal('delete-confirm-modal'));
 }
 
+/* ══════════════════════════════════════════════════════════
+   IMAGE UPLOAD  (FileReader API — 100% free, no backend)
+   ══════════════════════════════════════════════════════════ */
+const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
+
+function initImageUpload() {
+    const fileInput = document.getElementById('prod-img-file');
+    const urlInput = document.getElementById('prod-img');
+    const zone = document.getElementById('img-upload-zone');
+    const clearBtn = document.getElementById('clear-img-btn');
+    if (!zone) return;
+
+    /* ── Click anywhere in zone → open file picker ── */
+    zone.addEventListener('click', () => fileInput && fileInput.click());
+
+    /* ── File selected via picker ── */
+    if (fileInput) {
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files[0]) processImageFile(fileInput.files[0]);
+        });
+    }
+
+    /* ── Drag & Drop ── */
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const file = e.dataTransfer && e.dataTransfer.files[0];
+        if (file) processImageFile(file);
+    });
+
+    /* ── URL fallback input ── */
+    if (urlInput) {
+        urlInput.addEventListener('input', () => {
+            const url = urlInput.value.trim();
+            if (url) {
+                currentImgData = url;
+                showImagePreview(url);
+            } else if (currentImgData && !currentImgData.startsWith('data:')) {
+                currentImgData = '';
+                hideImagePreview();
+            }
+        });
+    }
+
+    /* ── Clear button ── */
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            currentImgData = '';
+            if (urlInput) urlInput.value = '';
+            if (fileInput) fileInput.value = '';
+            hideImagePreview();
+            zone.classList.remove('has-img');
+            showToast('Image cleared', 'info');
+        });
+    }
+}
+
+function processImageFile(file) {
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
+    if (!allowed.includes(file.type)) {
+        showToast('Only JPG, PNG, or WEBP images are allowed.', 'error');
+        return;
+    }
+    const MAX_MB = 5;
+    if (file.size > MAX_MB * 1024 * 1024) {
+        showToast(`Image must be under ${MAX_MB} MB. Please compress it first.`, 'error');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+        currentImgData = e.target.result;   // Base64 data URL
+        showImagePreview(currentImgData);
+        /* Clear URL input since we're using uploaded file */
+        const urlInput = document.getElementById('prod-img');
+        if (urlInput) urlInput.value = '';
+        showToast('\u2705 Image uploaded successfully!', 'success');
+    };
+    reader.onerror = () => showToast('Failed to read image file. Try again.', 'error');
+    reader.readAsDataURL(file);
+}
+
+function showImagePreview(src) {
+    const preview = document.getElementById('img-preview');
+    const previewW = document.getElementById('img-preview-wrap');
+    const zone = document.getElementById('img-upload-zone');
+    if (preview) { preview.src = src; }
+    if (previewW) { previewW.classList.add('has-img'); }
+    if (zone) { zone.classList.add('has-img'); }
+}
+
+function hideImagePreview() {
+    const preview = document.getElementById('img-preview');
+    const previewW = document.getElementById('img-preview-wrap');
+    const zone = document.getElementById('img-upload-zone');
+    if (preview) { preview.src = ''; }
+    if (previewW) { previewW.classList.remove('has-img'); }
+    if (zone) { zone.classList.remove('has-img'); }
+}
+
+
 function loadProductIntoForm(id) {
     const products = getProducts();
     const p = products.find(x => x.id === id);
     if (!p) return;
     editingId = id;
 
-    document.getElementById('prod-name').value = p.name;
+    document.getElementById('prod-name').value  = p.name;
     document.getElementById('prod-price').value = p.price;
-    document.getElementById('prod-img').value = p.img;
-    document.getElementById('prod-cat').value = p.category;
-    document.getElementById('prod-desc').value = p.description || '';
+    document.getElementById('prod-cat').value   = p.category;
+    document.getElementById('prod-desc').value  = p.description || '';
 
-    const preview = document.getElementById('img-preview');
-    const previewW = document.getElementById('img-preview-wrap');
-    if (preview) { preview.src = p.img; previewW.classList.add('has-img'); }
+    currentImgData = p.img || '';
+    const urlInput = document.getElementById('prod-img');
+    if (urlInput) urlInput.value = currentImgData.startsWith('data:') ? '' : currentImgData;
+    const fileInput = document.getElementById('prod-img-file');
+    if (fileInput) fileInput.value = '';
+    if (currentImgData) showImagePreview(currentImgData);
 
-    document.getElementById('form-mode-title').textContent = '✏️ Edit Product';
-    document.getElementById('save-prod-btn').textContent = '💾 Update Product';
+    document.getElementById('form-mode-title').textContent = 'Edit Product';
+    document.getElementById('save-prod-btn').textContent   = 'Update Product';
 
-    /* Scroll to form */
-    document.getElementById('prod-form-panel')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('prod-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function resetProductForm() {
     editingId = null;
-    ['prod-name', 'prod-price', 'prod-img', 'prod-cat', 'prod-desc'].forEach(id => {
+    currentImgData = '';
+    ['prod-name', 'prod-price', 'prod-cat', 'prod-desc'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = (id === 'prod-cat') ? 'special' : '';
     });
-    const previewW = document.getElementById('img-preview-wrap');
-    if (previewW) previewW.classList.remove('has-img');
-    document.getElementById('form-mode-title').textContent = '➕ Add New Product';
-    document.getElementById('save-prod-btn').textContent = '✅ Save Product';
+    const urlInput  = document.getElementById('prod-img');
+    const fileInput = document.getElementById('prod-img-file');
+    if (urlInput)  urlInput.value  = '';
+    if (fileInput) fileInput.value = '';
+    hideImagePreview();
+    document.getElementById('form-mode-title').textContent = 'Add New Product';
+    document.getElementById('save-prod-btn').textContent   = 'Save Product';
 }
 
 function saveProduct() {
-    const name = document.getElementById('prod-name').value.trim();
+    const name  = document.getElementById('prod-name').value.trim();
     const price = parseFloat(document.getElementById('prod-price').value);
-    const img = document.getElementById('prod-img').value.trim();
-    const cat = document.getElementById('prod-cat').value;
-    const desc = document.getElementById('prod-desc').value.trim();
+    const cat   = document.getElementById('prod-cat').value;
+    const desc  = document.getElementById('prod-desc').value.trim();
+    const img   = (currentImgData || '').trim() || PLACEHOLDER_IMG;
 
-    if (!name) { showToast('Product name is required.', 'error'); return; }
+    if (!name)                      { showToast('Product name is required.', 'error'); return; }
     if (isNaN(price) || price <= 0) { showToast('Enter a valid price.', 'error'); return; }
-    if (!img) { showToast('Image URL is required.', 'error'); return; }
 
     const products = getProducts();
 
     if (editingId !== null) {
-        /* UPDATE */
         const idx = products.findIndex(p => p.id === editingId);
         if (idx >= 0) {
             products[idx] = { ...products[idx], name, price, img, category: cat, description: desc };
             saveProducts(products);
-            showToast('✅ Product updated!', 'success');
+            showToast('Product updated!', 'success');
         }
     } else {
-        /* ADD */
         const newId = Math.max(0, ...products.map(p => p.id)) + 1;
         products.push({ id: newId, name, price, img, category: cat, description: desc });
         saveProducts(products);
-        showToast('✅ Product added!', 'success');
+        showToast('Product added!', 'success');
     }
 
     resetProductForm();
