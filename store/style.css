@@ -1505,10 +1505,6 @@ select.form-input option {
     align-items: start;
 }
 
-.cart-left {}
-
-.cart-right {}
-
 .cart-heading {
     display: flex;
     align-items: center;
@@ -2124,7 +2120,7 @@ select.form-input option {
     font-size: 1rem;
 }
 
-.success-modal-inner {}
+
 
 @media(max-width:860px) {
     .checkout-layout {
@@ -3842,9 +3838,7 @@ td.col-status {
 }
 
 /*  PM legacy selectors (used by old admin CSS)  */
-.pm-section,
-.pm-add-card,
-.pm-list-card {}
+
 
 .pm-add-header {
     display: flex;
@@ -4007,7 +4001,7 @@ td.col-status {
     align-items: center;
 }
 
-.pm-product-list {}
+
 
 .search-wrap {
     display: flex;
@@ -4231,4 +4225,84 @@ td.col-status {
     background: rgba(239, 68, 68, 0.1);
     color: #F87171;
     border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* 📱 MOBILE BOTTOM NAVIGATION BAR  */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(13, 18, 36, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px 20px 0 0;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    z-index: 2000;
+    display: none;
+    /* Desktop hidden */
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+    justify-content: space-around;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: flex;
+    }
+
+    body {
+        padding-bottom: 80px !important;
+    }
+}
+
+.bn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 1;
+    padding: 4px 0;
+}
+
+.bn-item svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.2;
+    transition: all 0.3s var(--ease);
+}
+
+.bn-item.active {
+    color: var(--yellow);
+}
+
+.bn-item.active svg {
+    transform: translateY(-3px);
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 10px rgba(255, 216, 77, 0.4));
+}
+
+.bn-item:active {
+    transform: scale(0.9);
+    opacity: 0.8;
+}
+
+/* Active tab dot indicator */
+.bn-item.active::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--yellow);
+    border-radius: 50%;
+    margin-top: 2px;
+    box-shadow: 0 0 10px var(--yellow);
 }
