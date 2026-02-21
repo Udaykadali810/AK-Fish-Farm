@@ -8,11 +8,15 @@
    CONSTANTS & KEYS
  */
 const LS = {
-    products: 'akf_products',   // matches script.js LS_PRODUCTS
-    orders: 'akf_orders',     // matches script.js LS_ORDERS
     creds: 'ak_admin_creds', // admin-only
     session: 'ak_admin_session',
 };
+
+// Firebase Globals
+let db, collection, onSnapshot, query, orderBy, addDoc, setDoc, updateDoc, deleteDoc, doc, serverTimestamp;
+let globalProducts = [];
+let globalOrders = [];
+
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
 const STATUS_LIST = ['Pending', 'Processing', 'Out for Delivery', 'Delivered', 'Cancelled'];
 const STATUS_CLS = { 'Pending': 'sb-pending', 'Processing': 'sb-processing', 'Out for Delivery': 'sb-out', 'Delivered': 'sb-delivered', 'Cancelled': 'sb-cancelled' };
@@ -20,15 +24,48 @@ const STATUS_CLS = { 'Pending': 'sb-pending', 'Processing': 'sb-processing', 'Ou
 /* 
    DATA HELPERS
  */
-const getProducts = () => { try { return JSON.parse(localStorage.getItem(LS.products)) || []; } catch { return []; } };
-const saveProducts = (d) => localStorage.setItem(LS.products, JSON.stringify(d));
-const getOrders = () => { try { return JSON.parse(localStorage.getItem(LS.orders)) || []; } catch { return []; } };
-const saveOrders = (d) => localStorage.setItem(LS.orders, JSON.stringify(d));
+const getProducts = () => globalProducts;
+const getOrders = () => globalOrders;
 const getCreds = () => {
     try { return JSON.parse(localStorage.getItem(LS.creds)); } catch { return null; }
 };
 const getDefaultCreds = () => ({ username: 'admin', password: 'AKFish2026' });
 const saveCreds = (c) => localStorage.setItem(LS.creds, JSON.stringify(c));
+
+/**
+ * INITIALIZE FIREBASE
+ */
+async function initFirebase() {
+    const fb = await import('./firebase.js');
+    db = fb.db;
+    collection = fb.collection;
+    onSnapshot = fb.onSnapshot;
+    query = fb.query;
+    orderBy = fb.orderBy;
+    addDoc = fb.addDoc;
+    setDoc = fb.setDoc;
+    updateDoc = fb.updateDoc;
+    deleteDoc = fb.deleteDoc;
+    doc = fb.doc;
+    serverTimestamp = fb.serverTimestamp;
+
+    // Listen to Products
+    const qProds = query(collection(db, "products"), orderBy("updatedAt", "desc"));
+    onSnapshot(qProds, (snap) => {
+        globalProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (currentSection === 'products') renderProductTable();
+        if (currentSection === 'dashboard') renderDashboard();
+    });
+
+    // Listen to Orders
+    const qOrders = query(collection(db, "orders"), orderBy("date", "desc"));
+    onSnapshot(qOrders, (snap) => {
+        globalOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        if (currentSection === 'orders') renderOrderList();
+        if (currentSection === 'dashboard') renderDashboard();
+    });
+}
+
 
 /* 
    TOAST NOTIFICATIONS
@@ -431,29 +468,31 @@ function renderProductTable(query) {
 
     /* Row image upload */
     tbody.querySelectorAll('.row-img-inp').forEach(inp => {
-        inp.addEventListener('change', function () {
+        inp.addEventListener('change', async function () {
             const file = this.files && this.files[0];
             if (!file) return;
-            const pid = +this.dataset.id;
+            const pid = this.dataset.id;
             if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type)) { showToast('Only JPG/PNG/WEBP', 'error'); return; }
             if (file.size > 3 * 1024 * 1024) { showToast('Max 3 MB', 'error'); return; }
             const reader = new FileReader();
-            reader.onload = ev => {
+            reader.onload = async ev => {
                 const b64 = ev.target.result;
-                const prods = getProducts(); const idx = prods.findIndex(p => p.id === pid);
-                if (idx >= 0) { prods[idx].img = b64; saveProducts(prods); }
-                const thumb = document.getElementById('pthumb-' + pid);
-                if (thumb) { thumb.style.opacity = '.3'; setTimeout(() => { thumb.src = b64; thumb.style.opacity = '1'; }, 200); }
-                showToast(' Image updated!', 'success');
+                try {
+                    await setDoc(doc(db, "products", pid), { img: b64, updatedAt: serverTimestamp() }, { merge: true });
+                    showToast(' Image updated globally!', 'success');
+                } catch (err) {
+                    showToast('Cloud upload failed', 'error');
+                }
             };
             reader.readAsDataURL(file);
         });
     });
 
+
     /* Save row */
     tbody.querySelectorAll('.save-row-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const pid = +this.dataset.id;
+        btn.addEventListener('click', async function () {
+            const pid = this.dataset.id;
             const row = document.getElementById('pr-' + pid);
             if (!row) return;
             const name = row.querySelector('[data-field="name"]')?.value.trim();
@@ -461,23 +500,26 @@ function renderProductTable(query) {
             const cat = row.querySelector('[data-field="category"]')?.value;
             const tgl = row.querySelector('.tgl-cb');
             const status = tgl?.checked ? 'in_stock' : 'out_stock';
-            if (!name) { showToast('Name required!', 'error'); return; }
-            if (isNaN(price) || price <= 0) { showToast('Valid price needed!', 'error'); return; }
-            const prods = getProducts(); const idx = prods.findIndex(p => p.id === pid);
-            if (idx >= 0) {
-                prods[idx] = { ...prods[idx], name, price, category: cat, status };
-                saveProducts(prods);
+
+            if (!name || isNaN(price)) { showToast('Name and valid price required!', 'error'); return; }
+
+            try {
+                await setDoc(doc(db, "products", pid), {
+                    name, price, category: cat, status, updatedAt: serverTimestamp()
+                }, { merge: true });
                 this.textContent = ' Saved!'; this.style.background = '#10B981';
                 setTimeout(() => { this.textContent = ' Save'; this.style.background = ''; }, 1800);
-                showToast('Product updated!', 'success');
-                renderDashboardStats();
+                showToast('Product Updated Globally!', 'success');
+            } catch (err) {
+                console.error("Firebase Update Row Error:", err);
+                showToast('Cloud update failed', 'error');
             }
         });
     });
 
     /* Delete row */
     tbody.querySelectorAll('.del-row-btn').forEach(btn => {
-        btn.addEventListener('click', () => openDelModal(+btn.dataset.id));
+        btn.addEventListener('click', () => openDelModal(btn.dataset.id));
     });
 }
 
@@ -544,31 +586,42 @@ function clearAddImage() {
     const ui = document.getElementById('add-img-url'); if (ui) ui.value = '';
 }
 
-function saveProduct() {
+async function saveProduct() {
     const name = document.getElementById('add-name')?.value.trim();
     const price = parseFloat(document.getElementById('add-price')?.value);
     const cat = document.getElementById('add-cat')?.value || 'special';
     const status = document.getElementById('add-status')?.value || 'in_stock';
     const desc = document.getElementById('add-desc')?.value.trim();
     const img = addImgData || PLACEHOLDER;
+
     if (!name) { showToast('Fish name required!', 'error'); return; }
     if (isNaN(price) || price <= 0) { showToast('Valid price required!', 'error'); return; }
 
-    const prods = getProducts();
-    if (editingProductId !== null) {
-        const idx = prods.findIndex(p => p.id === editingProductId);
-        if (idx >= 0) { prods[idx] = { ...prods[idx], name, price, img, category: cat, description: desc, status }; }
-        saveProducts(prods);
-        showToast(' Product updated!', 'success');
-    } else {
-        const newId = prods.length ? Math.max(...prods.map(p => p.id)) + 1 : 1;
-        prods.push({ id: newId, name, price, img, category: cat, description: desc, status });
-        saveProducts(prods);
-        showToast(' Product added!', 'success');
+    const productData = {
+        name,
+        price,
+        img,
+        category: cat,
+        description: desc,
+        status,
+        updatedAt: serverTimestamp()
+    };
+
+    try {
+        if (editingProductId !== null) {
+            await setDoc(doc(db, "products", editingProductId), productData, { merge: true });
+            showToast('Product Updated Globally!', 'success');
+        } else {
+            await addDoc(collection(db, "products"), productData);
+            showToast('Product Added Globally!', 'success');
+        }
+        resetAddForm();
+    } catch (err) {
+        console.error("Firebase Save Error:", err);
+        showToast('Error saving to cloud', 'error');
     }
-    resetAddForm();
-    renderProductTable();
 }
+
 
 function resetAddForm() {
     editingProductId = null; addImgData = '';
@@ -597,6 +650,20 @@ function openDelModal(pid) {
     document.getElementById('del-modal').classList.add('open');
 }
 function closeDelModal() { document.getElementById('del-modal').classList.remove('open'); }
+
+async function confirmDelete() {
+    const id = document.getElementById('del-prod-id').value;
+    if (!id) return;
+    try {
+        await deleteDoc(doc(db, "products", id));
+        showToast('Product removed globally', 'info');
+        closeDelModal();
+    } catch (err) {
+        console.error("Firebase Delete Error:", err);
+        showToast('Cloud delete failed', 'error');
+    }
+}
+
 
 /* 
    SECURITY  CHANGE PASSWORD
@@ -676,7 +743,31 @@ function downloadExcel() {
     }
 }
 
+async function updateOrderStatus(id, status) {
+    try {
+        await setDoc(doc(db, "orders", id), { status }, { merge: true });
+        showToast('Status Updated Globally', 'success');
+        closeOrderModal();
+    } catch (err) {
+        console.error("Firebase Order Update Error:", err);
+        showToast('Update failed', 'error');
+    }
+}
+
+async function deleteOrder(id) {
+    if (!confirm('Permanently delete this order from cloud?')) return;
+    try {
+        await deleteDoc(doc(db, "orders", id));
+        showToast('Order Deleted Globally', 'info');
+        closeOrderModal();
+    } catch (err) {
+        console.error("Firebase Order Delete Error:", err);
+        showToast('Delete failed', 'error');
+    }
+}
+
 function downloadCSV() {
+
     const rows = buildOrdersRows();
     if (!rows.length) { showToast('No orders to export!', 'warning'); return; }
     const headers = Object.keys(rows[0]);
@@ -724,7 +815,8 @@ function escHtml(str) {
 /* 
    INITIALISE
  */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await initFirebase();
 
     /*  Ensure default credentials exist  */
     if (!getCreds()) saveCreds(getDefaultCreds());
@@ -781,25 +873,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('hamburger-btn')?.addEventListener('click', openSidebar);
     document.getElementById('sidebar-overlay')?.addEventListener('click', closeSidebar);
 
+    /*  DELETE CONFIRM  */
+    document.getElementById('confirm-del-btn')?.addEventListener('click', confirmDelete);
+    document.getElementById('cancel-del-btn')?.addEventListener('click', closeDelModal);
+
     /*  MODALS  */
     document.getElementById('modal-close-btn')?.addEventListener('click', () => document.getElementById('order-modal').classList.remove('open'));
     document.getElementById('order-modal')?.addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
-    document.getElementById('cancel-del-btn')?.addEventListener('click', closeDelModal);
     document.getElementById('del-modal')?.addEventListener('click', function (e) { if (e.target === this) closeDelModal(); });
-    document.getElementById('confirm-del-btn')?.addEventListener('click', () => {
-        const pid = +document.getElementById('del-prod-id').value;
-        const prods = getProducts().filter(p => p.id !== pid);
-        saveProducts(prods);
-        closeDelModal();
-        showToast(' Product deleted.', 'error');
-        renderProductTable();
-    });
 
     /*  ORDERS SEARCH  */
-    document.getElementById('orders-search')?.addEventListener('input', function () { renderOrders(this.value); });
-
-    /*  TRACK SEARCH  */
-    document.getElementById('track-search')?.addEventListener('input', function () { renderTrackList(this.value); });
+    document.getElementById('orders-search')?.addEventListener('input', function () { renderOrderList(this.value); });
 
     /*  PRODUCT SEARCH  */
     document.getElementById('prod-search')?.addEventListener('input', function () { renderProductTable(this.value); });
@@ -830,3 +914,9 @@ function showDashboard() {
     /* Render initial section */
     renderDashboard();
 }
+
+// Re-attach XLSX for export
+window.XLSX = window.XLSX || {};
+
+export { updateOrderStatus, deleteOrder };
+

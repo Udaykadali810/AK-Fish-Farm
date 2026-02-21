@@ -11,11 +11,14 @@
     */
 const WA_NUMBER = '919492045766';
 const ADMIN_PASS = 'AKFish2026';
-const LS_PRODUCTS = 'akf_products';
 const LS_CART = 'akf_cart';
-const LS_ORDERS = 'akf_orders';
 const LS_ADMIN_AUTH = 'akf_admin_auth';
 const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
+
+// Firebase Database Imports (These will be populated dynamically)
+let db, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp;
+let globalProducts = [];
+
 
 /* 
    DEFAULT PRODUCT CATALOGUE  (used on first load)
@@ -61,19 +64,45 @@ const CATEGORY_LABELS = {
     guppy: 'AK Guppy Collection',
 };
 
+/**
+ * INITIALIZE FIREBASE & REAL-TIME LISTENERS
+ */
+async function initFirebase() {
+    // Import from our local firebase module
+    const fb = await import('./firebase.js');
+    db = fb.db;
+    collection = fb.collection;
+    onSnapshot = fb.onSnapshot;
+    query = fb.query;
+    orderBy = fb.orderBy;
+    addDoc = fb.addDoc;
+    serverTimestamp = fb.serverTimestamp;
+
+    // Start listening to products collection
+    const qProducts = query(collection(db, "products"), orderBy("updatedAt", "desc"));
+    onSnapshot(qProducts, (snapshot) => {
+        globalProducts = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        // If we are on the shop page, re-render
+        const grid = document.getElementById('product-grid');
+        if (grid) {
+            const activeTab = document.querySelector('.tab.active')?.dataset.cat || 'all';
+            window.renderProducts?.(activeTab);
+        }
+    });
+}
+
+
 /* 
    PRODUCT STORAGE
     */
 function getProducts() {
-    try {
-        const raw = localStorage.getItem(LS_PRODUCTS);
-        const arr = raw ? JSON.parse(raw) : [];
-        return Array.isArray(arr) && arr.length ? arr : DEFAULT_PRODUCTS;
-    } catch { return DEFAULT_PRODUCTS; }
+    return globalProducts.length > 0 ? globalProducts : DEFAULT_PRODUCTS;
 }
-function saveProducts(arr) {
-    localStorage.setItem(LS_PRODUCTS, JSON.stringify(arr));
-}
+
 function initProducts() {
     /* Auto-clean existing products in storage from symbols */
     let products = getProducts();
@@ -283,10 +312,12 @@ function initScrollReveal() {
 /* 
      INDEX.HTML  Shop Page
     */
-function initShopPage() {
+async function initShopPage() {
     initNavbar();
-    initProducts();
+    await initFirebase();
+    // initProducts(); // No longer needed as we use Firestore
     initHeroBanner();
+
 
     const grid = document.getElementById('product-grid');
     const tabRow = document.getElementById('tab-row');
@@ -296,6 +327,8 @@ function initShopPage() {
 
     function renderProducts(filter) {
         const products = getProducts();
+        window.renderProducts = renderProducts; // Expose for onSnapshot
+
         const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
         if (countLabel) countLabel.textContent = `${filtered.length} product${filtered.length !== 1 ? 's' : ''}`;
 
@@ -491,7 +524,7 @@ function renderCartPage() {
 
     const confirmBtn = document.getElementById('confirm-delivery-btn');
     if (confirmBtn) {
-        confirmBtn.onclick = () => {
+        confirmBtn.onclick = async () => {
             const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim();
             const city = document.getElementById('cust-city').value.trim();
@@ -506,8 +539,35 @@ function renderCartPage() {
             }
 
             const url = buildWhatsAppURL(name, phone, city);
+
+            // Save order to Firebase Cloud
+            try {
+                const orderData = {
+                    customerName: name,
+                    phone: phone,
+                    city: city,
+                    items: getCart(),
+                    total: getCartTotal(),
+                    status: 'Pending',
+                    date: new Date().toISOString(),
+                    timestamp: serverTimestamp()
+                };
+                const docRef = await addDoc(collection(db, "orders"), orderData);
+
+                // Save to local history for "My Orders" page
+                const localOrders = JSON.parse(localStorage.getItem('akf_orders') || '[]');
+                localOrders.push({ id: docRef.id, date: new Date().toISOString() });
+                localStorage.setItem('akf_orders', JSON.stringify(localOrders));
+
+                showToast('Order placed successfully!', 'success');
+            } catch (err) {
+                console.error("Firebase Order Error:", err);
+                showToast('Cloud sync failed, but order sent via WhatsApp', 'warning');
+            }
+
             sessionStorage.setItem('akf_return_thanks', '1');
             window.open(url, '_blank');
+
 
             hideModal('delivery-modal');
             clearCart();
@@ -585,7 +645,7 @@ function initCheckoutPage() {
 
     /* Redirect if cart empty */
     if (cart.length === 0) {
-        window.location.href = '/';
+        window.location.href = 'index.html';
         return;
     }
 
@@ -1194,3 +1254,17 @@ function deleteProduct(id) {
     renderProductList();
     if (editingId === id) resetProductForm();
 }
+export {
+    initShopPage,
+    initCartPage,
+    initCheckoutPage,
+    initNavbar,
+    getCart,
+    getCartTotal,
+    addToCart,
+    clearCart,
+    buildWhatsAppURL,
+    WA_NUMBER,
+    CATEGORY_LABELS,
+    getProducts
+};

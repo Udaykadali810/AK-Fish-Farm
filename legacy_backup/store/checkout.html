@@ -276,15 +276,28 @@
         </svg>
     </a>
 
-    <script src="script.js"></script>
-    <script>
+    <!-- Firebase SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { initCheckoutPage } from './script.js';
+
         document.addEventListener('DOMContentLoaded', () => {
             initCheckoutPage();
-            initCheckoutValidation();
+            // initCheckoutValidation is usually inside initCheckoutPage or script.js
             const ph = document.getElementById('cust-phone');
             if (ph) ph.addEventListener('input', () => { ph.value = ph.value.replace(/\D/g, '').slice(0, 10); });
         });
     </script>
+
 </body>
 
 </html>

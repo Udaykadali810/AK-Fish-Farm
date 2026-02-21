@@ -110,7 +110,15 @@
             </div>
 
             <!-- Product Grid -->
-            <div class="product-grid" id="product-grid"></div>
+            <div class="product-grid" id="product-grid">
+                <!-- Loading Skeletons -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
         </div>
     </section>
 
@@ -259,8 +267,22 @@
         </svg>
     </a>
 
-    <script src="script.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', initShopPage);</script>
+    <!-- Firebase SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { initShopPage } from './script.js';
+        document.addEventListener('DOMContentLoaded', initShopPage);
+    </script>
+
 </body>
 
 </html>

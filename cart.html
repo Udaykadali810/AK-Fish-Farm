@@ -21,14 +21,14 @@
     <header>
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
-                <a href="/" class="nav-logo">
+                <a href="index.html" class="nav-logo">
                     AK Fish<span>Farms</span>
                 </a>
                 <div class="nav-links">
-                    <a href="/">Home</a>
+                    <a href="index.html">Home</a>
                     <a href="index.html#products">Shop</a>
-                    <a href="/cart" class="active">Cart</a>
-                    <a href="/admin">Admin</a>
+                    <a href="cart.html" class="active">Cart</a>
+                    <a href="admin-login.html">Admin</a>
                 </div>
                 <div class="nav-right">
                     <a href="https://wa.me/919492045766" target="_blank" class="nav-wa-btn">
@@ -39,7 +39,7 @@
                         </svg>
                         WhatsApp
                     </a>
-                    <a href="/cart" class="cart-btn" aria-label="View Cart">
+                    <a href="cart.html" class="cart-btn" aria-label="View Cart">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5">
                             <circle cx="9" cy="21" r="1" />
@@ -54,10 +54,10 @@
                 </div>
             </div>
             <div class="mobile-menu" id="mobile-menu">
-                <a href="/">Home</a>
+                <a href="index.html">Home</a>
                 <a href="index.html#products">Shop</a>
-                <a href="/cart">Cart</a>
-                <a href="/admin">Admin</a>
+                <a href="cart.html">Cart</a>
+                <a href="admin-login.html">Admin</a>
                 <a href="https://wa.me/919492045766" target="_blank" class="mm-wa">WhatsApp Us</a>
             </div>
         </nav>
@@ -69,7 +69,7 @@
         <!-- Breadcrumb -->
         <div class="breadcrumb-bar">
             <div class="breadcrumb-inner">
-                <a href="/">Home</a>
+                <a href="index.html">Home</a>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -238,7 +238,7 @@
             </svg>
             <span>Shop</span>
         </a>
-        <a href="admin.html" class="bn-item">
+        <a href="admin-login.html" class="bn-item">
             <svg viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
@@ -255,8 +255,19 @@
         </svg>
     </a>
 
-    <script src="script.js"></script>
-    <script>
+    <!-- Firebase SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { initCartPage } from './script.js';
         document.addEventListener('DOMContentLoaded', () => {
             initCartPage();
             const c2 = document.getElementById('item-count-2');
@@ -264,6 +275,7 @@
             if (c2 && c1) c2.textContent = c1.textContent;
         });
     </script>
+
 </body>
 
 </html>

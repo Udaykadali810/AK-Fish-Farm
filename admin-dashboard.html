@@ -10,38 +10,11 @@
         rel="stylesheet" />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>" />
-    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="styles/admin.css" />
 </head>
 
 <body>
 
-    <!-- 
-     LOGIN SCREEN
- -->
-    <div id="login-screen">
-        <div class="login-card">
-            <span class="login-logo"></span>
-            <div class="login-brand">AK FishFarms</div>
-            <p class="login-sub">Admin Control Panel</p>
-            <div id="login-err" class="login-err"></div>
-            <form id="login-form" novalidate>
-                <div class="lf-group">
-                    <label class="lf-label" for="l-user">Username</label>
-                    <input type="text" id="l-user" class="lf-input" placeholder="admin" autocomplete="username" />
-                </div>
-                <div class="lf-group">
-                    <label class="lf-label" for="l-pass">Password</label>
-                    <div class="lf-input-wrap">
-                        <input type="password" id="l-pass" class="lf-input has-toggle" placeholder=""
-                            autocomplete="current-password" />
-                        <button type="button" class="lf-eye" id="login-eye" title="Show/hide"></button>
-                    </div>
-                </div>
-                <button type="submit" class="login-btn"> Login to Admin</button>
-            </form>
-            <p class="login-hint">Default: <code>admin</code> / <code>AKFish2026</code></p>
-        </div>
-    </div>
 
     <!-- 
      DASHBOARD SCREEN
@@ -81,7 +54,7 @@
                 <button class="nav-item nav-logout" id="logout-btn">
                     <span class="nav-ico"></span> Logout
                 </button>
-                <div class="sb-version">v3.0 LocalStorage</div>
+                <div class="sb-version">v3.5 Cloud Sync</div>
             </div>
         </aside>
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -115,7 +88,7 @@
                 <section id="sec-dashboard" class="adm-sec active">
                     <div class="page-hd">
                         <h1> Dashboard Overview</h1>
-                        <p>Live stats from your LocalStorage database</p>
+                        <p>Live stats from your real-time cloud database</p>
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -538,7 +511,7 @@
                 </svg>
                 <span>Shop</span>
             </a>
-            <a href="admin.html" class="bn-item active">
+            <a href="admin-login.html" class="bn-item active">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
@@ -578,9 +551,18 @@
     <!-- TOAST -->
     <div id="toast-root"></div>
 
-    <!-- SheetJS for Excel export -->
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.mini.min.js"></script>
-    <script src="admin-script.js"></script>
+    <!-- Firebase SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="scripts/firebase.js"></script>
+    <script type="module" src="scripts/admin-script.js"></script>
+
 </body>
 
 </html>

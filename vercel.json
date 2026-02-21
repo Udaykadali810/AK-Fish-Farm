@@ -1,67 +1,59 @@
 {
     "version": 2,
-    "builds": [
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "rewrites": [
         {
-            "src": "store/**",
-            "use": "@vercel/static"
+            "source": "/",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/shop",
+            "destination": "/index.html#products"
+        },
+        {
+            "source": "/cart",
+            "destination": "/cart.html"
+        },
+        {
+            "source": "/checkout",
+            "destination": "/checkout.html"
+        },
+        {
+            "source": "/orders",
+            "destination": "/orders.html"
+        },
+        {
+            "source": "/admin-login",
+            "destination": "/admin-login.html"
+        },
+        {
+            "source": "/admin",
+            "destination": "/admin-dashboard.html"
+        },
+        {
+            "source": "/admin-dashboard",
+            "destination": "/admin-dashboard.html"
         }
     ],
-    "routes": [
+    "headers": [
         {
-            "src": "/store/(.*)",
-            "dest": "store/$1"
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=0, must-revalidate"
+                }
+            ]
         },
         {
-            "src": "/",
-            "dest": "store/index.html"
-        },
-        {
-            "src": "/index\\.html",
-            "dest": "store/index.html"
-        },
-        {
-            "src": "/shop",
-            "dest": "store/index.html"
-        },
-        {
-            "src": "/cart",
-            "dest": "store/cart.html"
-        },
-        {
-            "src": "/cart\\.html",
-            "dest": "store/cart.html"
-        },
-        {
-            "src": "/orders",
-            "dest": "store/orders.html"
-        },
-        {
-            "src": "/orders\\.html",
-            "dest": "store/orders.html"
-        },
-        {
-            "src": "/checkout",
-            "dest": "store/checkout.html"
-        },
-        {
-            "src": "/checkout\\.html",
-            "dest": "store/checkout.html"
-        },
-        {
-            "src": "/admin",
-            "dest": "store/admin.html"
-        },
-        {
-            "src": "/admin\\.html",
-            "dest": "store/admin.html"
-        },
-        {
-            "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot))",
-            "dest": "store/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "store/index.html"
+            "source": "/assets/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
         }
     ]
 }

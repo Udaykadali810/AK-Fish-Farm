@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Admin Login - AK Fish Farms</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>" />
+    <link rel="stylesheet" href="styles/admin.css" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #0F172A;
+            margin: 0;
+        }
+
+        #login-screen {
+            display: block !important;
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="login-screen">
+        <div class="login-card">
+            <span class="login-logo"></span>
+            <div class="login-brand">AK FishFarms</div>
+            <p class="login-sub">Admin Control Panel</p>
+            <div id="login-err" class="login-err"></div>
+            <form id="login-form" novalidate>
+                <div class="lf-group">
+                    <label class="lf-label" for="l-user">Username</label>
+                    <input type="text" id="l-user" class="lf-input" placeholder="admin" autocomplete="username" />
+                </div>
+                <div class="lf-group">
+                    <label class="lf-label" for="l-pass">Password</label>
+                    <div class="lf-input-wrap">
+                        <input type="password" id="l-pass" class="lf-input has-toggle" placeholder=""
+                            autocomplete="current-password" />
+                        <button type="button" class="lf-eye" id="login-eye" title="Show/hide"></button>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn"> Login to Admin</button>
+            </form>
+            <p class="login-hint">Secure your credentials. Do not share with anyone.</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="scripts/firebase.js"></script>
+    <script type="module" src="scripts/admin-script.js"></script>
+</body>
+
+</html>

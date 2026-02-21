@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Orders - AK Fish Farms</title>
+    <meta name="description" content="Track your aquarium fish orders at AK Fish Farms." />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        .orders-page {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .order-card {
+            background: var(--card);
+            border: 1px solid var(--border-2);
+            border-radius: var(--r);
+            padding: 24px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        .order-id {
+            font-weight: 800;
+            color: var(--yellow);
+        }
+
+        .order-status {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 50px;
+            background: rgba(255, 107, 0, 0.1);
+            color: var(--orange);
+            text-transform: uppercase;
+        }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .order-total {
+            margin-top: 16px;
+            text-align: right;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--white);
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 100px 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-logo">AK Fish<span>Farms</span></a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#products">Shop</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="admin.html">Admin</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="orders-page">
+        <h1 style="margin-bottom: 24px; font-weight: 900;">My Order History</h1>
+        <div id="orders-list">
+            <!-- Loaded via JS -->
+            <div class="no-orders">Loading your orders...</div>
+        </div>
+    </main>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bn-item">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="orders.html" class="bn-item active">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="2 9 12 2 22 9"></polyline>
+            </svg>
+            <span>Orders</span>
+        </a>
+        <a href="index.html#products" class="bn-item">
+            <svg viewBox="0 0 24 24">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                <path d="M3 6h18"></path>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Shop</span>
+        </a>
+        <a href="admin.html" class="bn-item">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Admin</span>
+        </a>
+    </nav>
+    <div id="toast-root"></div>
+
+    <!-- Firebase SDK (Modular) -->
+    <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+      }
+    }
+    </script>
+    <script type="module" src="firebase.js"></script>
+    <script type="module">
+        import { db, doc, onSnapshot } from './firebase.js';
+        import { initNavbar } from './script.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbar();
+            const list = document.getElementById('orders-list');
+            const localOrders = JSON.parse(localStorage.getItem('akf_orders') || '[]');
+
+            if (localOrders.length === 0) {
+                list.innerHTML = `<div class="no-orders">
+                    <p style="color: var(--muted); margin-bottom: 20px;">You haven't placed any orders yet.</p>
+                    <a href="index.html#products" class="btn btn-primary">Start Shopping</a>
+                </div>`;
+                return;
+            }
+
+            // Create a map to store real-time data for each order
+            const orderStates = {};
+
+            localOrders.forEach(order => {
+                // Listen to each order in real-time
+                const orderId = order.id;
+                if (!orderId || typeof orderId !== 'string') return;
+
+                onSnapshot(doc(db, "orders", orderId), (snapshot) => {
+                    if (snapshot.exists()) {
+                        orderStates[orderId] = { ...snapshot.data(), id: snapshot.id };
+                        renderOrders();
+                    }
+                });
+            });
+
+            function renderOrders() {
+                // Show orders sorted by date
+                const sorted = Object.values(orderStates).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (sorted.length === 0) return;
+
+                list.innerHTML = sorted.map(o => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Order ID: ${o.id.substring(0, 8)}...</span>
+                            <span class="order-status" style="background:${getStatusColor(o.status)}22; color:${getStatusColor(o.status)}">${o.status || 'Pending'}</span>
+                        </div>
+                        <div class="order-items">
+                            ${(o.items || []).map(i => `
+                                <div class="order-item">
+                                    <span>${i.name} (x${i.qty})</span>
+                                    <span>₹${(i.price * i.qty).toLocaleString('en-IN')}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="order-total">Total: ₹${(o.total || 0).toLocaleString('en-IN')}</div>
+                        <div style="font-size: 0.7rem; color: var(--dim); margin-top: 10px;">Placed on: ${new Date(o.date).toLocaleDateString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            function getStatusColor(status) {
+                switch (status) {
+                    case 'Delivered': return '#10B981';
+                    case 'Shipped': return '#3B82F6';
+                    case 'Processing': return '#F59E0B';
+                    case 'Cancelled': return '#EF4444';
+                    default: return '#6366F1';
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
