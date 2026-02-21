@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Cart — AK FishFarms 🐟</title>
+    <meta name="description" content="Review your cart and proceed to checkout at AK FishFarms." />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+</head>
+
+<body>
+
+    <!-- ── Navbar ─────────────────────────────────────────────── -->
+    <header>
+        <nav class="navbar" id="navbar">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-logo">AK Fish<span>Farms</span> 🐟</a>
+                <div class="nav-links">
+                    <a href="index.html">🏠 Home</a>
+                    <a href="index.html#products">🛍 Shop</a>
+                    <a href="cart.html" class="active">🛒 Cart</a>
+                    <a href="admin.html">⚙️ Admin</a>
+                </div>
+                <a href="cart.html" class="cart-btn" aria-label="View Cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <circle cx="9" cy="21" r="1" />
+                        <circle cx="20" cy="21" r="1" />
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                    </svg>
+                    Cart
+                    <span class="cart-count" id="cart-badge">0</span>
+                </a>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+            <div class="mobile-menu" id="mobile-menu">
+                <a href="index.html">🏠 Home</a>
+                <a href="index.html#products">🛍 Shop</a>
+                <a href="cart.html">🛒 Cart</a>
+                <a href="admin.html">⚙️ Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ── Cart Page ──────────────────────────────────────────── -->
+    <main class="cart-page" id="cart-root">
+
+        <!-- Empty State -->
+        <div id="cart-empty" class="cart-empty" style="display:none;">
+            <div class="cart-empty-icon">🛒</div>
+            <h2 style="font-weight:900;color:#1A1A1A;margin-bottom:8px;font-size:1.9rem;">Your Cart is Empty</h2>
+            <p style="color:#888;margin-bottom:28px;">Looks like you haven't added any fish yet!</p>
+            <a href="index.html#products" class="btn btn-primary">🐟 Browse Fish</a>
+        </div>
+
+        <!-- Cart Main (shown when items exist) -->
+        <div id="cart-main" class="cart-layout" style="display:none;">
+
+            <!-- Left: Items List -->
+            <div>
+                <h1
+                    style="font-size:2.2rem;font-weight:900;color:#1A1A1A;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
+                    🛒 My Cart
+                    <span id="item-count"
+                        style="font-size:1rem;font-weight:600;color:#FF6B00;background:#FFF3CC;padding:3px 12px;border-radius:50px;"></span>
+                </h1>
+
+                <!-- Items will render here -->
+                <div class="cart-items" id="cart-items"></div>
+
+                <div style="margin-top:16px;">
+                    <button id="clear-cart-btn"
+                        style="background:none;border:none;color:#999;font-size:0.83rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color 0.2s;"
+                        onmouseover="this.style.color='#e53935'" onmouseout="this.style.color='#999'">
+                        🗑 Clear Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Summary -->
+            <div>
+                <div class="cart-summary">
+                    <h2>Order Summary</h2>
+
+                    <div class="summary-row">
+                        <span>Items</span>
+                        <span id="item-count-2"></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery</span>
+                        <span style="color:#00C853;font-weight:700;">FREE ✅</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="cart-total">₹0</span>
+                    </div>
+
+                    <p class="summary-note">📦 Prices shown per pair. WhatsApp confirmation after order.</p>
+
+                    <!-- CTA — redirects to checkout.html, NOT WhatsApp directly -->
+                    <button id="initiate-delivery-btn" class="btn btn-primary btn-full"
+                        style="margin-top:16px;font-size:1rem;padding:15px;">
+                        🚚 Initiate Delivery
+                    </button>
+
+                    <a href="index.html#products" class="btn btn-outline btn-full" style="margin-top:10px;">
+                        ← Continue Shopping
+                    </a>
+
+                    <!-- Reassurance -->
+                    <div
+                        style="margin-top:16px;background:#FFF9ED;border:1.5px solid rgba(255,107,0,0.15);border-radius:12px;padding:12px 14px;">
+                        <p style="font-size:0.78rem;color:#888;line-height:1.6;">
+                            🔒 <strong style="color:#FF6B00;">Secure &amp; Free Delivery</strong><br>
+                            Pay on delivery via Cash / UPI. Your order is confirmed via WhatsApp — no upfront payment
+                            needed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Toast Root -->
+    <div id="toast-root"></div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initCartPage();
+            /* Sync item count in sidebar too */
+            const c2 = document.getElementById('item-count-2');
+            const c1 = document.getElementById('item-count');
+            if (c2 && c1) c2.textContent = c1.textContent;
+        });
+    </script>
+</body>
+
+</html>
