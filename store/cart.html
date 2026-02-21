@@ -6,105 +6,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Cart — AK FishFarms 🐟</title>
     <meta name="description" content="Review your cart and proceed to checkout at AK FishFarms." />
-    <link rel="stylesheet" href="style.css" />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-    <!-- ── Navbar ─────────────────────────────────────────────── -->
+    <!-- ── Navbar ── -->
     <header>
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
-                <a href="index.html" class="nav-logo">AK Fish<span>Farms</span> 🐟</a>
-                <div class="nav-links">
-                    <a href="index.html">🏠 Home</a>
-                    <a href="index.html#products">🛍 Shop</a>
-                    <a href="cart.html" class="active">🛒 Cart</a>
-                    <a href="admin.html">⚙️ Admin</a>
-                </div>
-                <a href="cart.html" class="cart-btn" aria-label="View Cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                    Cart
-                    <span class="cart-count" id="cart-badge">0</span>
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-icon">🐟</span>
+                    AK Fish<span>Farms</span>
                 </a>
-                <button class="hamburger" id="hamburger" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#products">Shop</a>
+                    <a href="cart.html" class="active">Cart</a>
+                    <a href="admin.html">Admin</a>
+                </div>
+                <div class="nav-right">
+                    <a href="https://wa.me/919492045766" target="_blank" class="nav-wa-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                        WhatsApp
+                    </a>
+                    <a href="cart.html" class="cart-btn" aria-label="View Cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                        <span class="cart-count" id="cart-badge">0</span>
+                    </a>
+                    <button class="hamburger" id="hamburger" aria-label="Menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
             </div>
             <div class="mobile-menu" id="mobile-menu">
                 <a href="index.html">🏠 Home</a>
                 <a href="index.html#products">🛍 Shop</a>
                 <a href="cart.html">🛒 Cart</a>
                 <a href="admin.html">⚙️ Admin</a>
+                <a href="https://wa.me/919492045766" target="_blank" class="mm-wa">💬 WhatsApp Us</a>
             </div>
         </nav>
     </header>
 
-    <!-- ── Cart Page ──────────────────────────────────────────── -->
+    <!-- ── Cart Page ── -->
     <main class="cart-page" id="cart-root">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-bar">
+            <div class="breadcrumb-inner">
+                <a href="index.html">Home</a>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <span>Cart</span>
+            </div>
+        </div>
 
         <!-- Empty State -->
         <div id="cart-empty" class="cart-empty" style="display:none;">
-            <div class="cart-empty-icon">🛒</div>
-            <h2 style="font-weight:900;color:#1A1A1A;margin-bottom:8px;font-size:1.9rem;">Your Cart is Empty</h2>
-            <p style="color:#888;margin-bottom:28px;">Looks like you haven't added any fish yet!</p>
+            <div class="cart-empty-anim">🛒</div>
+            <h2>Your Cart is Empty</h2>
+            <p>Looks like you haven't added any fish yet!</p>
             <a href="index.html#products" class="btn btn-primary">🐟 Browse Fish</a>
         </div>
 
-        <!-- Cart Main (shown when items exist) -->
+        <!-- Cart Main -->
         <div id="cart-main" class="cart-layout" style="display:none;">
 
-            <!-- Left: Items List -->
-            <div>
-                <h1
-                    style="font-size:2.2rem;font-weight:900;color:#1A1A1A;margin-bottom:24px;display:flex;align-items:center;gap:12px;">
-                    🛒 My Cart
-                    <span id="item-count"
-                        style="font-size:1rem;font-weight:600;color:#FF6B00;background:#FFF3CC;padding:3px 12px;border-radius:50px;"></span>
-                </h1>
-
-                <!-- Items will render here -->
-                <div class="cart-items" id="cart-items"></div>
-
-                <div style="margin-top:16px;">
-                    <button id="clear-cart-btn"
-                        style="background:none;border:none;color:#999;font-size:0.83rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color 0.2s;"
-                        onmouseover="this.style.color='#e53935'" onmouseout="this.style.color='#999'">
-                        🗑 Clear Cart
-                    </button>
+            <!-- Left: Items -->
+            <div class="cart-left">
+                <div class="cart-heading">
+                    <h1>🛒 My Cart</h1>
+                    <span id="item-count" class="item-count-badge"></span>
                 </div>
+                <div class="cart-items" id="cart-items"></div>
+                <button id="clear-cart-btn" class="clear-cart-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                    </svg>
+                    Clear Cart
+                </button>
             </div>
 
             <!-- Right: Summary -->
-            <div>
+            <div class="cart-right">
                 <div class="cart-summary">
-                    <h2>Order Summary</h2>
+                    <h2 class="summary-title">Order Summary</h2>
 
-                    <div class="summary-row">
-                        <span>Items</span>
-                        <span id="item-count-2"></span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Delivery</span>
-                        <span style="color:#00C853;font-weight:700;">FREE ✅</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Total</span>
-                        <span id="cart-total">₹0</span>
+                    <div class="summary-rows">
+                        <div class="summary-row">
+                            <span>Items</span>
+                            <span id="item-count-2"></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span class="free-tag">FREE ✅</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span id="cart-total">₹0</span>
+                        </div>
                     </div>
 
-                    <p class="summary-note">📦 Prices shown per pair. WhatsApp confirmation after order.</p>
+                    <div class="summary-note">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        Prices shown per pair. WhatsApp confirmation after order.
+                    </div>
 
-                    <!-- CTA — redirects to checkout.html, NOT WhatsApp directly -->
-                    <button id="initiate-delivery-btn" class="btn btn-primary btn-full"
-                        style="margin-top:16px;font-size:1rem;padding:15px;">
+                    <button id="initiate-delivery-btn" class="btn btn-primary btn-full checkout-btn">
                         🚚 Initiate Delivery
                     </button>
 
@@ -112,14 +144,13 @@
                         ← Continue Shopping
                     </a>
 
-                    <!-- Reassurance -->
-                    <div
-                        style="margin-top:16px;background:#FFF9ED;border:1.5px solid rgba(255,107,0,0.15);border-radius:12px;padding:12px 14px;">
-                        <p style="font-size:0.78rem;color:#888;line-height:1.6;">
-                            🔒 <strong style="color:#FF6B00;">Secure &amp; Free Delivery</strong><br>
+                    <div class="secure-note">
+                        <div class="secure-icon">🔒</div>
+                        <div>
+                            <strong>Secure &amp; Free Delivery</strong><br>
                             Pay on delivery via Cash / UPI. Your order is confirmed via WhatsApp — no upfront payment
                             needed.
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,11 +161,18 @@
     <!-- Toast Root -->
     <div id="toast-root"></div>
 
+    <!-- Floating WA -->
+    <a href="https://wa.me/919492045766" target="_blank" class="fab-wa" aria-label="Chat on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+        </svg>
+    </a>
+
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initCartPage();
-            /* Sync item count in sidebar too */
             const c2 = document.getElementById('item-count-2');
             const c1 = document.getElementById('item-count');
             if (c2 && c1) c2.textContent = c1.textContent;

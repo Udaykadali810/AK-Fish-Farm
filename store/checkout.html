@@ -6,37 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout — AK FishFarms 🐟</title>
     <meta name="description" content="Complete your order at AK FishFarms by entering your delivery details." />
-    <link rel="stylesheet" href="style.css" />
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-    <!-- ── Navbar ─────────────────────────────────────────────── -->
+    <!-- ── Navbar ── -->
     <header>
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
-                <a href="index.html" class="nav-logo">AK Fish<span>Farms</span> 🐟</a>
-                <div class="nav-links">
-                    <a href="index.html">🏠 Home</a>
-                    <a href="index.html#products">🛍 Shop</a>
-                    <a href="cart.html">🛒 Cart</a>
-                    <a href="admin.html">⚙️ Admin</a>
-                </div>
-                <a href="cart.html" class="cart-btn" aria-label="View Cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                    Cart
-                    <span class="cart-count" id="cart-badge">0</span>
+                <a href="index.html" class="nav-logo">
+                    <span class="logo-icon">🐟</span>
+                    AK Fish<span>Farms</span>
                 </a>
-                <button class="hamburger" id="hamburger" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="index.html#products">Shop</a>
+                    <a href="cart.html">Cart</a>
+                    <a href="admin.html">Admin</a>
+                </div>
+                <div class="nav-right">
+                    <a href="https://wa.me/919492045766" target="_blank" class="nav-wa-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                        WhatsApp
+                    </a>
+                    <a href="cart.html" class="cart-btn" aria-label="View Cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                        <span class="cart-count" id="cart-badge">0</span>
+                    </a>
+                    <button class="hamburger" id="hamburger" aria-label="Menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
             </div>
             <div class="mobile-menu" id="mobile-menu">
                 <a href="index.html">🏠 Home</a>
@@ -47,66 +63,106 @@
         </nav>
     </header>
 
-    <!-- ── Checkout Page ──────────────────────────────────────── -->
+    <!-- ── Checkout Page ── -->
     <main class="checkout-page">
 
         <!-- Breadcrumb -->
-        <div
-            style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:#888;margin-bottom:24px;flex-wrap:wrap;">
-            <a href="index.html" style="color:#FF6B00;font-weight:600;">Home</a>
-            <span>›</span>
-            <a href="cart.html" style="color:#FF6B00;font-weight:600;">Cart</a>
-            <span>›</span>
-            <strong style="color:#1A1A1A;">Checkout</strong>
+        <div class="breadcrumb-bar">
+            <div class="breadcrumb-inner">
+                <a href="index.html">Home</a>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <a href="cart.html">Cart</a>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <span>Checkout</span>
+            </div>
         </div>
 
-        <h1>Delivery Details 📦</h1>
-        <p class="page-sub">Fill in your details below — your order will be sent to AK FishFarms via WhatsApp instantly
-            after you click Place Order.</p>
+        <!-- Steps indicator -->
+        <div class="checkout-steps">
+            <div class="step done">
+                <div class="step-circle">✓</div>
+                <span>Cart</span>
+            </div>
+            <div class="step-line active"></div>
+            <div class="step active">
+                <div class="step-circle">2</div>
+                <span>Details</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <span>Confirm</span>
+            </div>
+        </div>
 
         <div class="checkout-layout">
 
-            <!-- ── LEFT: Delivery Form ── -->
+            <!-- LEFT: Delivery Form -->
             <div class="checkout-form-card">
-                <h2>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="#FF6B00" stroke-width="2.5">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                        <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    Delivery Information
-                </h2>
+                <div class="form-card-header">
+                    <div class="form-card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2>Delivery Details</h2>
+                        <p>Fill in your info to complete your order</p>
+                    </div>
+                </div>
 
                 <form id="checkout-form" novalidate>
-
-                    <!-- Name -->
                     <div class="form-group">
-                        <label class="form-label" for="cust-name">Full Name *</label>
+                        <label class="form-label" for="cust-name">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            Full Name *
+                        </label>
                         <input type="text" id="cust-name" class="form-input" placeholder="e.g. Uday Kumar"
                             autocomplete="name" maxlength="60" />
                         <span class="field-err" id="err-name"></span>
                     </div>
 
-                    <!-- Phone -->
                     <div class="form-group">
-                        <label class="form-label" for="cust-phone">Phone Number *</label>
-                        <input type="tel" id="cust-phone" class="form-input"
-                            placeholder="10-digit mobile number (e.g. 9492045766)" autocomplete="tel" maxlength="10" />
+                        <label class="form-label" for="cust-phone">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.35h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                            </svg>
+                            Phone Number *
+                        </label>
+                        <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit mobile number"
+                            autocomplete="tel" maxlength="10" />
                         <span class="field-err" id="err-phone"></span>
                     </div>
 
-                    <!-- Address -->
                     <div class="form-group">
-                        <label class="form-label" for="cust-address">Delivery Address *</label>
+                        <label class="form-label" for="cust-address">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <line x1="3" y1="9" x2="21" y2="9" />
+                                <line x1="9" y1="21" x2="9" y2="9" />
+                            </svg>
+                            Delivery Address *
+                        </label>
                         <textarea id="cust-address" class="form-input" rows="4"
                             placeholder="House No., Street, City, District, PIN Code…" autocomplete="street-address"
                             style="resize:vertical;"></textarea>
                         <span class="field-err" id="err-address"></span>
                     </div>
 
-                    <!-- Place Order Button (→ WhatsApp) -->
-                    <button type="submit" id="place-order-btn" class="btn btn-wa btn-full"
-                        style="font-size:1rem;padding:16px;margin-top:8px;">
+                    <button type="submit" id="place-order-btn" class="btn btn-wa btn-full place-order-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                             fill="currentColor">
                             <path
@@ -115,62 +171,63 @@
                         Place Order via WhatsApp
                     </button>
 
-                    <!-- Back to cart -->
-                    <a href="cart.html" class="btn btn-outline btn-full" style="margin-top:10px;">
-                        ← Back to Cart
-                    </a>
+                    <a href="cart.html" class="btn btn-outline btn-full" style="margin-top:10px;">← Back to Cart</a>
                 </form>
             </div>
 
-            <!-- ── RIGHT: Order Summary ── -->
-            <div>
+            <!-- RIGHT: Order Summary -->
+            <div class="checkout-summary-col">
                 <div class="order-summary-card">
-                    <h2>
-                        🛒 Your Order
-                        <span id="os-count"
-                            style="font-size:0.75rem;font-weight:600;color:#888;margin-left:8px;"></span>
-                    </h2>
+                    <div class="os-header">
+                        <h2>🛒 Your Order</h2>
+                        <span id="os-count" class="os-count-pill"></span>
+                    </div>
                     <div class="osi-list" id="osi-list"></div>
-                    <div class="os-total">
+                    <div class="os-total-row">
                         <span>Total</span>
-                        <span id="os-total-val">₹0</span>
+                        <span id="os-total-val" class="os-total-val">₹0</span>
                     </div>
                 </div>
 
-                <!-- WhatsApp info note -->
-                <div class="wa-note" style="margin-top:14px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#25D366"
-                        style="flex-shrink:0;margin-top:2px;">
-                        <path
-                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                    </svg>
+                <div class="wa-how-it-works">
+                    <div class="wa-how-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                            fill="#25D366">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                    </div>
                     <div>
                         <strong>How it works:</strong><br>
-                        After clicking "Place Order", WhatsApp will open with your full order details pre-filled. Just
-                        tap <strong>Send</strong> — our team will confirm and arrange delivery within a few hours.
-                        <strong>Pay on delivery!</strong>
+                        After clicking "Place Order", WhatsApp will open with your full order pre-filled. Tap
+                        <strong>Send</strong> — our team confirms and arranges delivery. <strong>Pay on
+                            delivery!</strong>
                     </div>
                 </div>
-            </div>
 
+                <div class="checkout-trust-row">
+                    <div class="ct-item"><span>🔒</span> Secure</div>
+                    <div class="ct-item"><span>🚚</span> Free Delivery</div>
+                    <div class="ct-item"><span>💵</span> Pay on Delivery</div>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- ══ SUCCESS MODAL ══════════════════════════════════════════ -->
+    <!-- Success Modal -->
     <div class="modal-overlay" id="success-modal">
-        <div class="modal">
-            <div class="modal-icon">🎉</div>
+        <div class="modal success-modal-inner">
+            <div class="modal-icon success-icon">🎉</div>
             <h2>Order Placed!</h2>
-            <p>
-                Thank you for shopping in <strong>AK FishFarms 🐟</strong><br><br>
-                Your order ID: <strong id="success-order-id" style="color:#FF6B00;font-size:1rem;"></strong><br><br>
-                WhatsApp has opened with your full order details. Just hit <strong>Send</strong> — we'll confirm
-                delivery shortly!
-            </p>
+            <p>Thank you for shopping at <strong>AK FishFarms 🐟</strong></p>
+            <div class="order-id-box">
+                Order ID: <strong id="success-order-id" style="color:#FF6B00;"></strong>
+            </div>
+            <p style="font-size:0.88rem;color:#888;margin-top:8px;">WhatsApp has opened with your full order details.
+                Just hit <strong>Send</strong> — we'll confirm delivery shortly!</p>
             <div class="modal-actions">
-                <a href="index.html" class="btn btn-yellow">🛍 Shop More</a>
-                <button onclick="hideModal('success-modal')" class="btn btn-outline"
-                    style="border-radius:50px;">Close</button>
+                <a href="index.html" class="btn btn-primary">🛍 Shop More</a>
+                <button onclick="hideModal('success-modal')" class="btn btn-outline">Close</button>
             </div>
         </div>
     </div>
@@ -178,12 +235,19 @@
     <!-- Toast Root -->
     <div id="toast-root"></div>
 
+    <!-- Floating WA -->
+    <a href="https://wa.me/919492045766" target="_blank" class="fab-wa" aria-label="Chat on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+        </svg>
+    </a>
+
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initCheckoutPage();
             initCheckoutValidation();
-            /* Phone input — digits only */
             const ph = document.getElementById('cust-phone');
             if (ph) ph.addEventListener('input', () => { ph.value = ph.value.replace(/\D/g, '').slice(0, 10); });
         });
