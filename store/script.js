@@ -15,6 +15,7 @@ const LS_PRODUCTS = 'akf_products';
 const LS_CART = 'akf_cart';
 const LS_ORDERS = 'akf_orders';
 const LS_ADMIN_AUTH = 'akf_admin_auth';
+const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
 
 /* ══════════════════════════════════════════════════════════
    DEFAULT PRODUCT CATALOGUE  (used on first load)
@@ -806,7 +807,6 @@ function initAdminPanelForm() {
 /* ══════════════════════════════════════════════════════════
    IMAGE UPLOAD  (FileReader API — 100% free, no backend)
    ══════════════════════════════════════════════════════════ */
-const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80';
 
 function initImageUpload() {
     const fileInput = document.getElementById('prod-img-file');
