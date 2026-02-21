@@ -118,8 +118,16 @@ function changeQty(productId, delta) {
     const cart = getCart();
     const idx = cart.findIndex(i => i.id === productId);
     if (idx < 0) return;
-    cart[idx].qty = Math.max(1, cart[idx].qty + delta);
-    saveCart(cart);
+    const newQty = cart[idx].qty + delta;
+    if (newQty <= 0) {
+        /* Auto-remove when qty reaches 0 */
+        cart.splice(idx, 1);
+        saveCart(cart);
+        updateCartBadge();
+    } else {
+        cart[idx].qty = newQty;
+        saveCart(cart);
+    }
 }
 function clearCart() {
     localStorage.removeItem(LS_CART);
@@ -380,43 +388,43 @@ function renderCartPage() {
         <img class="ci-img" src="${item.img}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80'">
         <div class="ci-info">
           <div class="ci-name">${item.name}</div>
-          <div class="ci-price">₹${item.price.toLocaleString('en-IN')} / pair</div>
+          <div class="ci-price">&#x20B9;${item.price.toLocaleString('en-IN')} / pair</div>
           <div class="ci-controls">
             <div class="qty-sel">
-              <button class="qty-btn ci-minus" data-id="${item.id}">−</button>
+              <button class="qty-btn ci-minus" data-id="${item.id}" aria-label="Decrease quantity">&#x2212;</button>
               <span class="qty-val" id="iqty-${item.id}">${item.qty}</span>
-              <button class="qty-btn ci-plus"  data-id="${item.id}">+</button>
+              <button class="qty-btn ci-plus"  data-id="${item.id}" aria-label="Increase quantity">+</button>
             </div>
-            <span class="ci-subtotal">₹${(item.price * item.qty).toLocaleString('en-IN')}</span>
-            <button class="ci-remove" data-id="${item.id}" title="Remove">🗑</button>
+            <span class="ci-subtotal">&#x20B9;${(item.price * item.qty).toLocaleString('en-IN')}</span>
+            <button class="ci-remove" data-id="${item.id}" title="Remove">&#x1F5D1;</button>
           </div>
         </div>
       </div>`).join('');
 
-        /* Quantity – minus */
-        itemsEl.querySelectorAll('.ci-minus').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = +btn.dataset.id;
+        /* ── Single delegated handler — works reliably on mobile ── */
+        itemsEl.addEventListener('click', function handleCartClick(e) {
+            const minusBtn = e.target.closest('.ci-minus');
+            const plusBtn = e.target.closest('.ci-plus');
+            const removeBtn = e.target.closest('.ci-remove');
+
+            if (minusBtn) {
+                const id = +minusBtn.dataset.id;
                 changeQty(id, -1);
                 renderCartPage();
-            });
-        });
-        /* Quantity – plus */
-        itemsEl.querySelectorAll('.ci-plus').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = +btn.dataset.id;
+                return;
+            }
+            if (plusBtn) {
+                const id = +plusBtn.dataset.id;
                 changeQty(id, +1);
                 renderCartPage();
-            });
-        });
-        /* Remove */
-        itemsEl.querySelectorAll('.ci-remove').forEach(btn => {
-            btn.addEventListener('click', () => {
-                removeFromCart(+btn.dataset.id);
+                return;
+            }
+            if (removeBtn) {
+                removeFromCart(+removeBtn.dataset.id);
                 showToast('Item removed from cart', 'error');
                 renderCartPage();
-            });
-        });
+            }
+        }, { once: true }); /* once:true — re-added after each renderCartPage call */
     }
 
     /* "Initiate Delivery" → checkout.html */

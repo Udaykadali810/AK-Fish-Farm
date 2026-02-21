@@ -917,14 +917,23 @@ textarea {
 .qty-btn {
     background: var(--yellow);
     color: var(--dark);
-    width: 28px;
-    height: 28px;
-    font-size: 1rem;
+    width: 40px;
+    /* proper square touch target */
+    height: 40px;
+    min-height: unset;
+    /* override the global 44px rule */
+    font-size: 1.1rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background var(--ease);
+    touch-action: manipulation;
+    /* kills 300ms tap delay on mobile */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    flex-shrink: 0;
 }
 
 .qty-btn:hover {
@@ -2033,11 +2042,16 @@ textarea {
 button,
 .tab,
 .atc-btn,
-.qty-btn,
 .cart-btn,
 .tbl-btn,
 .btn {
     min-height: 44px;
+}
+
+/* qty-btn gets its own explicit touch-target size above — no min-height override here */
+.qty-btn,
+.qty-val {
+    touch-action: manipulation;
 }
 
 /* ─── Prevent horizontal overflow ─── */
