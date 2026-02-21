@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checkout — AK FishFarms 🐟</title>
+    <title>Checkout â€” AK FishFarms ðŸŸ</title>
     <meta name="description" content="Complete your order at AK FishFarms by entering your delivery details." />
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ðŸ“¦</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -17,19 +17,19 @@
 
 <body>
 
-    <!-- ── Navbar ── -->
+    <!-- â”€â”€ Navbar â”€â”€ -->
     <header>
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
-                <a href="index.html" class="nav-logo">
-                    <span class="logo-icon">🐟</span>
+                <a href="/" class="nav-logo">
+                    <span class="logo-icon">ðŸŸ</span>
                     AK Fish<span>Farms</span>
                 </a>
                 <div class="nav-links">
-                    <a href="index.html">Home</a>
+                    <a href="/">Home</a>
                     <a href="index.html#products">Shop</a>
-                    <a href="cart.html">Cart</a>
-                    <a href="admin.html">Admin</a>
+                    <a href="/cart">Cart</a>
+                    <a href="/admin">Admin</a>
                 </div>
                 <div class="nav-right">
                     <a href="https://wa.me/919492045766" target="_blank" class="nav-wa-btn">
@@ -40,7 +40,7 @@
                         </svg>
                         WhatsApp
                     </a>
-                    <a href="cart.html" class="cart-btn" aria-label="View Cart">
+                    <a href="/cart" class="cart-btn" aria-label="View Cart">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5">
                             <circle cx="9" cy="21" r="1" />
@@ -55,25 +55,25 @@
                 </div>
             </div>
             <div class="mobile-menu" id="mobile-menu">
-                <a href="index.html">🏠 Home</a>
-                <a href="index.html#products">🛍 Shop</a>
-                <a href="cart.html">🛒 Cart</a>
-                <a href="admin.html">⚙️ Admin</a>
+                <a href="/">ðŸ  Home</a>
+                <a href="index.html#products">ðŸ› Shop</a>
+                <a href="/cart">ðŸ›’ Cart</a>
+                <a href="/admin">âš™ï¸ Admin</a>
             </div>
         </nav>
     </header>
 
-    <!-- ── Checkout Page ── -->
+    <!-- â”€â”€ Checkout Page â”€â”€ -->
     <main class="checkout-page">
 
         <!-- Breadcrumb -->
         <div class="breadcrumb-bar">
             <div class="breadcrumb-inner">
-                <a href="index.html">Home</a>
+                <a href="/">Home</a>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
-                <a href="cart.html">Cart</a>
+                <a href="/cart">Cart</a>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -84,7 +84,7 @@
         <!-- Steps indicator -->
         <div class="checkout-steps">
             <div class="step done">
-                <div class="step-circle">✓</div>
+                <div class="step-circle">âœ“</div>
                 <span>Cart</span>
             </div>
             <div class="step-line active"></div>
@@ -157,7 +157,7 @@
                             Delivery Address *
                         </label>
                         <textarea id="cust-address" class="form-input" rows="4"
-                            placeholder="House No., Street, City, District, PIN Code…" autocomplete="street-address"
+                            placeholder="House No., Street, City, District, PIN Codeâ€¦" autocomplete="street-address"
                             style="resize:vertical;"></textarea>
                         <span class="field-err" id="err-address"></span>
                     </div>
@@ -171,7 +171,7 @@
                         Place Order via WhatsApp
                     </button>
 
-                    <a href="cart.html" class="btn btn-outline btn-full" style="margin-top:10px;">← Back to Cart</a>
+                    <a href="/cart" class="btn btn-outline btn-full" style="margin-top:10px;">â† Back to Cart</a>
                 </form>
             </div>
 
@@ -179,13 +179,13 @@
             <div class="checkout-summary-col">
                 <div class="order-summary-card">
                     <div class="os-header">
-                        <h2>🛒 Your Order</h2>
+                        <h2>ðŸ›’ Your Order</h2>
                         <span id="os-count" class="os-count-pill"></span>
                     </div>
                     <div class="osi-list" id="osi-list"></div>
                     <div class="os-total-row">
                         <span>Total</span>
-                        <span id="os-total-val" class="os-total-val">₹0</span>
+                        <span id="os-total-val" class="os-total-val">â‚¹0</span>
                     </div>
                 </div>
 
@@ -200,15 +200,15 @@
                     <div>
                         <strong>How it works:</strong><br>
                         After clicking "Place Order", WhatsApp will open with your full order pre-filled. Tap
-                        <strong>Send</strong> — our team confirms and arranges delivery. <strong>Pay on
+                        <strong>Send</strong> â€” our team confirms and arranges delivery. <strong>Pay on
                             delivery!</strong>
                     </div>
                 </div>
 
                 <div class="checkout-trust-row">
-                    <div class="ct-item"><span>🔒</span> Secure</div>
-                    <div class="ct-item"><span>🚚</span> Free Delivery</div>
-                    <div class="ct-item"><span>💵</span> Pay on Delivery</div>
+                    <div class="ct-item"><span>ðŸ”’</span> Secure</div>
+                    <div class="ct-item"><span>ðŸšš</span> Free Delivery</div>
+                    <div class="ct-item"><span>ðŸ’µ</span> Pay on Delivery</div>
                 </div>
             </div>
         </div>
@@ -217,16 +217,16 @@
     <!-- Success Modal -->
     <div class="modal-overlay" id="success-modal">
         <div class="modal success-modal-inner">
-            <div class="modal-icon success-icon">🎉</div>
+            <div class="modal-icon success-icon">ðŸŽ‰</div>
             <h2>Order Placed!</h2>
-            <p>Thank you for shopping at <strong>AK FishFarms 🐟</strong></p>
+            <p>Thank you for shopping at <strong>AK FishFarms ðŸŸ</strong></p>
             <div class="order-id-box">
                 Order ID: <strong id="success-order-id" style="color:#FF6B00;"></strong>
             </div>
             <p style="font-size:0.88rem;color:#888;margin-top:8px;">WhatsApp has opened with your full order details.
-                Just hit <strong>Send</strong> — we'll confirm delivery shortly!</p>
+                Just hit <strong>Send</strong> â€” we'll confirm delivery shortly!</p>
             <div class="modal-actions">
-                <a href="index.html" class="btn btn-primary">🛍 Shop More</a>
+                <a href="/" class="btn btn-primary">ðŸ› Shop More</a>
                 <button onclick="hideModal('success-modal')" class="btn btn-outline">Close</button>
             </div>
         </div>

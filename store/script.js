@@ -432,7 +432,7 @@ function renderCartPage() {
     const deliveryBtn = document.getElementById('initiate-delivery-btn');
     if (deliveryBtn) {
         deliveryBtn.addEventListener('click', () => {
-            window.location.href = 'checkout.html';
+            window.location.href = '/checkout';
         });
     }
 
@@ -459,7 +459,7 @@ function initCheckoutPage() {
 
     /* Redirect if cart empty */
     if (cart.length === 0) {
-        window.location.href = 'index.html';
+        window.location.href = '/';
         return;
     }
 

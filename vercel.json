@@ -16,7 +16,19 @@
             "dest": "store/index.html"
         },
         {
+            "src": "/index\\.html",
+            "dest": "store/index.html"
+        },
+        {
+            "src": "/shop",
+            "dest": "store/index.html"
+        },
+        {
             "src": "/cart",
+            "dest": "store/cart.html"
+        },
+        {
+            "src": "/cart\\.html",
             "dest": "store/cart.html"
         },
         {
@@ -24,7 +36,15 @@
             "dest": "store/checkout.html"
         },
         {
+            "src": "/checkout\\.html",
+            "dest": "store/checkout.html"
+        },
+        {
             "src": "/admin",
+            "dest": "store/admin.html"
+        },
+        {
+            "src": "/admin\\.html",
             "dest": "store/admin.html"
         },
         {

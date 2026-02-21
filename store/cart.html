@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Cart — AK FishFarms 🐟</title>
+    <title>My Cart â€” AK FishFarms ðŸŸ</title>
     <meta name="description" content="Review your cart and proceed to checkout at AK FishFarms." />
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ðŸ›’</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -17,19 +17,19 @@
 
 <body>
 
-    <!-- ── Navbar ── -->
+    <!-- â”€â”€ Navbar â”€â”€ -->
     <header>
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
-                <a href="index.html" class="nav-logo">
-                    <span class="logo-icon">🐟</span>
+                <a href="/" class="nav-logo">
+                    <span class="logo-icon">ðŸŸ</span>
                     AK Fish<span>Farms</span>
                 </a>
                 <div class="nav-links">
-                    <a href="index.html">Home</a>
+                    <a href="/">Home</a>
                     <a href="index.html#products">Shop</a>
-                    <a href="cart.html" class="active">Cart</a>
-                    <a href="admin.html">Admin</a>
+                    <a href="/cart" class="active">Cart</a>
+                    <a href="/admin">Admin</a>
                 </div>
                 <div class="nav-right">
                     <a href="https://wa.me/919492045766" target="_blank" class="nav-wa-btn">
@@ -40,7 +40,7 @@
                         </svg>
                         WhatsApp
                     </a>
-                    <a href="cart.html" class="cart-btn" aria-label="View Cart">
+                    <a href="/cart" class="cart-btn" aria-label="View Cart">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5">
                             <circle cx="9" cy="21" r="1" />
@@ -55,22 +55,22 @@
                 </div>
             </div>
             <div class="mobile-menu" id="mobile-menu">
-                <a href="index.html">🏠 Home</a>
-                <a href="index.html#products">🛍 Shop</a>
-                <a href="cart.html">🛒 Cart</a>
-                <a href="admin.html">⚙️ Admin</a>
-                <a href="https://wa.me/919492045766" target="_blank" class="mm-wa">💬 WhatsApp Us</a>
+                <a href="/">ðŸ  Home</a>
+                <a href="index.html#products">ðŸ› Shop</a>
+                <a href="/cart">ðŸ›’ Cart</a>
+                <a href="/admin">âš™ï¸ Admin</a>
+                <a href="https://wa.me/919492045766" target="_blank" class="mm-wa">ðŸ’¬ WhatsApp Us</a>
             </div>
         </nav>
     </header>
 
-    <!-- ── Cart Page ── -->
+    <!-- â”€â”€ Cart Page â”€â”€ -->
     <main class="cart-page" id="cart-root">
 
         <!-- Breadcrumb -->
         <div class="breadcrumb-bar">
             <div class="breadcrumb-inner">
-                <a href="index.html">Home</a>
+                <a href="/">Home</a>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -80,10 +80,10 @@
 
         <!-- Empty State -->
         <div id="cart-empty" class="cart-empty" style="display:none;">
-            <div class="cart-empty-anim">🛒</div>
+            <div class="cart-empty-anim">ðŸ›’</div>
             <h2>Your Cart is Empty</h2>
             <p>Looks like you haven't added any fish yet!</p>
-            <a href="index.html#products" class="btn btn-primary">🐟 Browse Fish</a>
+            <a href="index.html#products" class="btn btn-primary">ðŸŸ Browse Fish</a>
         </div>
 
         <!-- Cart Main -->
@@ -92,7 +92,7 @@
             <!-- Left: Items -->
             <div class="cart-left">
                 <div class="cart-heading">
-                    <h1>🛒 My Cart</h1>
+                    <h1>ðŸ›’ My Cart</h1>
                     <span id="item-count" class="item-count-badge"></span>
                 </div>
                 <div class="cart-items" id="cart-items"></div>
@@ -117,12 +117,12 @@
                         </div>
                         <div class="summary-row">
                             <span>Delivery</span>
-                            <span class="free-tag">FREE ✅</span>
+                            <span class="free-tag">FREE âœ…</span>
                         </div>
                         <div class="summary-divider"></div>
                         <div class="summary-row total">
                             <span>Total</span>
-                            <span id="cart-total">₹0</span>
+                            <span id="cart-total">â‚¹0</span>
                         </div>
                     </div>
 
@@ -137,18 +137,18 @@
                     </div>
 
                     <button id="initiate-delivery-btn" class="btn btn-primary btn-full checkout-btn">
-                        🚚 Initiate Delivery
+                        ðŸšš Initiate Delivery
                     </button>
 
                     <a href="index.html#products" class="btn btn-outline btn-full" style="margin-top:10px;">
-                        ← Continue Shopping
+                        â† Continue Shopping
                     </a>
 
                     <div class="secure-note">
-                        <div class="secure-icon">🔒</div>
+                        <div class="secure-icon">ðŸ”’</div>
                         <div>
                             <strong>Secure &amp; Free Delivery</strong><br>
-                            Pay on delivery via Cash / UPI. Your order is confirmed via WhatsApp — no upfront payment
+                            Pay on delivery via Cash / UPI. Your order is confirmed via WhatsApp â€” no upfront payment
                             needed.
                         </div>
                     </div>
