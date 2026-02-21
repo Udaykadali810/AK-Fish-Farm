@@ -677,20 +677,87 @@ function renderProductTable(query) {
         tbody.innerHTML = `<tr><td colspan="7" class="tbl-empty">No products found.</td></tr>`;
         return;
     }
+
     tbody.innerHTML = filtered.map(p => `
-    <tr>
-      <td><img class="prod-thumb" src="${p.img}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80'"></td>
+    <tr id="prod-row-${p.id}">
+      <td>
+        <div class="row-img-cell">
+          <img class="prod-thumb row-thumb" id="thumb-${p.id}"
+               src="${p.img || PLACEHOLDER_IMG}"
+               alt="${p.name}"
+               onerror="this.src='${PLACEHOLDER_IMG}'"
+               style="transition:transform 0.2s,opacity 0.2s;">
+          <label class="row-upload-btn" title="Upload image from device">
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+                   class="row-file-input" data-id="${p.id}" />
+            &#x1F4F7; Upload
+          </label>
+        </div>
+      </td>
       <td class="prod-name-td">${p.name}</td>
       <td><span class="cat-badge ${p.category}">${CATEGORY_LABELS[p.category] || p.category}</span></td>
-      <td><strong>₹${p.price.toLocaleString('en-IN')}</strong></td>
-      <td style="max-width:200px;font-size:0.8rem;color:#888">${p.description || '—'}</td>
+      <td><strong>&#x20B9;${p.price.toLocaleString('en-IN')}</strong></td>
+      <td style="max-width:200px;font-size:0.8rem;color:#888">${p.description || '&mdash;'}</td>
       <td>
         <div class="tbl-actions">
-          <button class="tbl-btn tbl-edit" data-id="${p.id}">✏️ Edit</button>
-          <button class="tbl-btn tbl-del"  data-id="${p.id}">🗑 Delete</button>
+          <button class="tbl-btn tbl-edit" data-id="${p.id}">&#x270F;&#xFE0F; Edit</button>
+          <button class="tbl-btn tbl-del"  data-id="${p.id}">&#x1F5D1; Delete</button>
         </div>
       </td>
     </tr>`).join('');
+
+    /* ── Inline per-row image upload (FileReader -> Base64 -> LocalStorage) ── */
+    tbody.querySelectorAll('.row-file-input').forEach(input => {
+        input.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file) return;
+            const productId = +this.dataset.id;
+
+            /* Validate type */
+            const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
+            if (!allowed.includes(file.type)) {
+                showToast('Only JPG, PNG or WEBP images allowed.', 'error');
+                this.value = '';
+                return;
+            }
+            /* Validate size — 2 MB max */
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image must be under 2 MB. Try compressing it first.', 'error');
+                this.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                const base64 = e.target.result;
+
+                /* Persist in LocalStorage */
+                const prods = getProducts();
+                const idx = prods.findIndex(p => p.id === productId);
+                if (idx >= 0) {
+                    prods[idx].img = base64;
+                    saveProducts(prods);
+                }
+
+                /* Animate thumbnail swap — no reload */
+                const thumb = document.getElementById('thumb-' + productId);
+                if (thumb) {
+                    thumb.style.transform = 'scale(0.8)';
+                    thumb.style.opacity = '0.3';
+                    setTimeout(() => {
+                        thumb.src = base64;
+                        thumb.style.transform = 'scale(1)';
+                        thumb.style.opacity = '1';
+                    }, 200);
+                }
+
+                showToast('\u2705 Product image updated!', 'success');
+                this.value = ''; /* reset so same file can be re-selected */
+            };
+            reader.onerror = () => showToast('Could not read image file. Try again.', 'error');
+            reader.readAsDataURL(file);
+        });
+    });
 
     /* Edit */
     tbody.querySelectorAll('.tbl-edit').forEach(btn => {
@@ -844,10 +911,10 @@ function loadProductIntoForm(id) {
     if (!p) return;
     editingId = id;
 
-    document.getElementById('prod-name').value  = p.name;
+    document.getElementById('prod-name').value = p.name;
     document.getElementById('prod-price').value = p.price;
-    document.getElementById('prod-cat').value   = p.category;
-    document.getElementById('prod-desc').value  = p.description || '';
+    document.getElementById('prod-cat').value = p.category;
+    document.getElementById('prod-desc').value = p.description || '';
 
     currentImgData = p.img || '';
     const urlInput = document.getElementById('prod-img');
@@ -857,7 +924,7 @@ function loadProductIntoForm(id) {
     if (currentImgData) showImagePreview(currentImgData);
 
     document.getElementById('form-mode-title').textContent = 'Edit Product';
-    document.getElementById('save-prod-btn').textContent   = 'Update Product';
+    document.getElementById('save-prod-btn').textContent = 'Update Product';
 
     document.getElementById('prod-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -869,23 +936,23 @@ function resetProductForm() {
         const el = document.getElementById(id);
         if (el) el.value = (id === 'prod-cat') ? 'special' : '';
     });
-    const urlInput  = document.getElementById('prod-img');
+    const urlInput = document.getElementById('prod-img');
     const fileInput = document.getElementById('prod-img-file');
-    if (urlInput)  urlInput.value  = '';
+    if (urlInput) urlInput.value = '';
     if (fileInput) fileInput.value = '';
     hideImagePreview();
     document.getElementById('form-mode-title').textContent = 'Add New Product';
-    document.getElementById('save-prod-btn').textContent   = 'Save Product';
+    document.getElementById('save-prod-btn').textContent = 'Save Product';
 }
 
 function saveProduct() {
-    const name  = document.getElementById('prod-name').value.trim();
+    const name = document.getElementById('prod-name').value.trim();
     const price = parseFloat(document.getElementById('prod-price').value);
-    const cat   = document.getElementById('prod-cat').value;
-    const desc  = document.getElementById('prod-desc').value.trim();
-    const img   = (currentImgData || '').trim() || PLACEHOLDER_IMG;
+    const cat = document.getElementById('prod-cat').value;
+    const desc = document.getElementById('prod-desc').value.trim();
+    const img = (currentImgData || '').trim() || PLACEHOLDER_IMG;
 
-    if (!name)                      { showToast('Product name is required.', 'error'); return; }
+    if (!name) { showToast('Product name is required.', 'error'); return; }
     if (isNaN(price) || price <= 0) { showToast('Enter a valid price.', 'error'); return; }
 
     const products = getProducts();
