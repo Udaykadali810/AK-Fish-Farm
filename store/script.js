@@ -642,356 +642,397 @@ function initAdminPage() {
     if (logoutBtn) logoutBtn.addEventListener('click', adminLogout);
 }
 
-/* ── Admin Dashboard (Products CRUD) ── */
-let editingId = null;   // null = add mode; id = edit mode
-let searchQuery = '';
-let currentImgData = ''; // Base64 string or URL for the current form image
+/* ══════════════════════════════════════════════════════════
+   ADMIN — PRODUCTS MANAGEMENT  (Full rebuild — Modern UI)
+   ══════════════════════════════════════════════════════════ */
+let editingId    = null;   // null = add mode; number = edit mode
+let searchQuery  = '';
+let currentImgData = '';   // Base64 or URL for the Add/Edit form
 
+/* ── CATEGORY LABELS already defined above, but safe alias ── */
+const CAT_LABEL = k => CATEGORY_LABELS[k] || k;
+
+/* ── STOCK STATUS labels ── */
+const STOCK_LABEL = s => s === 'out_stock' ? '<span class="stock-badge out">Out of Stock</span>'
+                                           : '<span class="stock-badge in">In Stock</span>';
+
+/* ──────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────── */
 function initAdminDashboard() {
     updateAdminStats();
-    renderProductTable();
+    renderProductList();
     initAdminPanelForm();
     initAdminSearch();
+    initImageUpload();
 }
 
 function updateAdminStats() {
     const products = getProducts();
-    const orders = getOrders();
+    const orders   = getOrders();
     const el = id => document.getElementById(id);
     if (el('stat-products')) el('stat-products').textContent = products.length;
-    if (el('stat-orders')) el('stat-orders').textContent = orders.length;
-    if (el('stat-special')) el('stat-special').textContent = products.filter(p => p.category === 'special').length;
-    if (el('stat-guppy')) el('stat-guppy').textContent = products.filter(p => p.category === 'guppy').length;
+    if (el('stat-orders'))   el('stat-orders').textContent   = orders.length;
+    if (el('stat-special'))  el('stat-special').textContent  = products.filter(p => p.category === 'special').length;
+    if (el('stat-guppy'))    el('stat-guppy').textContent    = products.filter(p => p.category === 'guppy').length;
 }
 
-function renderProductTable(query) {
+/* ──────────────────────────────────────────────
+   PRODUCT LIST CARDS  ("Current Inventory")
+────────────────────────────────────────────── */
+function renderProductList(query) {
     const products = getProducts();
     const q = (query || searchQuery || '').toLowerCase();
     const filtered = q ? products.filter(p =>
         p.name.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q)
     ) : products;
 
-    const tbody = document.getElementById('prod-tbody');
-    if (!tbody) return;
+    const list = document.getElementById('pm-product-list');
+    if (!list) return;
+
+    /* Update count badge */
+    const badge = document.getElementById('pm-count-badge');
+    if (badge) badge.textContent = filtered.length;
 
     if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="tbl-empty">No products found.</td></tr>`;
+        list.innerHTML = '<div class="tbl-empty" style="padding:32px;">No products found. Add one above!</div>';
         return;
     }
 
-    tbody.innerHTML = filtered.map(p => `
-    <tr id="prod-row-${p.id}">
-      <td>
-        <div class="row-img-cell">
-          <img class="prod-thumb row-thumb" id="thumb-${p.id}"
-               src="${p.img || PLACEHOLDER_IMG}"
-               alt="${p.name}"
-               onerror="this.src='${PLACEHOLDER_IMG}'"
-               style="transition:transform 0.2s,opacity 0.2s;">
-          <label class="row-upload-btn" title="Upload image from device">
-            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif"
-                   class="row-file-input" data-id="${p.id}" />
-            &#x1F4F7; Upload
-          </label>
-        </div>
-      </td>
-      <td class="prod-name-td">${p.name}</td>
-      <td><span class="cat-badge ${p.category}">${CATEGORY_LABELS[p.category] || p.category}</span></td>
-      <td><strong>&#x20B9;${p.price.toLocaleString('en-IN')}</strong></td>
-      <td style="max-width:200px;font-size:0.8rem;color:#888">${p.description || '&mdash;'}</td>
-      <td>
-        <div class="tbl-actions">
-          <button class="tbl-btn tbl-edit" data-id="${p.id}">&#x270F;&#xFE0F; Edit</button>
-          <button class="tbl-btn tbl-del"  data-id="${p.id}">&#x1F5D1; Delete</button>
-        </div>
-      </td>
-    </tr>`).join('');
+    list.innerHTML = filtered.map(p => {
+        const imgSrc   = p.img || PLACEHOLDER_IMG;
+        const stockVal = p.status || 'in_stock';
+        return `
+        <div class="pm-row" id="pm-row-${p.id}">
+            <!-- Thumbnail + Upload -->
+            <div class="pm-row-img">
+                <img class="pm-thumb" id="pm-thumb-${p.id}"
+                     src="${imgSrc}" alt="${p.name}"
+                     onerror="this.src='${PLACEHOLDER_IMG}'"
+                     style="transition:transform .2s,opacity .2s;">
+                <label class="pm-upload-lbl" title="Upload image from device">
+                    <input type="file" accept="image/jpeg,image/png,image/webp"
+                           class="pm-img-input" data-id="${p.id}" />
+                    📷 Change
+                </label>
+            </div>
 
-    /* ── Inline per-row image upload (FileReader -> Base64 -> LocalStorage) ── */
-    tbody.querySelectorAll('.row-file-input').forEach(input => {
+            <!-- Editable Fields -->
+            <div class="pm-row-fields">
+                <input class="pm-inline-input" type="text" data-field="name" data-id="${p.id}"
+                       value="${p.name}" placeholder="Fish name" maxlength="80" />
+                <div class="pm-row-sub">
+                    <input class="pm-inline-input pm-price-input" type="number"
+                           data-field="price" data-id="${p.id}"
+                           value="${p.price}" placeholder="Price" min="1" />
+                    <select class="pm-inline-select pm-cat-select" data-field="category" data-id="${p.id}">
+                        <option value="special"  ${p.category === 'special'  ? 'selected' : ''}>Special</option>
+                        <option value="premium"  ${p.category === 'premium'  ? 'selected' : ''}>Premium</option>
+                        <option value="guppy"    ${p.category === 'guppy'    ? 'selected' : ''}>Guppy</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Status Toggle -->
+            <div class="pm-row-status">
+                <label class="pm-toggle-wrap" title="Toggle Stock">
+                    <input type="checkbox" class="pm-toggle-input" data-id="${p.id}"
+                           ${stockVal === 'in_stock' ? 'checked' : ''} />
+                    <span class="pm-toggle-track">
+                        <span class="pm-toggle-thumb"></span>
+                    </span>
+                </label>
+                <span class="pm-stock-lbl" id="pm-slbl-${p.id}">${stockVal === 'in_stock' ? 'In Stock' : 'Out of Stock'}</span>
+            </div>
+
+            <!-- Actions -->
+            <div class="pm-row-actions">
+                <button class="pm-save-row-btn" data-id="${p.id}" title="Save changes">&#x1F4BE; Save</button>
+                <button class="pm-del-row-btn"  data-id="${p.id}" title="Delete product">&#x1F5D1;</button>
+            </div>
+        </div>`;
+    }).join('');
+
+    /* ── Attach event listeners ── */
+
+    /* Image upload (per row) */
+    list.querySelectorAll('.pm-img-input').forEach(input => {
         input.addEventListener('change', function () {
             const file = this.files && this.files[0];
             if (!file) return;
-            const productId = +this.dataset.id;
-
-            /* Validate type */
-            const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
-            if (!allowed.includes(file.type)) {
-                showToast('Only JPG, PNG or WEBP images allowed.', 'error');
-                this.value = '';
-                return;
-            }
-            /* Validate size — 2 MB max */
-            if (file.size > 2 * 1024 * 1024) {
-                showToast('Image must be under 2 MB. Try compressing it first.', 'error');
-                this.value = '';
-                return;
-            }
-
+            const pid = +this.dataset.id;
+            const allowed = ['image/jpeg','image/png','image/webp','image/jpg'];
+            if (!allowed.includes(file.type)) { showToast('Only JPG, PNG or WEBP allowed.','error'); this.value=''; return; }
+            if (file.size > 2 * 1024 * 1024)  { showToast('Image must be under 2 MB.','error');     this.value=''; return; }
             const reader = new FileReader();
-            reader.onload = e => {
-                const base64 = e.target.result;
-
-                /* Persist in LocalStorage */
+            reader.onload = ev => {
+                const b64 = ev.target.result;
                 const prods = getProducts();
-                const idx = prods.findIndex(p => p.id === productId);
-                if (idx >= 0) {
-                    prods[idx].img = base64;
-                    saveProducts(prods);
-                }
-
-                /* Animate thumbnail swap — no reload */
-                const thumb = document.getElementById('thumb-' + productId);
+                const idx = prods.findIndex(p => p.id === pid);
+                if (idx >= 0) { prods[idx].img = b64; saveProducts(prods); }
+                const thumb = document.getElementById('pm-thumb-' + pid);
                 if (thumb) {
-                    thumb.style.transform = 'scale(0.8)';
-                    thumb.style.opacity = '0.3';
-                    setTimeout(() => {
-                        thumb.src = base64;
-                        thumb.style.transform = 'scale(1)';
-                        thumb.style.opacity = '1';
-                    }, 200);
+                    thumb.style.transform='scale(0.8)'; thumb.style.opacity='0.3';
+                    setTimeout(() => { thumb.src=b64; thumb.style.transform='scale(1)'; thumb.style.opacity='1'; }, 200);
                 }
-
-                showToast('\u2705 Product image updated!', 'success');
-                this.value = ''; /* reset so same file can be re-selected */
+                showToast('\u2705 Image Updated Successfully!', 'success');
+                this.value = '';
             };
-            reader.onerror = () => showToast('Could not read image file. Try again.', 'error');
+            reader.onerror = () => showToast('Could not read file.','error');
             reader.readAsDataURL(file);
         });
     });
 
-    /* Edit */
-    tbody.querySelectorAll('.tbl-edit').forEach(btn => {
-        btn.addEventListener('click', () => loadProductIntoForm(+btn.dataset.id));
+    /* Stock toggle */
+    list.querySelectorAll('.pm-toggle-input').forEach(tog => {
+        tog.addEventListener('change', function () {
+            const pid = +this.dataset.id;
+            const lbl = document.getElementById('pm-slbl-' + pid);
+            if (lbl) lbl.textContent = this.checked ? 'In Stock' : 'Out of Stock';
+        });
     });
-    /* Delete */
-    tbody.querySelectorAll('.tbl-del').forEach(btn => {
+
+    /* Save row */
+    list.querySelectorAll('.pm-save-row-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const pid = +btn.dataset.id;
+            const row = document.getElementById('pm-row-' + pid);
+            if (!row) return;
+            const nameEl   = row.querySelector('[data-field="name"]');
+            const priceEl  = row.querySelector('[data-field="price"]');
+            const catEl    = row.querySelector('[data-field="category"]');
+            const togEl    = row.querySelector('.pm-toggle-input');
+            const name     = nameEl  ? nameEl.value.trim()   : '';
+            const price    = priceEl ? parseFloat(priceEl.value) : NaN;
+            const category = catEl   ? catEl.value  : 'special';
+            const status   = togEl   ? (togEl.checked ? 'in_stock' : 'out_stock') : 'in_stock';
+            if (!name)                    { showToast('Name cannot be empty!','error'); return; }
+            if (isNaN(price) || price<=0) { showToast('Enter a valid price!','error'); return; }
+            const prods = getProducts();
+            const idx = prods.findIndex(p => p.id === pid);
+            if (idx >= 0) {
+                prods[idx] = { ...prods[idx], name, price, category, status };
+                saveProducts(prods);
+                showToast('\u2705 Product Updated Successfully!', 'success');
+                updateAdminStats();
+            }
+        });
+    });
+
+    /* Delete row */
+    list.querySelectorAll('.pm-del-row-btn').forEach(btn => {
         btn.addEventListener('click', () => confirmDeleteProduct(+btn.dataset.id));
     });
 }
 
+/* Backwards-compat alias (called by delete modal) */
+function renderProductTable(query) { renderProductList(query); }
+
+/* ──────────────────────────────────────────────
+   ADD-CARD COLLAPSE TOGGLE
+────────────────────────────────────────────── */
+function pmToggleAddCard() {
+    const body = document.getElementById('pm-add-body');
+    const btn  = document.getElementById('pm-collapse-btn');
+    if (!body) return;
+    const collapsed = body.style.display === 'none';
+    body.style.display = collapsed ? '' : 'none';
+    if (btn) btn.textContent = collapsed ? '▲' : '▼';
+}
+
+/* ──────────────────────────────────────────────
+   SEARCH
+────────────────────────────────────────────── */
 function initAdminSearch() {
     const inp = document.getElementById('search-input');
     if (!inp) return;
     inp.addEventListener('input', () => {
         searchQuery = inp.value.trim();
-        renderProductTable(searchQuery);
+        renderProductList(searchQuery);
     });
 }
 
+/* ──────────────────────────────────────────────
+   ADD / EDIT FORM
+────────────────────────────────────────────── */
 function initAdminPanelForm() {
-    /* Initialise image upload (FileReader + drag-drop) */
-    initImageUpload();
-
-    /* Save button */
-    const saveBtn = document.getElementById('save-prod-btn');
-    if (saveBtn) saveBtn.addEventListener('click', saveProduct);
-
-    /* Reset / cancel */
+    const saveBtn  = document.getElementById('save-prod-btn');
     const resetBtn = document.getElementById('reset-prod-btn');
+    if (saveBtn)  saveBtn.addEventListener('click', saveProduct);
     if (resetBtn) resetBtn.addEventListener('click', resetProductForm);
 
     /* Delete confirm modal */
     const confirmDel = document.getElementById('confirm-del-btn');
-    if (confirmDel) {
-        confirmDel.addEventListener('click', () => {
-            const id = +document.getElementById('del-product-id').value;
-            deleteProduct(id);
-            hideModal('delete-confirm-modal');
-        });
-    }
+    if (confirmDel) confirmDel.addEventListener('click', () => {
+        const id = +document.getElementById('del-product-id').value;
+        deleteProduct(id);
+        hideModal('delete-confirm-modal');
+    });
     const cancelDel = document.getElementById('cancel-del-btn');
     if (cancelDel) cancelDel.addEventListener('click', () => hideModal('delete-confirm-modal'));
 }
 
 /* ══════════════════════════════════════════════════════════
-   IMAGE UPLOAD  (FileReader API — 100% free, no backend)
+   IMAGE UPLOAD — FileReader API (100% free, no backend)
    ══════════════════════════════════════════════════════════ */
-
 function initImageUpload() {
     const fileInput = document.getElementById('prod-img-file');
-    const urlInput = document.getElementById('prod-img');
-    const zone = document.getElementById('img-upload-zone');
-    const clearBtn = document.getElementById('clear-img-btn');
+    const urlInput  = document.getElementById('prod-img');
+    const zone      = document.getElementById('img-upload-zone');
+    const clearBtn  = document.getElementById('clear-img-btn');
     if (!zone) return;
 
-    /* ── Click anywhere in zone → open file picker ── */
     zone.addEventListener('click', () => fileInput && fileInput.click());
-
-    /* ── File selected via picker ── */
-    if (fileInput) {
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files && fileInput.files[0]) processImageFile(fileInput.files[0]);
-        });
-    }
-
-    /* ── Drag & Drop ── */
+    if (fileInput) fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) processImageFile(fileInput.files[0]);
+    });
     zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
     zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
     zone.addEventListener('drop', e => {
-        e.preventDefault();
-        zone.classList.remove('dragover');
-        const file = e.dataTransfer && e.dataTransfer.files[0];
-        if (file) processImageFile(file);
+        e.preventDefault(); zone.classList.remove('dragover');
+        const f = e.dataTransfer && e.dataTransfer.files[0];
+        if (f) processImageFile(f);
     });
-
-    /* ── URL fallback input ── */
-    if (urlInput) {
-        urlInput.addEventListener('input', () => {
-            const url = urlInput.value.trim();
-            if (url) {
-                currentImgData = url;
-                showImagePreview(url);
-            } else if (currentImgData && !currentImgData.startsWith('data:')) {
-                currentImgData = '';
-                hideImagePreview();
-            }
-        });
-    }
-
-    /* ── Clear button ── */
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            currentImgData = '';
-            if (urlInput) urlInput.value = '';
-            if (fileInput) fileInput.value = '';
-            hideImagePreview();
-            zone.classList.remove('has-img');
-            showToast('Image cleared', 'info');
-        });
-    }
+    if (urlInput) urlInput.addEventListener('input', () => {
+        const url = urlInput.value.trim();
+        if (url) { currentImgData = url; showImagePreview(url); }
+        else if (currentImgData && !currentImgData.startsWith('data:')) { currentImgData=''; hideImagePreview(); }
+    });
+    if (clearBtn) clearBtn.addEventListener('click', () => {
+        currentImgData='';
+        if (urlInput)  urlInput.value='';
+        if (fileInput) fileInput.value='';
+        hideImagePreview();
+        zone.classList.remove('has-img');
+        showToast('Image cleared','info');
+    });
 }
 
 function processImageFile(file) {
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/jpg'];
-    if (!allowed.includes(file.type)) {
-        showToast('Only JPG, PNG, or WEBP images are allowed.', 'error');
-        return;
-    }
-    const MAX_MB = 5;
-    if (file.size > MAX_MB * 1024 * 1024) {
-        showToast(`Image must be under ${MAX_MB} MB. Please compress it first.`, 'error');
-        return;
-    }
+    const allowed = ['image/jpeg','image/png','image/webp','image/gif','image/jpg'];
+    if (!allowed.includes(file.type)) { showToast('Only JPG, PNG or WEBP images are allowed.','error'); return; }
+    if (file.size > 5*1024*1024)      { showToast('Image must be under 5 MB.','error'); return; }
     const reader = new FileReader();
     reader.onload = e => {
-        currentImgData = e.target.result;   // Base64 data URL
+        currentImgData = e.target.result;
         showImagePreview(currentImgData);
-        /* Clear URL input since we're using uploaded file */
         const urlInput = document.getElementById('prod-img');
         if (urlInput) urlInput.value = '';
-        showToast('\u2705 Image uploaded successfully!', 'success');
+        showToast('\u2705 Image uploaded successfully!','success');
     };
-    reader.onerror = () => showToast('Failed to read image file. Try again.', 'error');
+    reader.onerror = () => showToast('Failed to read image file.','error');
     reader.readAsDataURL(file);
 }
 
 function showImagePreview(src) {
-    const preview = document.getElementById('img-preview');
+    const preview  = document.getElementById('img-preview');
     const previewW = document.getElementById('img-preview-wrap');
-    const zone = document.getElementById('img-upload-zone');
-    if (preview) { preview.src = src; }
-    if (previewW) { previewW.classList.add('has-img'); }
-    if (zone) { zone.classList.add('has-img'); }
+    const zone     = document.getElementById('img-upload-zone');
+    if (preview)  preview.src = src;
+    if (previewW) previewW.classList.add('has-img');
+    if (zone)     zone.classList.add('has-img');
 }
-
 function hideImagePreview() {
-    const preview = document.getElementById('img-preview');
+    const preview  = document.getElementById('img-preview');
     const previewW = document.getElementById('img-preview-wrap');
-    const zone = document.getElementById('img-upload-zone');
-    if (preview) { preview.src = ''; }
-    if (previewW) { previewW.classList.remove('has-img'); }
-    if (zone) { zone.classList.remove('has-img'); }
+    const zone     = document.getElementById('img-upload-zone');
+    if (preview)  preview.src = '';
+    if (previewW) previewW.classList.remove('has-img');
+    if (zone)     zone.classList.remove('has-img');
 }
 
-
+/* ──────────────────────────────────────────────
+   LOAD PRODUCT INTO FORM (edit mode)
+────────────────────────────────────────────── */
 function loadProductIntoForm(id) {
-    const products = getProducts();
-    const p = products.find(x => x.id === id);
+    const p = getProducts().find(x => x.id === id);
     if (!p) return;
     editingId = id;
-
-    document.getElementById('prod-name').value = p.name;
+    document.getElementById('prod-name').value  = p.name;
     document.getElementById('prod-price').value = p.price;
-    document.getElementById('prod-cat').value = p.category;
-    document.getElementById('prod-desc').value = p.description || '';
-
+    document.getElementById('prod-cat').value   = p.category;
+    document.getElementById('prod-desc').value  = p.description || '';
+    const statusEl = document.getElementById('prod-status');
+    if (statusEl) statusEl.value = p.status || 'in_stock';
     currentImgData = p.img || '';
-    const urlInput = document.getElementById('prod-img');
-    if (urlInput) urlInput.value = currentImgData.startsWith('data:') ? '' : currentImgData;
+    const urlInput  = document.getElementById('prod-img');
     const fileInput = document.getElementById('prod-img-file');
+    if (urlInput)  urlInput.value  = currentImgData.startsWith('data:') ? '' : currentImgData;
     if (fileInput) fileInput.value = '';
     if (currentImgData) showImagePreview(currentImgData);
-
-    document.getElementById('form-mode-title').textContent = 'Edit Product';
-    document.getElementById('save-prod-btn').textContent = 'Update Product';
-
-    document.getElementById('prod-form-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const titleEl = document.getElementById('form-mode-title');
+    if (titleEl) titleEl.textContent = 'Update Product';
+    /* Expand the add card and scroll to it */
+    const body = document.getElementById('pm-add-body');
+    const colBtn = document.getElementById('pm-collapse-btn');
+    if (body) body.style.display = '';
+    if (colBtn) colBtn.textContent = '▲';
+    document.getElementById('pm-add-card')?.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function resetProductForm() {
-    editingId = null;
-    currentImgData = '';
-    ['prod-name', 'prod-price', 'prod-cat', 'prod-desc'].forEach(id => {
+    editingId = null; currentImgData = '';
+    ['prod-name','prod-price','prod-cat','prod-desc'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.value = (id === 'prod-cat') ? 'special' : '';
+        if (el) el.value = (id==='prod-cat') ? 'special' : '';
     });
-    const urlInput = document.getElementById('prod-img');
+    const statusEl = document.getElementById('prod-status');
+    if (statusEl) statusEl.value = 'in_stock';
+    const urlInput  = document.getElementById('prod-img');
     const fileInput = document.getElementById('prod-img-file');
-    if (urlInput) urlInput.value = '';
+    if (urlInput)  urlInput.value  = '';
     if (fileInput) fileInput.value = '';
     hideImagePreview();
-    document.getElementById('form-mode-title').textContent = 'Add New Product';
-    document.getElementById('save-prod-btn').textContent = 'Save Product';
+    const titleEl = document.getElementById('form-mode-title');
+    if (titleEl) titleEl.textContent = 'Add Product';
 }
 
 function saveProduct() {
-    const name = document.getElementById('prod-name').value.trim();
-    const price = parseFloat(document.getElementById('prod-price').value);
-    const cat = document.getElementById('prod-cat').value;
-    const desc = document.getElementById('prod-desc').value.trim();
-    const img = (currentImgData || '').trim() || PLACEHOLDER_IMG;
-
-    if (!name) { showToast('Product name is required.', 'error'); return; }
-    if (isNaN(price) || price <= 0) { showToast('Enter a valid price.', 'error'); return; }
-
+    const name   = document.getElementById('prod-name').value.trim();
+    const price  = parseFloat(document.getElementById('prod-price').value);
+    const cat    = document.getElementById('prod-cat').value;
+    const desc   = document.getElementById('prod-desc').value.trim();
+    const statusEl = document.getElementById('prod-status');
+    const status = statusEl ? statusEl.value : 'in_stock';
+    const img    = (currentImgData || '').trim() || PLACEHOLDER_IMG;
+    if (!name)                      { showToast('Product name is required.','error');  return; }
+    if (isNaN(price) || price <= 0) { showToast('Enter a valid price.','error');       return; }
     const products = getProducts();
-
     if (editingId !== null) {
         const idx = products.findIndex(p => p.id === editingId);
         if (idx >= 0) {
-            products[idx] = { ...products[idx], name, price, img, category: cat, description: desc };
+            products[idx] = { ...products[idx], name, price, img, category:cat, description:desc, status };
             saveProducts(products);
-            showToast('Product updated!', 'success');
+            showToast('\u2705 Product Updated Successfully!', 'success');
         }
     } else {
         const newId = Math.max(0, ...products.map(p => p.id)) + 1;
-        products.push({ id: newId, name, price, img, category: cat, description: desc });
+        products.push({ id:newId, name, price, img, category:cat, description:desc, status });
         saveProducts(products);
-        showToast('Product added!', 'success');
+        showToast('\u2705 Product Added Successfully!', 'success');
     }
-
     resetProductForm();
     updateAdminStats();
-    renderProductTable();
+    renderProductList();
 }
 
+/* ──────────────────────────────────────────────
+   DELETE
+────────────────────────────────────────────── */
 function confirmDeleteProduct(id) {
     document.getElementById('del-product-id').value = id;
-    const products = getProducts();
-    const p = products.find(x => x.id === id);
+    const p = getProducts().find(x => x.id === id);
     const nameEl = document.getElementById('del-product-name');
     if (nameEl) nameEl.textContent = p ? p.name : `Product #${id}`;
     showModal('delete-confirm-modal');
 }
 
 function deleteProduct(id) {
-    let products = getProducts();
-    products = products.filter(p => p.id !== id);
+    let products = getProducts().filter(p => p.id !== id);
     saveProducts(products);
-    showToast('🗑 Product deleted.', 'error');
+    showToast('\uD83D\uDDD1 Product deleted.', 'error');
     updateAdminStats();
-    renderProductTable();
-    /* Reset form if we were editing this product */
+    renderProductList();
     if (editingId === id) resetProductForm();
+}
 }

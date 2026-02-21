@@ -118,126 +118,123 @@
                         </div>
                     </div>
 
-                    <!-- Two-column layout: table + form -->
-                    <div style="display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;">
+                    <!-- ══ PRODUCTS MANAGEMENT (Modern Full-Width Layout) ══ -->
+                    <div class="pm-section">
 
-                        <!-- ── Product Table ── -->
-                        <div>
-                            <!-- Toolbar -->
-                            <div class="admin-toolbar">
-                                <div class="search-wrap">
-                                    <svg class="si" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2">
-                                        <circle cx="11" cy="11" r="8" />
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                                    </svg>
-                                    <input type="text" id="search-input"
-                                        placeholder="Search products by name or category…" />
+                        <!-- ── ADD NEW PRODUCT CARD ── -->
+                        <div class="pm-add-card" id="pm-add-card">
+                            <div class="pm-add-header">
+                                <div class="pm-add-title">
+                                    <span class="pm-add-icon">➕</span>
+                                    <div>
+                                        <div class="pm-add-h">Add New Product</div>
+                                        <div class="pm-add-sub">Fill in the details and upload a fish image</div>
+                                    </div>
                                 </div>
-                                <button class="btn btn-primary" onclick="resetProductForm()"
-                                    style="white-space:nowrap;font-size:0.85rem;padding:10px 18px;">
-                                    ＋ Add New
-                                </button>
+                                <button class="pm-collapse-btn" id="pm-collapse-btn" onclick="pmToggleAddCard()"
+                                    title="Collapse">▲</button>
                             </div>
 
-                            <div class="admin-table-wrap">
-                                <div class="admin-table-head">
-                                    <h3>All Products</h3>
-                                    <span style="font-size:0.75rem;color:#888;">Click ✏️ to edit or 🗑 to delete</span>
-                                </div>
-                                <div style="overflow-x:auto;">
-                                    <table class="prod-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Image</th>
-                                                <th>Name</th>
-                                                <th>Category</th>
-                                                <th>Price</th>
-                                                <th>Description</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="prod-tbody">
-                                            <tr>
-                                                <td colspan="6" class="tbl-empty">Loading products…</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="pm-add-body" id="pm-add-body">
+                                <!-- Image upload area (left) + fields (right) -->
+                                <div class="pm-add-grid">
+                                    <!-- Image column -->
+                                    <div class="pm-img-col">
+                                        <div class="pm-upload-zone" id="img-upload-zone">
+                                            <input type="file" id="prod-img-file"
+                                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                                class="img-file-input" tabindex="-1" />
+                                            <div class="pm-upload-placeholder" id="img-upload-content">
+                                                <div style="font-size:2.4rem;line-height:1;">📷</div>
+                                                <p
+                                                    style="margin:8px 0 2px;font-weight:700;font-size:0.82rem;color:#374151;">
+                                                    Click to upload</p>
+                                                <p style="margin:0;font-size:0.7rem;color:#9CA3AF;">JPG · PNG · WEBP ·
+                                                    Max 5 MB</p>
+                                            </div>
+                                        </div>
+                                        <div id="img-preview-wrap" class="img-preview-wrap" style="margin-top:8px;">
+                                            <img id="img-preview" src="" alt="Preview"
+                                                onerror="this.src='${PLACEHOLDER_IMG}'" />
+                                            <button type="button" id="clear-img-btn" class="img-clear-btn">✕
+                                                Clear</button>
+                                        </div>
+                                        <div class="img-or-divider"><span>OR paste URL</span></div>
+                                        <input type="url" id="prod-img" class="form-input" placeholder="https://..."
+                                            style="font-size:0.78rem;" />
+                                    </div>
+
+                                    <!-- Fields column -->
+                                    <div class="pm-fields-col">
+                                        <div class="pm-field-row">
+                                            <label class="form-label" for="prod-name">Fish Name *</label>
+                                            <input type="text" id="prod-name" class="form-input"
+                                                placeholder="e.g. Flowerhorn (S)" maxlength="80" />
+                                        </div>
+                                        <div class="pm-field-row">
+                                            <label class="form-label" for="prod-price">Price (₹) *</label>
+                                            <input type="number" id="prod-price" class="form-input"
+                                                placeholder="e.g. 500" min="1" step="1" />
+                                        </div>
+                                        <div class="pm-field-row">
+                                            <label class="form-label" for="prod-cat">Category *</label>
+                                            <select id="prod-cat" class="form-input">
+                                                <option value="special">🏆 AK Special Collection</option>
+                                                <option value="premium">💎 AK Premium Collection</option>
+                                                <option value="guppy">🐟 AK Guppy Collection</option>
+                                            </select>
+                                        </div>
+                                        <div class="pm-field-row">
+                                            <label class="form-label" for="prod-status">Stock Status</label>
+                                            <select id="prod-status" class="form-input">
+                                                <option value="in_stock">✅ In Stock</option>
+                                                <option value="out_stock">❌ Out of Stock</option>
+                                            </select>
+                                        </div>
+                                        <div class="pm-field-row">
+                                            <label class="form-label" for="prod-desc">Description</label>
+                                            <textarea id="prod-desc" class="form-input" rows="2"
+                                                placeholder="Short description…" style="resize:vertical;"></textarea>
+                                        </div>
+                                        <div class="pm-add-actions">
+                                            <button id="save-prod-btn" class="btn btn-primary pm-save-btn">
+                                                ✅ <span id="form-mode-title">Add Product</span>
+                                            </button>
+                                            <button id="reset-prod-btn" class="btn btn-outline pm-cancel-btn">✕
+                                                Cancel</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- ── Add / Edit Form ── -->
-                        <div class="prod-panel" id="prod-form-panel">
-                            <h3 id="form-mode-title">➕ Add New Product</h3>
-
-                            <div class="form-group">
-                                <label class="form-label" for="prod-name">Product Name *</label>
-                                <input type="text" id="prod-name" class="form-input" placeholder="e.g. Flowerhorn (S)"
-                                    maxlength="80" />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="prod-price">Price (₹) *</label>
-                                <input type="number" id="prod-price" class="form-input" placeholder="e.g. 500" min="1"
-                                    step="1" />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="prod-cat">Category *</label>
-                                <select id="prod-cat" class="form-input">
-                                    <option value="special">🏆 AK Special Collection</option>
-                                    <option value="premium">💎 AK Premium Collection</option>
-                                    <option value="guppy">🐟 AK Guppy Collection</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Fish Image *</label>
-
-                                <!-- ── Drag & Drop / Click-to-Upload Zone ── -->
-                                <div class="img-upload-zone" id="img-upload-zone">
-                                    <input type="file" id="prod-img-file"
-                                        accept="image/jpeg,image/png,image/webp,image/gif" class="img-file-input"
-                                        tabindex="-1" />
-                                    <div class="img-upload-content" id="img-upload-content">
-                                        <div class="img-upload-icon">📷</div>
-                                        <p class="img-upload-label"><strong>Click to upload</strong> or drag &amp; drop
-                                        </p>
-                                        <p class="img-upload-sub">JPG · PNG · WEBP &nbsp;|&nbsp; Max 5 MB</p>
+                        <!-- ── PRODUCT LIST ── -->
+                        <div class="pm-list-card">
+                            <div class="pm-list-header">
+                                <div class="pm-list-title">
+                                    🐟 Current Inventory
+                                    <span class="pm-count-badge" id="pm-count-badge">0</span>
+                                </div>
+                                <div class="pm-list-controls">
+                                    <div class="search-wrap" style="min-width:200px;">
+                                        <svg class="si" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                        <input type="text" id="search-input" placeholder="Search…" />
                                     </div>
                                 </div>
-
-                                <!-- ── OR paste a URL ── -->
-                                <div class="img-or-divider"><span>OR paste image URL</span></div>
-                                <input type="url" id="prod-img" class="form-input"
-                                    placeholder="https://example.com/fish.jpg (optional)" />
-
-                                <!-- ── Live preview + clear ── -->
-                                <div id="img-preview-wrap" class="img-preview-wrap">
-                                    <img id="img-preview" src="" alt="Preview"
-                                        onerror="this.src='https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80'" />
-                                    <button type="button" id="clear-img-btn" class="img-clear-btn">✕ Clear
-                                        Image</button>
-                                </div>
                             </div>
 
-
-                            <div class="form-group">
-                                <label class="form-label" for="prod-desc">Description (optional)</label>
-                                <textarea id="prod-desc" class="form-input" rows="3"
-                                    placeholder="Short product description…" style="resize:vertical;"></textarea>
-                            </div>
-
-                            <div class="panel-actions">
-                                <button id="save-prod-btn" class="btn btn-primary" style="flex:1;">✅ Save
-                                    Product</button>
-                                <button id="reset-prod-btn" class="btn btn-outline" style="flex:1;">✕ Cancel</button>
+                            <!-- Product Cards List -->
+                            <div class="pm-product-list" id="pm-product-list">
+                                <div class="tbl-empty" style="padding:40px;">Loading products…</div>
                             </div>
                         </div>
 
                     </div>
-                    <!-- end two-col -->
+                    <!-- ══ end PRODUCTS MANAGEMENT ══ -->
 
                     <!-- ── Orders Table ── -->
                     <div class="admin-table-wrap" style="margin-top:28px;">
