@@ -1,8 +1,10 @@
 /* ============================================================
    AK FishFarms  Admin Panel Script  (admin-script.js)
-   Backend: Vercel Serverless API
+   STABLE VERSION 4.0 - NO API DELAYS - VERCEL CLEAN URL READY
    ============================================================ */
 'use strict';
+
+console.log("Admin Login script loaded");
 
 const LS = {
     session: 'akfish_admin_logged_in'
@@ -20,26 +22,30 @@ let currentSection = 'dashboard';
 let addImgData = '';
 
 /* 
-   DATA HELPERS
+   AUTH HELPERS
 */
-const getProducts = () => globalProducts;
-const getOrders = () => globalOrders;
-const getCreds = () => {
-    try { return JSON.parse(localStorage.getItem(LS.creds)); } catch { return null; }
-};
-const getDefaultCreds = () => ({ username: 'admin', password: 'admin123' });
+function checkAuth() {
+    return sessionStorage.getItem(LS.session) === 'true';
+}
 
+function doLogout() {
+    sessionStorage.removeItem(LS.session);
+    window.location.href = 'admin-login';
+}
+
+/* 
+   DATA FETCHING (DASHBOARD ONLY)
+*/
 async function fetchAllData() {
     try {
-        const prodRes = await fetch('/api/products');
-        if (prodRes.ok) globalProducts = await prodRes.json();
-
-        const orderRes = await fetch('/api/orders');
-        if (orderRes.ok) globalOrders = await orderRes.json();
-
-        const offerRes = await fetch('/api/offers');
-        if (offerRes.ok) globalOffers = await offerRes.json();
-
+        const [pRes, oRes, fRes] = await Promise.all([
+            fetch('/api/products'),
+            fetch('/api/orders'),
+            fetch('/api/offers')
+        ]);
+        if (pRes.ok) globalProducts = await pRes.json();
+        if (oRes.ok) globalOrders = await oRes.json();
+        if (fRes.ok) globalOffers = await fRes.json();
         refreshCurrentSection();
     } catch (err) {
         console.error('Fetch error:', err);
@@ -62,16 +68,10 @@ function showToast(msg, type = 'success') {
     t.className = `toast ${type}`;
     t.innerHTML = `<span></span><span class="toast-msg">${msg}</span>`;
     root.appendChild(t);
-    setTimeout(() => { t.style.animation = 'toastOut .35s ease forwards'; setTimeout(() => t.remove(), 370); }, 3200);
-}
-
-function checkAuth() {
-    return sessionStorage.getItem(LS.session) === 'true';
-}
-
-function doLogout() {
-    sessionStorage.removeItem(LS.session);
-    window.location.href = 'admin-login.html';
+    setTimeout(() => {
+        t.style.animation = 'toastOut .35s ease forwards';
+        setTimeout(() => t.remove(), 370);
+    }, 3200);
 }
 
 /* 
@@ -94,11 +94,11 @@ function openSidebar() { document.getElementById('adm-sidebar')?.classList.add('
 function closeSidebar() { document.getElementById('adm-sidebar')?.classList.remove('open'); document.getElementById('sidebar-overlay')?.classList.remove('show'); }
 
 /* 
-   DASHBOARD
+   DASHBOARD / TABLES (OMITTED FOR BREVITY BUT KEPT IN FINAL FILE)
 */
 function renderDashboard() {
-    const orders = getOrders();
-    const products = getProducts();
+    const orders = globalOrders;
+    const products = globalProducts;
     const revenue = orders.reduce((s, o) => s + (o.total || 0), 0);
     const pending = orders.filter(o => o.status === 'Pending').length;
 
@@ -121,16 +121,11 @@ function renderDashboard() {
     }
 }
 
-/* 
-   PRODUCTS 
-*/
 function renderProductTable() {
-    const products = getProducts();
+    const products = globalProducts;
     const tbody = document.getElementById('prod-tbody');
     if (!tbody) return;
-
     document.getElementById('prod-count').textContent = products.length;
-
     tbody.innerHTML = products.map(p => `
         <tr id="pr-${p.id}">
             <td><img class="prod-thumb" src="${p.img || PLACEHOLDER}" /></td>
@@ -160,29 +155,7 @@ function renderProductTable() {
     `).join('') || '<tr><td colspan="8">No products found</td></tr>';
 }
 
-async function handleRowImageUpload(input, id) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        const img = e.target.result;
-        try {
-            const res = await fetch('/api/products', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, img })
-            });
-            if (res.ok) {
-                showToast('Image updated successfully');
-                fetchAllData();
-            }
-        } catch (err) {
-            showToast('Upload failed', 'error');
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
+/* API CRUD FUNCTIONS */
 async function updateProduct(id) {
     const row = document.getElementById('pr-' + id);
     const updates = {
@@ -226,11 +199,31 @@ async function deleteProduct(id) {
     }
 }
 
-/* 
-   ORDERS
-*/
+async function handleRowImageUpload(input, id) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const img = e.target.result;
+        try {
+            const res = await fetch('/api/products', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, img })
+            });
+            if (res.ok) {
+                showToast('Image updated successfully');
+                fetchAllData();
+            }
+        } catch (err) {
+            showToast('Upload failed', 'error');
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
 function renderOrdersTable() {
-    const orders = getOrders();
+    const orders = globalOrders;
     const tbody = document.getElementById('orders-tbody');
     if (!tbody) return;
     document.getElementById('orders-count').textContent = orders.length;
@@ -242,13 +235,13 @@ function renderOrdersTable() {
             <td>${o.phone || ''}</td>
             <td>${o.city || ''}</td>
             <td>${(o.total || 0).toLocaleString('en-IN')}</td>
-            <td>${fmtDate(o.timestamp)}</td>
+            <td>${o.timestamp ? new Date(o.timestamp).toLocaleDateString() : ''}</td>
             <td>
                 <select onchange="updateOrderStatus('${o.id}', this.value)">
                     ${STATUS_LIST.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
                 </select>
             </td>
-            <td><button onclick="viewOrder('${o.id}')">View</button></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="viewOrder('${o.id}')">View</button></td>
         </tr>
     `).join('') || '<tr><td colspan="8">No orders</td></tr>';
 }
@@ -263,30 +256,23 @@ async function updateOrderStatus(id, status) {
         if (res.ok) {
             showToast(`Order ${id} set to ${status}`);
             fetchAllData();
-        } else {
-            showToast('Update failed', 'error');
         }
     } catch (err) {
-        showToast('Sync error', 'error');
+        showToast('Update failed', 'error');
     }
 }
 
-/* 
-   OFFERS & COUPONS
-*/
 function renderOffersTable() {
     const offers = globalOffers;
     const tbody = document.getElementById('offers-tbody');
     if (!tbody) return;
-
     document.getElementById('off-count').textContent = offers.length;
-
     tbody.innerHTML = offers.map(o => `
         <tr id="off-row-${o.id}">
-            <td><input class="inline-inp" type="text" data-field="title" value="${o.title}" style="font-weight:700;" /></td>
+            <td><input class="inline-inp" type="text" data-field="title" value="${o.title}" /></td>
             <td><code class="code-badge">${o.couponCode}</code></td>
-            <td><input class="inline-inp" type="number" data-field="val" value="${o.discountValue}" style="width:60px;" /></td>
-            <td><input class="inline-inp" type="number" data-field="min" value="${o.minOrder || 0}" style="width:80px;" /></td>
+            <td><input class="inline-inp" type="number" data-field="val" value="${o.discountValue}" /></td>
+            <td><input class="inline-inp" type="number" data-field="min" value="${o.minOrder || 0}" /></td>
             <td><input class="inline-inp" type="date"   data-field="exp" value="${o.expiryDate || ''}" /></td>
             <td>
                 <button class="status-toggle-btn ${o.status}" onclick="toggleOfferStatus('${o.id}')">
@@ -300,7 +286,7 @@ function renderOffersTable() {
                 </div>
             </td>
         </tr>
-    `).join('') || '<tr><td colspan="7" class="tbl-empty">No offers found</td></tr>';
+    `).join('') || '<tr><td colspan="7">No offers found</td></tr>';
 }
 
 async function updateOffer(id) {
@@ -311,22 +297,12 @@ async function updateOffer(id) {
         minOrder: parseFloat(row.querySelector('[data-field="min"]').value) || 0,
         expiryDate: row.querySelector('[data-field="exp"]').value
     };
-
-    if (!updates.title || isNaN(updates.discountValue)) {
-        showToast('Invalid inputs', 'error');
-        return;
-    }
-
     const res = await fetch('/api/offers', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, ...updates })
     });
-
-    if (res.ok) {
-        showToast('Offer updated');
-        fetchAllData();
-    }
+    if (res.ok) { showToast('Offer updated'); fetchAllData(); }
 }
 
 async function addOffer() {
@@ -337,11 +313,7 @@ async function addOffer() {
     const minOrder = parseFloat(document.getElementById('off-min').value) || 0;
     const expiryDate = document.getElementById('off-expiry').value;
     const bannerText = document.getElementById('off-banner').value.trim();
-
-    if (!title || !couponCode || isNaN(discountValue)) {
-        showToast('Please fill all required fields', 'error');
-        return;
-    }
+    if (!title || !couponCode) return showToast('Fill all fields', 'error');
 
     const res = await fetch('/api/offers', {
         method: 'POST',
@@ -351,37 +323,7 @@ async function addOffer() {
             minOrder, expiryDate, bannerText, status: 'active'
         })
     });
-
-    if (res.ok) {
-        showToast('Offer added successfully');
-        resetOfferForm();
-        fetchAllData();
-    }
-}
-
-async function toggleOfferStatus(id) {
-    const offer = globalOffers.find(o => o.id === id);
-    if (!offer) return;
-    const newStatus = offer.status === 'active' ? 'inactive' : 'active';
-    const res = await fetch('/api/offers', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus })
-    });
-    if (res.ok) {
-        showToast(`Offer set to ${newStatus}`);
-        fetchAllData();
-    }
-}
-
-async function deleteOffer(id) {
-    if (confirm('Delete this offer?')) {
-        const res = await fetch(`/api/offers?id=${id}`, { method: 'DELETE' });
-        if (res.ok) {
-            showToast('Offer deleted');
-            fetchAllData();
-        }
-    }
+    if (res.ok) { showToast('Added'); fetchAllData(); resetOfferForm(); }
 }
 
 function resetOfferForm() {
@@ -389,60 +331,107 @@ function resetOfferForm() {
     document.getElementById('off-code').value = '';
     document.getElementById('off-val').value = '';
     document.getElementById('off-min').value = '';
-    document.getElementById('off-expiry').value = '';
-    document.getElementById('off-banner').value = '';
+}
+
+function toggleOfferStatus(id) {
+    const off = globalOffers.find(o => o.id === id);
+    if (!off) return;
+    const newStatus = off.status === 'active' ? 'inactive' : 'active';
+    fetch('/api/offers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus })
+    }).then(() => fetchAllData());
+}
+
+function deleteOffer(id) {
+    if (confirm('Delete?')) {
+        fetch(`/api/offers?id=${id}`, { method: 'DELETE' }).then(() => fetchAllData());
+    }
+}
+
+function renderReports() {
+    const orders = globalOrders;
+    document.getElementById('rpt-order-count').textContent = orders.length;
+    document.getElementById('rpt-revenue').textContent = orders.reduce((s, o) => s + (o.total || 0), 0).toLocaleString('en-IN');
 }
 
 function toggleAddOfferCard() {
     const body = document.getElementById('add-offer-body');
     const btn = document.getElementById('offer-toggle-btn');
-    if (body.style.display === 'none') {
-        body.style.display = 'block';
-        btn.textContent = 'Collapse';
-    } else {
-        body.style.display = 'none';
-        btn.textContent = 'Expand';
-    }
+    if (!body || !btn) return;
+    const isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'block' : 'none';
+    btn.textContent = isHidden ? 'Collapse' : 'Expand';
 }
 
 /* 
-   REPORTS
+   INITIALIZATION & AUTH LOOP
 */
-function renderReports() {
-    const orders = getOrders();
-    document.getElementById('rpt-order-count').textContent = orders.length;
-    document.getElementById('rpt-revenue').textContent = orders.reduce((s, o) => s + (o.total || 0), 0).toLocaleString('en-IN');
-}
-
-/* 
-   MISC
-*/
-function fmtDate(d) { return d ? new Date(d).toLocaleDateString() : ''; }
-function closeSidebar() { document.getElementById('adm-sidebar')?.classList.remove('open'); }
-
-// Consolidated Initialization
 const init = () => {
-    const p = window.location.pathname.toLowerCase();
-    const isLoginPage = p.includes('admin-login') || p.includes('login');
-    const isDashboard = (p.includes('admin-dashboard') || p.includes('admin')) && !isLoginPage;
+    const path = window.location.pathname.toLowerCase();
+    const isLoginPage = path.includes('admin-login');
+    const isDashboard = (path.includes('admin-dashboard') || path.includes('admin')) && !isLoginPage;
 
     const loggedIn = checkAuth();
+    console.log("Current path:", path, "Logged in:", loggedIn);
 
-    // 1. Handle Protected Routes & Redirects
+    // 1. Redirect Rules
     if (loggedIn && isLoginPage) {
-        window.location.href = 'admin-dashboard.html';
+        console.log("Redirecting logged in user to dashboard");
+        window.location.href = '/admin-dashboard';
         return;
     }
     if (!loggedIn && isDashboard) {
-        window.location.href = 'admin-login.html';
+        console.log("Redirecting unauthorized user to login");
+        window.location.href = '/admin-login';
         return;
     }
 
-    // 2. Dashboard Logic
+    // 2. Login Page Logic
+    const loginForm = document.getElementById('login-form');
+    if (isLoginPage && loginForm) {
+        console.log("Login form detected and ready");
+
+        // Ensure absolutely no other listeners exist by clearing onsubmit if any
+        loginForm.onsubmit = async (e) => {
+            console.log("Login submission intercepted");
+            e.preventDefault();
+            e.stopPropagation();
+
+            const errEl = document.getElementById('login-err');
+            if (errEl) errEl.textContent = 'Verifying...';
+
+            const u = document.getElementById('l-user')?.value.trim();
+            const p = document.getElementById('l-pass')?.value.trim();
+
+            console.log("Attempting login with:", u);
+
+            if (u === 'admin' && p === 'admin123') {
+                console.log("Authentication success");
+                sessionStorage.setItem(LS.session, 'true');
+                if (errEl) errEl.textContent = 'Identity Verified! Redirecting...';
+
+                // Immediate redirect
+                window.location.href = '/admin-dashboard';
+                return false;
+            } else {
+                console.log("Authentication failed");
+                if (errEl) {
+                    errEl.textContent = 'Invalid Identity - Access Denied';
+                    errEl.style.color = '#F87171';
+                }
+                return false;
+            }
+        };
+    }
+
+    // 3. Dashboard Logic
     if (loggedIn && isDashboard) {
+        console.log("Initializing Admin Dashboard data");
         fetchAllData();
 
-        // Dashboard listeners
+        // Bind global components
         const bLogout = document.getElementById('logout-btn') || document.getElementById('logout-hd-btn');
         if (bLogout) bLogout.onclick = doLogout;
 
@@ -459,82 +448,22 @@ const init = () => {
             btn.addEventListener('click', () => switchSection(btn.dataset.section));
         });
     }
-
-    // 3. Login Logic (Strictly prevent refresh)
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        // High-priority interceptor
-        loginForm.onsubmit = async (e) => {
-            e.preventDefault();
-            e.stopPropagation(); // Stop any other listeners
-
-            const errEl = document.getElementById('login-err');
-            if (errEl) {
-                errEl.textContent = 'Checking...';
-                errEl.style.color = 'var(--aqua)';
-            }
-
-            const u = document.getElementById('l-user')?.value.trim();
-            const p = document.getElementById('l-pass')?.value.trim();
-
-            if (!u || !p) {
-                if (errEl) {
-                    errEl.textContent = 'Credentials required';
-                    errEl.style.color = '#F87171';
-                }
-                return false;
-            }
-
-            // INSTANT HYBRID AUTH (Rule 2)
-            if (u === 'admin' && p === 'admin123') {
-                sessionStorage.setItem(LS.session, 'true');
-                if (errEl) errEl.textContent = 'Success! Opening...';
-                window.location.href = 'admin-dashboard.html';
-                return false;
-            }
-
-            // API FALLBACK
-            try {
-                const res = await fetch('/api/admin', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: u, password: p })
-                });
-
-                if (res.ok) {
-                    sessionStorage.setItem(LS.session, 'true');
-                    window.location.href = 'admin-dashboard.html';
-                } else {
-                    if (errEl) {
-                        errEl.textContent = 'Invalid credentials';
-                        errEl.style.color = '#F87171';
-                    }
-                }
-            } catch (err) {
-                if (errEl) {
-                    errEl.textContent = 'Identity error - Check credentials';
-                    errEl.style.color = '#F87171';
-                }
-            }
-            return false;
-        };
-    }
 };
 
-// Start logic
+// Final execution entry
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
 }
 
-// Global Exports
+// Ensure global accessibility for inline HTML handlers
 window.switchSection = switchSection;
 window.updateProduct = updateProduct;
 window.deleteProduct = deleteProduct;
-window.updateOrderStatus = updateOrderStatus;
 window.handleRowImageUpload = handleRowImageUpload;
 window.toggleAddOfferCard = toggleAddOfferCard;
 window.toggleOfferStatus = toggleOfferStatus;
 window.updateOffer = updateOffer;
 window.deleteOffer = deleteOffer;
+window.doLogout = doLogout;
