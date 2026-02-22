@@ -1,72 +1,49 @@
-import { getOffers, saveOffers } from './lib/storage';
+import { db, initDb } from './lib/db';
 
 export default async function handler(req, res) {
     const { method } = req;
 
-    if (method === 'GET') {
-        try {
-            const offers = await getOffers();
-            res.status(200).json(offers);
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to fetch offers' });
-        }
-    } else if (method === 'POST') {
-        try {
-            const offers = await getOffers();
-            const newOffer = {
-                ...req.body,
-                id: `OFF-${Date.now()}`,
-                status: 'active',
-                createdAt: new Date().toISOString()
-            };
-            offers.push(newOffer);
-            if (await saveOffers(offers)) {
-                res.status(201).json(newOffer);
-            } else {
-                res.status(500).json({ error: 'Failed to save offer' });
-            }
-        } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    } else if (method === 'PUT') {
-        try {
-            const { id, ...updates } = req.body;
-            const offers = await getOffers();
-            const index = offers.findIndex(o => o.id === id);
+    try {
+        await initDb();
 
-            if (index > -1) {
-                offers[index] = {
-                    ...offers[index],
-                    ...updates,
-                    updatedAt: new Date().toISOString()
-                };
-                if (await saveOffers(offers)) {
-                    res.status(200).json(offers[index]);
-                } else {
-                    res.status(500).json({ error: 'Failed to update offer' });
-                }
-            } else {
-                res.status(404).json({ error: 'Offer not found' });
-            }
-        } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    } else if (method === 'DELETE') {
-        try {
-            const { id } = req.query;
-            const offers = await getOffers();
-            const filtered = offers.filter(o => o.id !== id);
+        switch (method) {
+            case 'GET':
+                const { rows: offers } = await db`SELECT * FROM offers ORDER BY created_at DESC`;
+                return res.status(200).json(offers.map(o => ({
+                    ...o,
+                    couponCode: o.coupon_code,
+                    discountType: o.discount_type,
+                    discountValue: o.discount_value,
+                    minOrder: o.min_order
+                })));
 
-            if (await saveOffers(filtered)) {
-                res.status(200).json({ message: 'Offer deleted' });
-            } else {
-                res.status(500).json({ error: 'Failed to delete offer' });
-            }
-        } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            case 'POST':
+                const { title, couponCode, discountType, discountValue, minOrder, expiry, banner, status } = req.body;
+                const { rows: newOffer } = await db`
+                    INSERT INTO offers (title, coupon_code, discount_type, discount_value, min_order, expiry, banner, status)
+                    VALUES (${title}, ${couponCode}, ${discountType}, ${discountValue}, ${minOrder}, ${expiry}, ${banner}, ${status || 'active'})
+                    RETURNING *
+                `;
+                return res.status(201).json(newOffer[0]);
+
+            case 'PUT':
+                const { id, status: upStatus } = req.body;
+                const { rows: updated } = await db`
+                    UPDATE offers SET status = ${upStatus} WHERE id = ${id} RETURNING *
+                `;
+                return res.status(200).json(updated[0]);
+
+            case 'DELETE':
+                const { id: delId } = req.query;
+                await db`DELETE FROM offers WHERE id = ${delId}`;
+                return res.status(200).json({ success: true });
+
+            default:
+                res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+                return res.status(405).end(`Method ${method} Not Allowed`);
         }
-    } else {
-        res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
-        res.status(405).end(`Method ${method} Not Allowed`);
+    } catch (error) {
+        console.error('Offers API Error:', error);
+        return res.status(500).json({ error: 'Database Connection Error' });
     }
 }

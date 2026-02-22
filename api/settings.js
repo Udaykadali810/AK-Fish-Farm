@@ -1,27 +1,32 @@
-import { kv } from '@vercel/kv';
+import { db, initDb } from './lib/db';
 
 export default async function handler(req, res) {
     const { method } = req;
-    const SETTINGS_KEY = 'akf_settings';
 
-    if (method === 'GET') {
-        try {
-            const settings = await kv.get(SETTINGS_KEY);
-            res.status(200).json(settings || {});
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to fetch settings' });
-        }
-    } else if (method === 'POST' || method === 'PUT') {
-        try {
-            const existing = await kv.get(SETTINGS_KEY) || {};
+    try {
+        await initDb();
+
+        if (method === 'GET') {
+            const { rows } = await db`SELECT value FROM settings WHERE key = 'global_settings'`;
+            const settings = rows.length > 0 ? JSON.parse(rows[0].value) : {};
+            return res.status(200).json(settings);
+        } else if (method === 'POST' || method === 'PUT') {
+            const { rows: existingRows } = await db`SELECT value FROM settings WHERE key = 'global_settings'`;
+            const existing = existingRows.length > 0 ? JSON.parse(existingRows[0].value) : {};
             const updated = { ...existing, ...req.body };
-            await kv.set(SETTINGS_KEY, updated);
-            res.status(200).json(updated);
-        } catch (error) {
-            res.status(500).json({ error: 'Failed to save settings' });
+
+            await db`
+                INSERT INTO settings (key, value)
+                VALUES ('global_settings', ${JSON.stringify(updated)})
+                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP
+            `;
+            return res.status(200).json(updated);
         }
-    } else {
+
         res.setHeader('Allow', ['GET', 'POST', 'PUT']);
-        res.status(405).end(`Method ${method} Not Allowed`);
+        return res.status(405).end(`Method ${method} Not Allowed`);
+    } catch (error) {
+        console.error('Settings API Error:', error);
+        return res.status(500).json({ error: 'Database Connection Error' });
     }
 }
