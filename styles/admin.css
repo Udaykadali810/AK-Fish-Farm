@@ -1296,14 +1296,68 @@ select.form-input option {
     border-radius: 14px;
     padding: 16px 20px;
     display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 12px;
     transition: border-color .2s;
 }
 
 .track-card:hover {
     border-color: rgba(0, 212, 255, 0.2);
+}
+
+.track-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.track-mid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: .78rem;
+    color: var(--muted);
+}
+
+.track-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.track-status-btn {
+    font-size: .7rem;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--dim);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all .2s;
+    min-height: 30px;
+}
+
+.track-status-btn:hover {
+    border-color: var(--aqua);
+    color: var(--white);
+    background: rgba(0, 212, 255, 0.1);
+}
+
+.track-status-btn.active {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--aqua);
+    color: var(--aqua);
+}
+
+.track-empty {
+    text-align: center;
+    padding: 40px;
+    color: #475569;
+    font-size: .9rem;
 }
 
 .track-id {
@@ -1475,7 +1529,8 @@ select.form-input option {
     padding: 20px;
 }
 
-.modal-bg.open {
+.modal-bg.open,
+.modal-bg.show {
     display: flex;
 }
 
@@ -1687,6 +1742,29 @@ select.form-input option {
     display: flex;
     align-items: center;
     justify-content: space-around;
+    padding: 0 8px;
+}
+
+.bottom-nav>* {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(13, 17, 33, 0.97);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    z-index: 400;
+    padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .bn-item {
@@ -1751,7 +1829,7 @@ select.form-input option {
     }
 
     .bottom-nav {
-        display: block;
+        display: flex;
     }
 
     .add-prod-grid {
