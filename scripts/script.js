@@ -100,6 +100,7 @@ async function initShopPage() {
     console.log("Initializing Shop Engine...");
     await fetchData();
     updateCartBadge();
+    renderLiveBanner();
 
     const grid = document.getElementById('product-grid');
     const tabs = document.querySelectorAll('.tab');
@@ -125,6 +126,43 @@ async function initShopPage() {
         });
         render('all');
     }
+}
+
+function renderLiveBanner() {
+    const root = document.getElementById('live-banner-root');
+    if (!root) return;
+
+    const activeOffer = globalOffers.find(o => o.status === 'active' || !o.status);
+
+    let title = "Fresh Fish Offers Available Today at AK Fish Farms";
+    let desc = "Experience premium quality aquarium fish with safe delivery across India.";
+    let badge = "Live Deals";
+
+    if (activeOffer) {
+        title = activeOffer.title;
+        const discText = activeOffer.discountType === 'percentage' ? `${activeOffer.discountValue}% OFF` : `₹${activeOffer.discountValue} OFF`;
+        desc = `Exclusive ${discText}! Use code ${activeOffer.couponCode} on your first order.`;
+        badge = "Today's Special Deal";
+    }
+
+    root.innerHTML = `
+        <div class="premium-offer-banner" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+            <img class="banner-bg-img" src="https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=1200" alt="Farm Banner">
+            <div class="banner-glass-overlay"></div>
+            <div class="banner-content">
+                <div class="banner-badge">${badge}</div>
+                <h2 class="banner-h">${title}</h2>
+                <p class="banner-p">${desc}</p>
+                <div class="banner-cta">
+                    Shop Now 
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 async function initCartPage() {
@@ -171,23 +209,54 @@ function renderCart() {
 
     itemsEl.innerHTML = cart.map(i => `
         <div class="cart-item">
-            <div class="ci-info">
-                <div class="ci-name">${i.name}</div>
-                <div class="ci-price">₹${(i.price * i.qty).toLocaleString('en-IN')}</div>
+            <img class="cart-item-img" src="${i.img || PLACEHOLDER_IMG}" alt="${i.name}">
+            <div class="cart-item-info">
+                <div class="cart-item-name">${i.name}</div>
+                <div class="cart-item-price">₹${(i.price).toLocaleString('en-IN')}</div>
             </div>
-            <div class="qty-sel">
-                <button onclick="UI.updateQty('${i.id}', -1)">-</button>
-                <span>${i.qty}</span>
-                <button onclick="UI.updateQty('${i.id}', 1)">+</button>
+            <div class="cart-item-right">
+                <div class="qty-row">
+                    <button class="qty-btn" onclick="UI.updateQty('${i.id}', -1)">-</button>
+                    <span class="qty-num">${i.qty}</span>
+                    <button class="qty-btn" onclick="UI.updateQty('${i.id}', 1)">+</button>
+                </div>
+                <button class="cart-item-del" onclick="UI.updateQty('${i.id}', -${i.qty})" aria-label="Remove item">✕</button>
             </div>
         </div>
     `).join('');
 
-    const totalEl = document.getElementById('cart-total');
-    if (totalEl) totalEl.textContent = `₹${getCartTotal().toLocaleString('en-IN')}`;
-
+    const total = getCartTotal();
     const subtotalEl = document.getElementById('cart-subtotal');
-    if (subtotalEl) subtotalEl.textContent = `₹${getCartTotal().toLocaleString('en-IN')}`;
+    if (subtotalEl) subtotalEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+
+    // Item Count Badge
+    const countEl = document.getElementById('item-count');
+    if (countEl) countEl.textContent = `(${cart.reduce((a, b) => a + b.qty, 0)} Items)`;
+
+    // Coupon logic
+    const discRow = document.getElementById('discount-row');
+    const discAmt = document.getElementById('discount-amount');
+    const couponTag = document.getElementById('applied-coupon-tag');
+    const finalTotalEl = document.getElementById('cart-total');
+
+    const coupon = JSON.parse(localStorage.getItem(LS_COUPON) || 'null');
+    let discount = 0;
+
+    if (coupon) {
+        if (coupon.discountType === 'percentage') {
+            discount = Math.floor(total * (coupon.discountValue / 100));
+        } else {
+            discount = coupon.discountValue;
+        }
+
+        if (discRow) discRow.style.display = 'flex';
+        if (discAmt) discAmt.textContent = `-₹${discount.toLocaleString('en-IN')}`;
+        if (couponTag) couponTag.textContent = coupon.couponCode;
+    } else {
+        if (discRow) discRow.style.display = 'none';
+    }
+
+    if (finalTotalEl) finalTotalEl.textContent = `₹${(total - discount).toLocaleString('en-IN')}`;
 }
 
 /* 
@@ -234,8 +303,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         const p = window.location.pathname.toLowerCase();
         console.log("UI Bridge Ready - Monitoring Path:", p);
-        if (p.includes('index.html') || p === '/' || p.endsWith('/')) initShopPage();
-        else if (p.includes('cart.html')) initCartPage();
+
+        // Robust routing for both local and dev/production environments
+        if (p === '/' || p.endsWith('/') || p.includes('index.html')) {
+            initShopPage();
+        } else if (p.includes('cart')) {
+            initCartPage();
+        }
     } catch (e) {
         console.error("UI Module Load Error:", e);
     }

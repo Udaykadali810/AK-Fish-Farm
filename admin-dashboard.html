@@ -31,30 +31,30 @@
             </div>
             <nav class="sidebar-nav">
                 <button class="nav-item active" data-section="dashboard">
-                    <span class="nav-ico"></span> Dashboard
+                    <span class="nav-ico">📊</span> Dashboard
                 </button>
                 <button class="nav-item" data-section="orders">
-                    <span class="nav-ico"></span> Orders
+                    <span class="nav-ico">📦</span> Orders
                 </button>
                 <button class="nav-item" data-section="track">
-                    <span class="nav-ico"></span> Track Orders
+                    <span class="nav-ico">🚚</span> Track Orders
                 </button>
                 <button class="nav-item" data-section="products">
-                    <span class="nav-ico"></span> Products
+                    <span class="nav-ico">🐠</span> Products
                 </button>
                 <button class="nav-item" data-section="offers">
-                    <span class="nav-ico"></span> Offers & Coupons
+                    <span class="nav-ico">🏷️</span> Offers & Coupons
                 </button>
                 <button class="nav-item" data-section="security">
-                    <span class="nav-ico"></span> Security
+                    <span class="nav-ico">🔐</span> Security
                 </button>
                 <button class="nav-item" data-section="reports">
-                    <span class="nav-ico"></span> Reports
+                    <span class="nav-ico">📈</span> Reports
                 </button>
             </nav>
             <div class="sidebar-foot">
                 <button class="nav-item nav-logout" id="logout-btn">
-                    <span class="nav-ico"></span> Logout
+                    <span class="nav-ico">🚪</span> Logout
                 </button>
                 <div class="sb-version">Cloud Sync v3.5</div>
             </div>
@@ -94,28 +94,28 @@
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-ico ico-aqua"></div>
+                            <div class="stat-ico ico-aqua">📝</div>
                             <div>
                                 <div class="stat-val" id="ds-orders">0</div>
                                 <div class="stat-lbl">Total Orders</div>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-ico ico-orange"></div>
+                            <div class="stat-ico ico-orange">💰</div>
                             <div>
                                 <div class="stat-val" id="ds-revenue">0</div>
                                 <div class="stat-lbl">Total Revenue</div>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-ico ico-green"></div>
+                            <div class="stat-ico ico-green">🐟</div>
                             <div>
                                 <div class="stat-val" id="ds-products">0</div>
                                 <div class="stat-lbl">Products Available</div>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-ico ico-yellow"></div>
+                            <div class="stat-ico ico-yellow">📦</div>
                             <div>
                                 <div class="stat-val" id="ds-pending">0</div>
                                 <div class="stat-lbl">Pending Shipments</div>
@@ -127,7 +127,7 @@
                     <div class="adm-card">
                         <div class="card-hd">
                             <div class="card-hd-l">
-                                <div class="card-ico-wrap"></div>
+                                <div class="card-ico-wrap">📜</div>
                                 <div>
                                     <div class="card-title">Recent Orders</div>
                                     <div class="card-sub">Latest 5 orders</div>
@@ -407,9 +407,9 @@
 
                     <!-- Add New Offer -->
                     <div class="adm-card" id="add-offer-card">
-                        <div class="card-hd" onclick="window.toggleAddOfferCard()" style="cursor:pointer;">
+                        <div class="card-hd" id="add-offer-hd" style="cursor:pointer;">
                             <div class="card-hd-l">
-                                <div class="card-ico-wrap"></div>
+                                <div class="card-ico-wrap">➕</div>
                                 <div>
                                     <div class="card-title">Add New Offer</div>
                                     <div class="card-sub">Create a new discount campaign</div>
@@ -475,7 +475,7 @@
                     <div class="adm-card">
                         <div class="card-hd">
                             <div class="card-hd-l">
-                                <div class="card-ico-wrap"></div>
+                                <div class="card-ico-wrap">🎟️</div>
                                 <div>
                                     <div class="card-title">Active Offers <span class="count-badge"
                                             id="off-count">0</span></div>
@@ -513,7 +513,7 @@
                         <p>Change your admin login credentials</p>
                     </div>
                     <div class="security-card">
-                        <div class="security-ico"></div>
+                        <div class="security-ico">🔒</div>
                         <div class="security-title">Change Admin Password</div>
                         <p class="security-sub">Your password is stored securely in LocalStorage. Update it here
                             anytime.</p>
@@ -550,7 +550,7 @@
                     </div>
 
                     <div class="report-card">
-                        <div class="report-icon"></div>
+                        <div class="report-icon">📊</div>
                         <div class="report-info">
                             <div class="report-title">Full Orders Report (.xlsx)</div>
                             <p class="report-desc">Export all order data customer name, phone, city, items ordered,
@@ -567,7 +567,7 @@
                     </div>
 
                     <div class="report-card">
-                        <div class="report-icon"></div>
+                        <div class="report-icon">🗄️</div>
                         <div class="report-info">
                             <div class="report-title">CSV Backup (Fallback)</div>
                             <p class="report-desc">Simple CSV file compatible with all spreadsheet apps. Use this if
@@ -580,7 +580,7 @@
                     </div>
 
                     <div class="report-card">
-                        <div class="report-icon"></div>
+                        <div class="report-icon">📦</div>
                         <div class="report-info">
                             <div class="report-title">Products Export</div>
                             <p class="report-desc">Export your full product catalog as a CSV file including names,
@@ -661,7 +661,7 @@
     <!-- TOAST -->
     <div id="toast-root"></div>
 
-    <script type="module" src="scripts/admin-script.js"></script>
+    <script src="scripts/admin-script.js"></script>
 
 </body>
 

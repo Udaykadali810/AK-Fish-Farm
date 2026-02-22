@@ -276,7 +276,8 @@ textarea {
    DASHBOARD LAYOUT
  */
 #dashboard-screen {
-    display: none;
+    display: flex;
+    /* Visible by default for stability */
     min-height: 100vh;
 }
 
@@ -1719,6 +1720,11 @@ select.form-input option {
 
 .bn-item.active .bn-lbl {
     color: var(--aqua);
+}
+
+/* Dashboard visibility override */
+#dashboard-screen {
+    display: flex;
 }
 
 /*  RESPONSIVE  */

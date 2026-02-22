@@ -125,6 +125,378 @@ textarea {
 }
 
 /* 
+   HOME PAGE SPECIAL SECTIONS
+    */
+.address-banner {
+    padding: 0 10px;
+    margin-top: -35px;
+    position: relative;
+    z-index: 100;
+    opacity: 0;
+    animation: bannerFade 0.8s ease forwards 0.2s;
+}
+
+.addr-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.social-strip {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    width: 100%;
+    justify-content: center;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--muted);
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 10px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.social-link svg {
+    color: var(--dim);
+}
+
+.social-link:hover {
+    color: var(--white);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+}
+
+.social-link.instagram:hover svg {
+    color: #E1306C;
+}
+
+.social-link.youtube:hover svg {
+    color: #FF0000;
+}
+
+@keyframes bannerFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.address-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(13, 18, 36, 0.9);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1.5px solid rgba(255, 216, 77, 0.25);
+    border-radius: 18px;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.addr-icon {
+    font-size: 1.4rem;
+    color: var(--orange);
+    filter: drop-shadow(0 0 8px rgba(255, 107, 0, 0.4));
+}
+
+.addr-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--yellow);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+}
+
+.addr-text {
+    font-size: 0.95rem;
+    color: var(--white);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+    .address-banner {
+        margin-top: -15px;
+    }
+
+    .address-card {
+        padding: 12px 18px;
+        gap: 10px;
+        width: 95%;
+    }
+
+    .addr-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* LIVE OFFER BANNER (FLIPKART / ZOMATO STYLE) */
+.live-offer-banner-sec {
+    padding: 15px 0 5px;
+    opacity: 0;
+    animation: slideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.4s;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.premium-offer-banner {
+    width: 100%;
+    min-height: 200px;
+    background: linear-gradient(135deg, #FF6B00 0%, #FF9500 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 30px 40px;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 12px 40px rgba(255, 107, 0, 0.25);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.premium-offer-banner:hover {
+    transform: scale(1.01);
+    box-shadow: 0 15px 50px rgba(255, 107, 0, 0.35);
+}
+
+.banner-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+}
+
+.banner-glass-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+    max-width: 60%;
+}
+
+.banner-badge {
+    display: inline-block;
+    background: #fff;
+    color: var(--orange);
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.banner-h {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.banner-p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+}
+
+.banner-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: var(--orange);
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.banner-cta:hover {
+    background: var(--yellow);
+    transform: translateX(10px);
+}
+
+@media (max-width: 768px) {
+    .live-offer-banner-sec {
+        padding: 16px 0 0;
+    }
+
+    .premium-offer-banner {
+        padding: 24px;
+        min-height: 180px;
+        border-radius: 16px;
+    }
+
+    .banner-content {
+        max-width: 100%;
+    }
+
+    .banner-h {
+        font-size: 1.5rem;
+    }
+
+    .banner-p {
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+    }
+
+    .banner-cta {
+        padding: 10px 22px;
+        font-size: 0.8rem;
+    }
+}
+
+/* OFFERS SECTION (Modern Flipkart/Swiggy Style) */
+.offers-section {
+    padding: 32px 0 10px;
+}
+
+.offers-scroller {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 10px 20px 24px;
+    margin: 0 -20px;
+    /* Bleed to edges on mobile */
+    scrollbar-width: none;
+}
+
+.offers-scroller::-webkit-scrollbar {
+    display: none;
+}
+
+.offer-card {
+    min-width: 290px;
+    background: linear-gradient(145deg, var(--card), var(--bg-3));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s var(--ease);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    position: relative;
+    cursor: default;
+    flex-shrink: 0;
+}
+
+.offer-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 107, 0, 0.4);
+    box-shadow: 0 15px 40px rgba(255, 107, 0, 0.15);
+}
+
+.offer-badge {
+    align-self: flex-start;
+    background: rgba(255, 107, 0, 0.15);
+    color: var(--orange);
+    font-weight: 800;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(255, 107, 0, 0.2);
+}
+
+.offer-title {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.2;
+}
+
+.offer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.offer-code-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px dashed var(--yellow);
+    padding: 6px 12px;
+    border-radius: 10px;
+}
+
+.offer-code-box code {
+    font-family: 'Inter', monospace;
+    font-weight: 800;
+    color: var(--yellow);
+    font-size: 0.85rem;
+}
+
+.offer-expiry {
+    font-size: 0.72rem;
+    color: var(--dim);
+    font-weight: 600;
+}
+
+@media (min-width: 992px) {
+    .offers-scroller {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        overflow-x: visible;
+        margin: 0;
+        padding: 10px 0 20px;
+    }
+
+    .offer-card {
+        min-width: 0;
+    }
+}
+
+@media (min-width: 1200px) {
+    .offers-scroller {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* 
    LAYOUT
     */
 .container {
@@ -358,7 +730,7 @@ header {
     background: linear-gradient(160deg, #0A0E1A 0%, #0D1B35 30%, #1a0d2e 65%, #0A0E1A 100%);
     position: relative;
     overflow: hidden;
-    padding: 100px 24px 60px;
+    padding: 100px 24px 30px;
 }
 
 .hero::before {
@@ -431,7 +803,7 @@ header {
 @media (max-width: 768px) {
     .hero {
         min-height: auto;
-        padding: 50px 16px 10px;
+        padding: 50px 16px 5px;
     }
 
     .hero::after {
