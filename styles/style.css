@@ -128,8 +128,8 @@ textarea {
    HOME PAGE SPECIAL SECTIONS
     */
 .address-banner {
-    padding: 0 10px;
-    margin-top: -35px;
+    padding: 0 16px;
+    margin-top: 20px;
     position: relative;
     z-index: 100;
     opacity: 0;
@@ -238,13 +238,14 @@ textarea {
 
 @media (max-width: 768px) {
     .address-banner {
-        margin-top: -15px;
+        margin-top: 12px;
+        padding: 0 12px;
     }
 
     .address-card {
         padding: 12px 18px;
         gap: 10px;
-        width: 95%;
+        width: 96%;
     }
 
     .addr-text {
@@ -256,7 +257,7 @@ textarea {
    OFFERS CAROUSEL (Admin-synced — swipeable)
 ════════════════════════════════════════ */
 .offers-section {
-    padding: 4px 0 24px;
+    padding: 20px 0 28px;
 }
 
 .section-header-sm {
@@ -670,7 +671,7 @@ header {
     background: linear-gradient(160deg, #0A0E1A 0%, #0D1B35 30%, #1a0d2e 65%, #0A0E1A 100%);
     position: relative;
     overflow: hidden;
-    padding: 80px 24px 20px;
+    padding: 80px 24px 32px;
 }
 
 .hero::before {
@@ -688,7 +689,7 @@ header {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px;
+    height: 60px;
     background: linear-gradient(to bottom, transparent, var(--bg));
 }
 

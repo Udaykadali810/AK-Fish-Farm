@@ -202,7 +202,7 @@
                 <!--  SECTION: ORDERS  -->
                 <section id="sec-orders" class="adm-sec">
                     <div class="page-hd">
-                        <h1> Orders Management</h1>
+                        <h1>📦 Orders Management</h1>
                         <p>Manage and update customer order statuses</p>
                     </div>
                     <div class="adm-card">
@@ -212,10 +212,10 @@
                                 <div>
                                     <div class="card-title">All Orders <span class="count-badge"
                                             id="orders-count">0</span></div>
-                                    <div class="card-sub">Click status dropdown to update</div>
+                                    <div class="card-sub">Tap status to update</div>
                                 </div>
                             </div>
-                            <div class="search-bar" style="min-width:200px;">
+                            <div class="search-bar" style="min-width:180px;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2.5">
                                     <circle cx="11" cy="11" r="8" />
@@ -224,7 +224,9 @@
                                 <input type="text" id="orders-search" placeholder="Search orders" />
                             </div>
                         </div>
-                        <div class="tbl-wrap">
+
+                        <!-- Desktop Table -->
+                        <div class="tbl-wrap orders-tbl-wrap">
                             <table class="adm-table">
                                 <thead>
                                     <tr>
@@ -232,7 +234,7 @@
                                         <th>Customer</th>
                                         <th>Phone</th>
                                         <th>City</th>
-                                        <th>Total ()</th>
+                                        <th>Total</th>
                                         <th>Date</th>
                                         <th>Status</th>
                                         <th>Details</th>
@@ -247,6 +249,9 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Mobile Cards -->
+                        <div id="orders-mobile-list" class="orders-mobile-list"></div>
                     </div>
                 </section>
 

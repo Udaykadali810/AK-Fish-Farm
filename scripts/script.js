@@ -567,19 +567,25 @@ window.scrollCarouselTo = scrollCarouselTo;
 document.addEventListener('DOMContentLoaded', () => {
     try {
         const p = window.location.pathname.toLowerCase();
-        if (p === '/' || p.endsWith('/') || p.includes('index.html') || p.endsWith('.html') === false) {
-            initShopPage();
-        } else if (p.includes('cart')) {
+
+        /* Check cart FIRST — before generic home check */
+        if (p.includes('cart')) {
             initCartPage();
+        } else {
+            /* Home/Shop — matches /, /index.html, or any non-.html path */
+            initShopPage();
         }
-        /* Hamburger (works on all pages) */
+
+        /* Hamburger — works on all pages */
         document.getElementById('hamburger')?.addEventListener('click', () => {
             document.getElementById('mobile-menu')?.classList.toggle('open');
         });
-        /* Navbar scroll */
+
+        /* Navbar scroll glow */
         window.addEventListener('scroll', () => {
             document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
         }, { passive: true });
+
     } catch (e) {
         console.error('UI Boot Error:', e);
     }

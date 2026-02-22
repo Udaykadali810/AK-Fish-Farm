@@ -330,11 +330,12 @@ function toggleAddCard() {
 }
 
 /* ════════════════════════════════════════
-   ORDERS — Full real data
+   ORDERS — Desktop table + Mobile cards
 ════════════════════════════════════════ */
-function renderOrdersTable(filter = '') {
+function renderOrdersTable(filter) {
+    filter = (filter || '').toLowerCase();
     const tbody = document.getElementById('orders-tbody');
-    if (!tbody) return;
+    const mobileList = document.getElementById('orders-mobile-list');
     const countEl = document.getElementById('orders-count');
     if (countEl) countEl.textContent = globalOrders.length;
 
@@ -345,32 +346,72 @@ function renderOrdersTable(filter = '') {
             (o.phone || '').includes(filter))
         : globalOrders;
 
-    if (!list.length) {
-        tbody.innerHTML = '<tr><td colspan="8" class="tbl-empty">No orders yet. Orders placed on the shop will appear here.</td></tr>';
-        return;
+    const ordered = [...list].reverse();
+
+    /* ── Desktop table rows ── */
+    if (tbody) {
+        if (!ordered.length) {
+            tbody.innerHTML = '<tr><td colspan="8" class="tbl-empty">No orders yet. Orders placed in the shop will appear here.</td></tr>';
+        } else {
+            tbody.innerHTML = ordered.map(o => {
+                const date = o.timestamp
+                    ? new Date(o.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })
+                    : '—';
+                const statusOpts = STATUS_OPTIONS.map(s =>
+                    `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('');
+                return `<tr>
+                    <td style="color:var(--aqua);font-weight:700;font-size:.8rem;">${o.id}</td>
+                    <td>${escHtml(o.customerName || 'Guest')}</td>
+                    <td>${escHtml(o.phone || '—')}</td>
+                    <td>${escHtml(o.city || '—')}</td>
+                    <td style="font-weight:700;">₹${(Number(o.total) || 0).toLocaleString('en-IN')}</td>
+                    <td style="font-size:.75rem;">${date}</td>
+                    <td><select class="inline-inp" style="width:148px;font-size:.75rem;"
+                        onchange="updateOrderStatus('${o.id}',this.value)">${statusOpts}</select></td>
+                    <td><button class="btn btn-ghost btn-sm" onclick="openOrderModal('${o.id}')">Details</button></td>
+                </tr>`;
+            }).join('');
+        }
     }
 
-    tbody.innerHTML = [...list].reverse().map(o => {
-        const date = o.timestamp ? new Date(o.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) : '—';
-        return `
-        <tr>
-            <td style="color:var(--aqua);font-weight:700;font-size:.8rem;">${o.id}</td>
-            <td>${escHtml(o.customerName || 'Guest')}</td>
-            <td>${escHtml(o.phone || '—')}</td>
-            <td>${escHtml(o.city || '—')}</td>
-            <td style="font-weight:700;">₹${(Number(o.total) || 0).toLocaleString('en-IN')}</td>
-            <td style="font-size:.75rem;">${date}</td>
-            <td>
-                <select class="inline-inp" style="width:150px;font-size:.75rem;" onchange="updateOrderStatus('${o.id}', this.value)">
-                    ${STATUS_OPTIONS.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
-                </select>
-            </td>
-            <td>
-                <button class="btn btn-ghost btn-sm" onclick="openOrderModal('${o.id}')">Details</button>
-            </td>
-        </tr>`;
-    }).join('');
+    /* ── Mobile cards ── */
+    if (mobileList) {
+        if (!ordered.length) {
+            mobileList.innerHTML = '<div class="ord-mob-empty">📭 No orders yet.<br><small>Place an order from the shop to see it here.</small></div>';
+        } else {
+            mobileList.innerHTML = ordered.map(o => {
+                const date = o.timestamp
+                    ? new Date(o.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                    : '—';
+                const itemCount = (o.items || []).reduce((a, i) => a + (i.qty || 1), 0);
+                const statusOpts = STATUS_OPTIONS.map(s =>
+                    `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('');
+                const meta = [escHtml(o.phone || ''), escHtml(o.city || ''), date].filter(Boolean).join(' · ');
+                return `
+                <div class="ord-mob-card">
+                    <div class="ord-mob-top">
+                        <div>
+                            <div class="ord-mob-id">${o.id}</div>
+                            <div class="ord-mob-name">${escHtml(o.customerName || 'Guest')}</div>
+                            <div class="ord-mob-meta">${meta}</div>
+                        </div>
+                        <div class="ord-mob-right">
+                            <div class="ord-mob-total">₹${(Number(o.total) || 0).toLocaleString('en-IN')}</div>
+                            <div class="ord-mob-items">${itemCount} item${itemCount !== 1 ? 's' : ''}</div>
+                        </div>
+                    </div>
+                    <div class="ord-mob-bot">
+                        <select class="ord-mob-sel" onchange="updateOrderStatus('${o.id}',this.value)">
+                            ${statusOpts}
+                        </select>
+                        <button class="ord-mob-det-btn" onclick="openOrderModal('${o.id}')">📋 Details</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
 }
+
 
 function updateOrderStatus(orderId, newStatus) {
     const idx = globalOrders.findIndex(o => o.id === orderId);
