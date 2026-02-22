@@ -421,53 +421,40 @@ function renderReports() {
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString() : ''; }
 function closeSidebar() { document.getElementById('adm-sidebar')?.classList.remove('open'); }
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!checkAuth() && !window.location.pathname.includes('admin-login.html')) {
+// Consolidated Initialization
+const init = () => {
+    const isLoginPage = window.location.pathname.includes('admin-login.html');
+
+    if (!checkAuth() && !isLoginPage) {
         window.location.href = 'admin-login.html';
         return;
     }
 
-    fetchAllData();
+    if (!isLoginPage) {
+        fetchAllData();
+    }
 
-    document.getElementById('save-prod-btn')?.onclick = addProduct;
-    document.getElementById('save-offer-btn')?.onclick = addOffer;
-    document.getElementById('cancel-offer-btn')?.onclick = () => {
-        resetOfferForm();
-        toggleAddOfferCard();
-    };
-    document.getElementById('add-img-file')?.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            addImgData = ev.target.result;
-            document.getElementById('add-img-preview-img').src = addImgData;
-            document.getElementById('add-img-preview').classList.add('show');
-        };
-        reader.readAsDataURL(file);
-    };
-
-    document.querySelectorAll('[data-section]').forEach(btn => {
-        btn.onclick = () => switchSection(btn.dataset.section);
-    });
-
-    // Logout
+    // Bind event listeners
+    document.getElementById('save-prod-btn')?.addEventListener('click', addProduct);
+    document.getElementById('save-offer-btn')?.addEventListener('click', addOffer);
     document.getElementById('logout-btn')?.addEventListener('click', doLogout);
     document.getElementById('logout-hd-btn')?.addEventListener('click', doLogout);
-
-    // Sidebar
     document.getElementById('hamburger-btn')?.addEventListener('click', openSidebar);
     document.getElementById('sidebar-overlay')?.addEventListener('click', closeSidebar);
 
-    // Login Form
+    document.querySelectorAll('[data-section]').forEach(btn => {
+        btn.addEventListener('click', () => switchSection(btn.dataset.section));
+    });
+
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const errEl = document.getElementById('login-err');
-            if (errEl) errEl.textContent = '';
+            if (errEl) errEl.textContent = 'Authenticating...';
 
-            const username = document.getElementById('l-user')?.value;
-            const password = document.getElementById('l-pass')?.value;
+            const username = document.getElementById('l-user')?.value.trim();
+            const password = document.getElementById('l-pass')?.value.trim();
 
             if (!username || !password) {
                 if (errEl) errEl.textContent = 'Please enter both fields';
@@ -480,19 +467,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
+
                 if (res.ok) {
                     sessionStorage.setItem(LS.session, '1');
                     window.location.href = 'admin-dashboard.html';
                 } else {
                     const data = await res.json();
-                    if (errEl) errEl.textContent = data.error || 'Invalid login';
+                    if (errEl) errEl.textContent = data.error || 'Invalid credentials';
                 }
             } catch (err) {
-                if (errEl) errEl.textContent = 'Backend connection failed';
+                if (errEl) errEl.textContent = 'Server connection failed. Try again.';
             }
         });
     }
-});
+};
+
+// Run init
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
 
 window.switchSection = switchSection;
 window.updateProduct = updateProduct;
