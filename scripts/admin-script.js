@@ -283,20 +283,51 @@ function renderOffersTable() {
     document.getElementById('off-count').textContent = offers.length;
 
     tbody.innerHTML = offers.map(o => `
-        <tr>
-            <td><strong>${o.title}</strong></td>
+        <tr id="off-row-${o.id}">
+            <td><input class="inline-inp" type="text" data-field="title" value="${o.title}" style="font-weight:700;" /></td>
             <td><code class="code-badge">${o.couponCode}</code></td>
-            <td>${o.discountType === 'percentage' ? o.discountValue + '%' : '₹' + o.discountValue}</td>
-            <td>₹${o.minOrder || 0}</td>
-            <td>${o.expiryDate || 'No Expiry'}</td>
+            <td><input class="inline-inp" type="number" data-field="val" value="${o.discountValue}" style="width:60px;" /></td>
+            <td><input class="inline-inp" type="number" data-field="min" value="${o.minOrder || 0}" style="width:80px;" /></td>
+            <td><input class="inline-inp" type="date"   data-field="exp" value="${o.expiryDate || ''}" /></td>
             <td>
                 <button class="status-toggle-btn ${o.status}" onclick="toggleOfferStatus('${o.id}')">
                     ${o.status === 'active' ? 'Active' : 'Inactive'}
                 </button>
             </td>
-            <td><button class="del-row-btn" onclick="deleteOffer('${o.id}')">Delete</button></td>
+            <td>
+                <div style="display:flex; gap:8px;">
+                    <button class="save-row-btn" onclick="updateOffer('${o.id}')">Save</button>
+                    <button class="del-row-btn" onclick="deleteOffer('${o.id}')">Delete</button>
+                </div>
+            </td>
         </tr>
     `).join('') || '<tr><td colspan="7" class="tbl-empty">No offers found</td></tr>';
+}
+
+async function updateOffer(id) {
+    const row = document.getElementById('off-row-' + id);
+    const updates = {
+        title: row.querySelector('[data-field="title"]').value.trim(),
+        discountValue: parseFloat(row.querySelector('[data-field="val"]').value),
+        minOrder: parseFloat(row.querySelector('[data-field="min"]').value) || 0,
+        expiryDate: row.querySelector('[data-field="exp"]').value
+    };
+
+    if (!updates.title || isNaN(updates.discountValue)) {
+        showToast('Invalid inputs', 'error');
+        return;
+    }
+
+    const res = await fetch('/api/offers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updates })
+    });
+
+    if (res.ok) {
+        showToast('Offer updated');
+        fetchAllData();
+    }
 }
 
 async function addOffer() {
@@ -444,4 +475,5 @@ window.updateOrderStatus = updateOrderStatus;
 window.handleRowImageUpload = handleRowImageUpload;
 window.toggleAddOfferCard = toggleAddOfferCard;
 window.toggleOfferStatus = toggleOfferStatus;
+window.updateOffer = updateOffer;
 window.deleteOffer = deleteOffer;

@@ -1797,6 +1797,34 @@ select.form-input option {
     }
 }
 
+/* INLINE EDITING */
+.inline-inp {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.save-row-btn {
+    background: var(--aqua);
+    color: #080C18;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.save-row-btn:hover {
+    background: #00B4D8;
+    transform: translateY(-2px);
+}
+
 /* OFFERS STYLES */
 .code-badge {
     background: rgba(0, 212, 255, 0.1);

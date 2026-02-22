@@ -4306,6 +4306,64 @@ td.col-status {
     }
 }
 
+/* COUPON SYSTEM */
+.coupon-box {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.coupon-field {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    outline: none;
+}
+
+.coupon-field::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.coupon-btn {
+    background: var(--aqua);
+    color: #080C18;
+    border: none;
+    padding: 0 24px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+}
+
+.coupon-btn:hover {
+    background: #fff;
+    transform: scale(1.02);
+}
+
+.coupon-msg {
+    font-size: 0.8rem;
+    margin-top: 8px;
+    padding-left: 10px;
+    font-weight: 600;
+}
+
+.coupon-msg.error {
+    color: #f87171;
+}
+
+.coupon-msg.success {
+    color: var(--aqua);
+}
+
 /* OFFERS DISPLAY */
 .offers-grid {
     display: grid;
