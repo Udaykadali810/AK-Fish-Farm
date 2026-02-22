@@ -4,12 +4,12 @@
     "private": true,
     "description": "AK Fish Farms - Pure Serverless Static Site",
     "scripts": {
-        "build": "echo 'Building static site...'",
-        "install": "echo 'Installing...'",
         "dev": "vercel dev",
         "start": "serve ."
     },
-    "dependencies": {},
+    "dependencies": {
+        "@vercel/kv": "^3.0.0"
+    },
     "devDependencies": {
         "vercel": "latest"
     }
