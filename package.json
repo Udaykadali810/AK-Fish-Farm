@@ -4,6 +4,7 @@
     "private": true,
     "description": "AK Fish Farms - Pure Serverless Static Site",
     "scripts": {
+        "build": "echo 'Build complete'",
         "dev": "vercel dev",
         "start": "serve ."
     },
