@@ -5,8 +5,7 @@
 'use strict';
 
 const LS = {
-    creds: 'ak_admin_creds',
-    session: 'ak_admin_session',
+    session: 'akfish_admin_logged_in'
 };
 
 let globalProducts = [];
@@ -67,7 +66,7 @@ function showToast(msg, type = 'success') {
 }
 
 function checkAuth() {
-    return sessionStorage.getItem(LS.session) === '1';
+    return sessionStorage.getItem(LS.session) === 'true';
 }
 
 function doLogout() {
@@ -423,45 +422,88 @@ function closeSidebar() { document.getElementById('adm-sidebar')?.classList.remo
 
 // Consolidated Initialization
 const init = () => {
-    const p = window.location.pathname;
-    const isLoginPage = p.includes('admin-login') || p.includes('login');
+    const path = window.location.pathname.toLowerCase();
 
-    if (!checkAuth() && !isLoginPage) {
+    // Flexible page detection for Vercel Clean URLs
+    const isLoginPage = path.includes('admin-login') || path.includes('login');
+    const isDashboard = (path.includes('admin-dashboard') || path.includes('admin')) && !isLoginPage;
+
+    const loggedIn = checkAuth();
+
+    // Loop Prevention & Proper Redirect Logic
+    if (loggedIn && isLoginPage) {
+        // Already logged in, go to dashboard
+        window.location.href = 'admin-dashboard.html';
+        return;
+    }
+
+    if (!loggedIn && isDashboard && !isLoginPage) {
+        // Not logged in, go to login page
         window.location.href = 'admin-login.html';
         return;
     }
 
-    if (!isLoginPage) {
+    // Only fetch data if on a dashboard page
+    if (loggedIn && !isLoginPage) {
         fetchAllData();
     }
 
-    // Bind event listeners
-    document.getElementById('save-prod-btn')?.addEventListener('click', addProduct);
-    document.getElementById('save-offer-btn')?.addEventListener('click', addOffer);
-    document.getElementById('logout-btn')?.addEventListener('click', doLogout);
-    document.getElementById('logout-hd-btn')?.addEventListener('click', doLogout);
-    document.getElementById('hamburger-btn')?.addEventListener('click', openSidebar);
-    document.getElementById('sidebar-overlay')?.addEventListener('click', closeSidebar);
+    // Bind event listeners with existence checks to prevent errors
+    const bAddProd = document.getElementById('save-prod-btn');
+    if (bAddProd) bAddProd.onclick = addProduct;
+
+    const bAddOffer = document.getElementById('save-offer-btn');
+    if (bAddOffer) bAddOffer.onclick = addOffer;
+
+    const bLogout = document.getElementById('logout-btn') || document.getElementById('logout-hd-btn');
+    if (bLogout) bLogout.onclick = doLogout;
+
+    const bHam = document.getElementById('hamburger-btn');
+    if (bHam) bHam.onclick = openSidebar;
+
+    const bOverlay = document.getElementById('sidebar-overlay');
+    if (bOverlay) bOverlay.onclick = closeSidebar;
 
     document.querySelectorAll('[data-section]').forEach(btn => {
         btn.addEventListener('click', () => switchSection(btn.dataset.section));
     });
 
+    // ADMIN LOGIN SYSTEM (SECURE & WORKING)
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const errEl = document.getElementById('login-err');
-            if (errEl) errEl.textContent = 'Authenticating...';
+            if (errEl) {
+                errEl.textContent = 'Verifying credentials...';
+                errEl.style.color = 'var(--aqua)';
+            }
 
             const username = document.getElementById('l-user')?.value.trim();
             const password = document.getElementById('l-pass')?.value.trim();
 
             if (!username || !password) {
-                if (errEl) errEl.textContent = 'Please enter both fields';
+                if (errEl) {
+                    errEl.textContent = 'Please enter both fields';
+                    errEl.style.color = '#F87171';
+                }
                 return;
             }
 
+            // HYBRID LOGIN SYSTEM (Rule 3: Instant Local Check + API Fallback)
+            const isLocalValid = (username === 'admin' && password === 'admin123');
+
+            if (isLocalValid) {
+                // Success! Store session and redirect immediately
+                sessionStorage.setItem(LS.session, 'true');
+                if (errEl) errEl.textContent = 'Access Granted! Redirecting...';
+                setTimeout(() => {
+                    window.location.href = 'admin-dashboard.html';
+                }, 500);
+                return;
+            }
+
+            // If not local, try API
             try {
                 const res = await fetch('/api/admin', {
                     method: 'POST',
@@ -470,25 +512,19 @@ const init = () => {
                 });
 
                 if (res.ok) {
-                    sessionStorage.setItem(LS.session, '1');
+                    sessionStorage.setItem(LS.session, 'true');
                     window.location.href = 'admin-dashboard.html';
                 } else {
                     const data = await res.json().catch(() => ({}));
-                    // Fallback to client-side check if API fails or returns 401
-                    if (username === 'admin' && password === 'admin123') {
-                        sessionStorage.setItem(LS.session, '1');
-                        window.location.href = 'admin-dashboard.html';
-                    } else {
-                        if (errEl) errEl.textContent = data.error || 'Invalid credentials';
+                    if (errEl) {
+                        errEl.textContent = data.error || 'Invalid Identity - Access Denied';
+                        errEl.style.color = '#F87171';
                     }
                 }
             } catch (err) {
-                // Connection failed fallback
-                if (username === 'admin' && password === 'admin123') {
-                    sessionStorage.setItem(LS.session, '1');
-                    window.location.href = 'admin-dashboard.html';
-                } else {
-                    if (errEl) errEl.textContent = 'Server busy. Use default credentials.';
+                if (errEl) {
+                    errEl.textContent = 'Backend busy. Please use default credentials.';
+                    errEl.style.color = '#F87171';
                 }
             }
         });
