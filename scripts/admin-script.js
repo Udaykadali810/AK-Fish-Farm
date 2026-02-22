@@ -28,7 +28,7 @@ const getOrders = () => globalOrders;
 const getCreds = () => {
     try { return JSON.parse(localStorage.getItem(LS.creds)); } catch { return null; }
 };
-const getDefaultCreds = () => ({ username: 'admin', password: 'AKFish2026' });
+const getDefaultCreds = () => ({ username: 'admin', password: 'admin123' });
 
 async function fetchAllData() {
     try {
@@ -450,22 +450,48 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.onclick = () => switchSection(btn.dataset.section);
     });
 
-    document.getElementById('login-form')?.onsubmit = async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('l-user').value;
-        const password = document.getElementById('l-pass').value;
-        const res = await fetch('/api/admin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+    // Logout
+    document.getElementById('logout-btn')?.addEventListener('click', doLogout);
+    document.getElementById('logout-hd-btn')?.addEventListener('click', doLogout);
+
+    // Sidebar
+    document.getElementById('hamburger-btn')?.addEventListener('click', openSidebar);
+    document.getElementById('sidebar-overlay')?.addEventListener('click', closeSidebar);
+
+    // Login Form
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl = document.getElementById('login-err');
+            if (errEl) errEl.textContent = '';
+
+            const username = document.getElementById('l-user')?.value;
+            const password = document.getElementById('l-pass')?.value;
+
+            if (!username || !password) {
+                if (errEl) errEl.textContent = 'Please enter both fields';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                if (res.ok) {
+                    sessionStorage.setItem(LS.session, '1');
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    const data = await res.json();
+                    if (errEl) errEl.textContent = data.error || 'Invalid login';
+                }
+            } catch (err) {
+                if (errEl) errEl.textContent = 'Backend connection failed';
+            }
         });
-        if (res.ok) {
-            sessionStorage.setItem(LS.session, '1');
-            window.location.href = 'admin-dashboard.html';
-        } else {
-            document.getElementById('login-err').textContent = 'Invalid login';
-        }
-    };
+    }
 });
 
 window.switchSection = switchSection;

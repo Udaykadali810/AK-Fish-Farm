@@ -6,7 +6,7 @@ export default async function handler(req, res) {
         const { username, password } = req.body;
 
         // In actual production, check these against hashed credentials or environment variables
-        if (username === 'admin' && password === 'AKFish2026') {
+        if (username === 'admin' && password === 'admin123') {
             res.status(200).json({ success: true, token: 'mock-jwt-token' });
         } else {
             res.status(401).json({ error: 'Invalid credentials' });

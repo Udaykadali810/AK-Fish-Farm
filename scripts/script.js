@@ -25,11 +25,12 @@ async function fetchData() {
         const [pRes, oRes] = await Promise.all([
             fetch('/api/products'),
             fetch('/api/offers')
-        ]);
-        if (pRes.ok) globalProducts = await pRes.json();
-        if (oRes.ok) globalOffers = await oRes.json();
+        ]).catch(() => [null, null]);
+
+        if (pRes && pRes.ok) globalProducts = await pRes.json();
+        if (oRes && oRes.ok) globalOffers = await oRes.json();
     } catch (err) {
-        console.error('API Error:', err);
+        console.warn('API connection failed. using local cache if available.');
     }
 }
 
@@ -154,6 +155,12 @@ async function initShopPage() {
     updateCartBadge();
     await fetchData();
     renderOffers();
+
+    // Show thanks if returning from WA
+    if (sessionStorage.getItem('akf_return_thanks')) {
+        showToast('Thanks for shopping with AK Fish Farms!', 'success');
+        sessionStorage.removeItem('akf_return_thanks');
+    }
 
     const grid = document.getElementById('product-grid');
     const tabRow = document.getElementById('tab-row');
