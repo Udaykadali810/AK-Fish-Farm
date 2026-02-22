@@ -4,17 +4,22 @@ export const db = sql;
 
 let isDbInitialized = false;
 
+/**
+ * Ensures the database schema is initialized and environment variables are present.
+ * Throws a JSON-friendly error if configuration is missing.
+ */
 export async function initDb() {
-    if (isDbInitialized) return;
-
     if (!process.env.POSTGRES_URL && !process.env.DATABASE_URL) {
-        throw new Error('POSTGRES_URL environment variable is missing. Please add it in Vercel settings.');
+        console.error('❌ Database Error: POSTGRES_URL or DATABASE_URL missing.');
+        throw new Error('Database not configured in Vercel. Please add POSTGRES_URL/DATABASE_URL in settings.');
     }
 
-    console.log('🐘 Initializing PostgreSQL Schema...');
+    if (isDbInitialized) return;
+
+    console.log('🐘 Connecting to Postgres...');
+    console.log('📡 POSTGRES_URL found. Initializing Schema...');
 
     try {
-        // Run all creations in parallel for speed
         await Promise.all([
             sql`CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -72,9 +77,27 @@ export async function initDb() {
         ]);
 
         isDbInitialized = true;
-        console.log('✅ PostgreSQL Schema Verified.');
+        console.log('✅ Postgres Connected Successfully. Schema Verified.');
     } catch (err) {
         console.error('❌ Database Initialization Error:', err);
-        throw err;
+        throw new Error('Database connection failed during initialization: ' + err.message);
     }
+}
+
+/**
+ * Wrapper to ensure every API response is valid JSON.
+ */
+export function withJson(handler) {
+    return async (req, res) => {
+        try {
+            return await handler(req, res);
+        } catch (error) {
+            console.error(`🚨 API Error [${req.url}]:`, error.message);
+            return res.status(500).json({
+                success: false,
+                error: 'Server Error',
+                message: error.message
+            });
+        }
+    };
 }
