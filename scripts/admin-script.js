@@ -930,7 +930,7 @@ const boot = () => {
                     sessionStorage.setItem('ak_admin_token', data.token);
                     setTimeout(() => redirectTo('admin-dashboard'), 800);
                 } else {
-                    throw new Error(data.error || 'Invalid credentials');
+                    throw new Error(data.details || data.error || 'Invalid credentials');
                 }
             } catch (error) {
                 if (err) {

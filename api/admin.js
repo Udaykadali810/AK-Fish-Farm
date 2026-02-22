@@ -63,6 +63,9 @@ export default async function handler(req, res) {
         return res.status(405).end(`Method ${method} Not Allowed`);
     } catch (error) {
         console.error('Admin API Error:', error);
-        return res.status(500).json({ error: 'Database Connection Error' });
+        return res.status(500).json({
+            error: 'Database Connection Error',
+            details: error.message
+        });
     }
 }
