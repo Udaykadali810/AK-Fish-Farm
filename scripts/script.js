@@ -89,8 +89,7 @@ async function fetchData() {
     if (grid) grid.classList.remove('pulse-loading');
     if (banner) banner.classList.remove('pulse-loading');
 
-    renderProductGrid();
-    renderTrackOrder();
+    // Rendering is handled by page-specific init functions
 }
 /* ════════════════════════════════════════
    CART HELPERS
