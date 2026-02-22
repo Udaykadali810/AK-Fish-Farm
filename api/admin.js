@@ -5,11 +5,18 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { username, password } = req.body;
 
-        // In actual production, check these against hashed credentials or environment variables
-        if (username?.trim() === 'admin' && password?.trim() === 'admin123') {
-            res.status(200).json({ success: true, token: 'mock-jwt-token' });
+        // Secure Credentials via Environment Variables
+        // Fallback to defaults if env not set (for initial setup)
+        const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+        const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123';
+
+        if (username?.trim() === ADMIN_USER && password?.trim() === ADMIN_PASS) {
+            res.status(200).json({
+                success: true,
+                token: Buffer.from(`${ADMIN_USER}:${ADMIN_PASS}`).toString('base64')
+            });
         } else {
-            res.status(401).json({ error: 'Invalid credentials' });
+            res.status(401).json({ error: 'Invalid username or password' });
         }
     } else {
         res.setHeader('Allow', ['POST']);

@@ -62,53 +62,54 @@ function redirectTo(page) {
 /* ════════════════════════════════════════
    DATA LOADING — LocalStorage first
 ════════════════════════════════════════ */
-async function loadAllData() {
-    // Products: LocalStorage → API → defaults
-    const lsProds = lsGet(LS_KEY.products, null);
-    if (lsProds && lsProds.length > 0) {
-        globalProducts = lsProds;
-    } else if (!IS_LOCAL) {
-        try {
-            const r = await fetch('/api/products');
-            if (r.ok) { globalProducts = await r.json(); lsSet(LS_KEY.products, globalProducts); }
-        } catch { }
-        if (!globalProducts.length) { globalProducts = DEFAULT_PRODUCTS; lsSet(LS_KEY.products, globalProducts); }
-    } else {
-        globalProducts = DEFAULT_PRODUCTS;
-        lsSet(LS_KEY.products, globalProducts);
+async function loadAllData(isSilent = false) {
+    if (!isSilent) showToast('Syncing with global database...', 'info');
+    const mainArea = document.querySelector('.adm-main-area');
+    if (!isSilent && mainArea) mainArea.classList.add('pulse-loading');
+
+    // Products
+    try {
+        const r = await fetch('/api/products');
+        if (r.ok) {
+            globalProducts = await r.json();
+            lsSet(LS_KEY.products, globalProducts);
+        } else throw new Error();
+    } catch {
+        globalProducts = lsGet(LS_KEY.products, DEFAULT_PRODUCTS);
     }
 
-    // Orders: LocalStorage → API → empty
-    const lsOrders = lsGet(LS_KEY.orders, null);
-    if (lsOrders && lsOrders.length > 0) {
-        globalOrders = lsOrders;
-    } else if (!IS_LOCAL) {
-        try {
-            const r = await fetch('/api/orders');
-            if (r.ok) { globalOrders = await r.json(); lsSet(LS_KEY.orders, globalOrders); }
-        } catch { }
-        if (!globalOrders.length) globalOrders = [];
-    } else {
+    // Orders
+    try {
+        const r = await fetch('/api/orders');
+        if (r.ok) {
+            globalOrders = await r.json();
+            lsSet(LS_KEY.orders, globalOrders);
+        } else throw new Error();
+    } catch {
         globalOrders = lsGet(LS_KEY.orders, []);
     }
 
-    // Offers: LocalStorage → API → defaults
-    const lsOffers = lsGet(LS_KEY.offers, null);
-    if (lsOffers && lsOffers.length > 0) {
-        globalOffers = lsOffers;
-    } else if (!IS_LOCAL) {
-        try {
-            const r = await fetch('/api/offers');
-            if (r.ok) { globalOffers = await r.json(); lsSet(LS_KEY.offers, globalOffers); }
-        } catch { }
-        if (!globalOffers.length) { globalOffers = DEFAULT_OFFERS; lsSet(LS_KEY.offers, globalOffers); }
-    } else {
-        globalOffers = DEFAULT_OFFERS;
-        lsSet(LS_KEY.offers, globalOffers);
+    // Offers
+    try {
+        const r = await fetch('/api/offers');
+        if (r.ok) {
+            globalOffers = await r.json();
+            lsSet(LS_KEY.offers, globalOffers);
+        } else throw new Error();
+    } catch {
+        globalOffers = lsGet(LS_KEY.offers, DEFAULT_OFFERS);
     }
 
+    if (mainArea) mainArea.classList.remove('pulse-loading');
     refreshUI();
 }
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    if (checkAuth() && currentSection === 'dashboard' || currentSection === 'orders') {
+        loadAllData(true);
+    }
+}, 30000);
 
 /* ════════════════════════════════════════
    UI REFRESH
@@ -254,7 +255,7 @@ function handleRowImgUpload(event, id) {
     reader.readAsDataURL(file);
 }
 
-function saveProductRow(id) {
+async function saveProductRow(id) {
     const idx = globalProducts.findIndex(p => p.id == id);
     if (idx < 0) return;
     const name = document.getElementById(`name-${id}`)?.value.trim();
@@ -265,9 +266,24 @@ function saveProductRow(id) {
     if (!name) { showToast('Product name is required.', 'error'); return; }
     if (!price || price < 1) { showToast('Enter a valid price.', 'error'); return; }
 
-    globalProducts[idx] = { ...globalProducts[idx], name, price, category: cat, status: stat };
-    saveProducts();
-    showToast(`"${name}" saved successfully!`, 'success');
+    const updatedProd = { ...globalProducts[idx], name, price, category: cat, status: stat };
+
+    try {
+        const res = await fetch('/api/products', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedProd)
+        });
+        if (res.ok) {
+            globalProducts[idx] = await res.json();
+            lsSet(LS_KEY.products, globalProducts);
+            showToast(`"${name}" updated globally!`, 'success');
+        } else throw new Error();
+    } catch (e) {
+        showToast('Global sync failed. Saving locally...', 'warning');
+        globalProducts[idx] = updatedProd;
+        lsSet(LS_KEY.products, globalProducts);
+    }
     renderProductTable(document.getElementById('prod-search')?.value || '');
 }
 
@@ -282,16 +298,25 @@ function confirmDeleteProduct(id, name) {
     }
 }
 
-function deleteProduct(id) {
-    globalProducts = globalProducts.filter(p => p.id != id);
-    saveProducts();
-    showToast('Product deleted.', 'warning');
+async function deleteProduct(id) {
+    try {
+        const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            globalProducts = globalProducts.filter(p => p.id != id);
+            lsSet(LS_KEY.products, globalProducts);
+            showToast('Product deleted globally!', 'success');
+        } else throw new Error();
+    } catch {
+        showToast('Global delete failed. Removing locally...', 'warning');
+        globalProducts = globalProducts.filter(p => p.id != id);
+        lsSet(LS_KEY.products, globalProducts);
+    }
     renderProductTable();
     renderDashboard();
 }
 
 /* Add Product Form */
-function addProductFromForm() {
+async function addProductFromForm() {
     const name = document.getElementById('add-name')?.value.trim();
     const price = parseFloat(document.getElementById('add-price')?.value);
     const cat = document.getElementById('add-cat')?.value;
@@ -303,10 +328,25 @@ function addProductFromForm() {
     if (!name) { showToast('Fish name is required.', 'error'); return; }
     if (!price || price < 1) { showToast('Enter a valid price.', 'error'); return; }
 
-    const newProd = { id: genId('P'), name, price, category: cat, status: stat, desc, img: imgSrc };
-    globalProducts.push(newProd);
-    saveProducts();
-    showToast(`"${name}" added to catalog!`, 'success');
+    const newProd = { name, price, category: cat, status: stat, desc, img: imgSrc };
+
+    try {
+        const res = await fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newProd)
+        });
+        if (res.ok) {
+            const saved = await res.json();
+            globalProducts.push(saved);
+            lsSet(LS_KEY.products, globalProducts);
+            showToast(`"${name}" added globally!`, 'success');
+        } else throw new Error();
+    } catch {
+        showToast('Sync failed. Added locally.', 'warning');
+        globalProducts.push({ ...newProd, id: Date.now() });
+        lsSet(LS_KEY.products, globalProducts);
+    }
 
     // Reset form
     ['add-name', 'add-price', 'add-desc', 'add-img-url'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -413,13 +453,29 @@ function renderOrdersTable(filter) {
 }
 
 
-function updateOrderStatus(orderId, newStatus) {
+async function updateOrderStatus(orderId, newStatus) {
     const idx = globalOrders.findIndex(o => o.id === orderId);
     if (idx < 0) return;
-    globalOrders[idx].status = newStatus;
-    lsSet(LS_KEY.orders, globalOrders);
-    showToast(`Order ${orderId} → ${newStatus}`, 'success');
+
+    try {
+        const res = await fetch('/api/orders', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: orderId, status: newStatus })
+        });
+        if (res.ok) {
+            const updated = await res.json();
+            globalOrders[idx] = updated;
+            lsSet(LS_KEY.orders, globalOrders);
+            showToast(`Order ${orderId} status set to "${newStatus}" globally!`, 'success');
+        } else throw new Error();
+    } catch {
+        showToast('Sync failed. Updating local state...', 'warning');
+        globalOrders[idx].status = newStatus;
+        lsSet(LS_KEY.orders, globalOrders);
+    }
     renderDashboard();
+    renderOrdersTable();
 }
 
 function openOrderModal(orderId) {
@@ -492,7 +548,7 @@ function renderOffersTable() {
         </tr>`).join('');
 }
 
-function addOfferFromForm() {
+async function addOfferFromForm() {
     const title = document.getElementById('off-title')?.value.trim();
     const code = document.getElementById('off-code')?.value.trim().toUpperCase();
     const type = document.getElementById('off-type')?.value;
@@ -504,32 +560,69 @@ function addOfferFromForm() {
     if (!title) { showToast('Offer title is required.', 'error'); return; }
     if (!code) { showToast('Coupon code is required.', 'error'); return; }
     if (!val || val < 1) { showToast('Enter a valid discount value.', 'error'); return; }
-    if (globalOffers.find(o => o.couponCode === code)) { showToast('Coupon code already exists!', 'error'); return; }
 
-    const newOffer = { id: genId('OFF'), title, couponCode: code, discountType: type, discountValue: val, minOrder: min, expiry, status: 'active', banner };
-    globalOffers.push(newOffer);
-    saveOffers();
-    showToast(`Offer "${title}" added! Coupon: ${code}`, 'success');
+    const newOffer = { title, couponCode: code, discountType: type, discountValue: val, minOrder: min, expiry, status: 'active', banner };
+
+    try {
+        const res = await fetch('/api/offers', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOffer)
+        });
+        if (res.ok) {
+            const saved = await res.json();
+            globalOffers.push(saved);
+            lsSet(LS_KEY.offers, globalOffers);
+            showToast(`Offer "${title}" added globally!`, 'success');
+        } else throw new Error();
+    } catch {
+        globalOffers.push({ ...newOffer, id: genId('OFF') });
+        lsSet(LS_KEY.offers, globalOffers);
+        showToast('Sync failed. Added locally.', 'warning');
+    }
 
     ['off-title', 'off-code', 'off-val', 'off-min', 'off-expiry', 'off-banner'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     toggleAddOfferCard();
     renderOffersTable();
 }
 
-function toggleOfferStatus(id) {
+async function toggleOfferStatus(id) {
     const idx = globalOffers.findIndex(o => o.id === id);
     if (idx < 0) return;
-    globalOffers[idx].status = globalOffers[idx].status === 'active' ? 'inactive' : 'active';
-    saveOffers();
-    showToast(`Offer is now ${globalOffers[idx].status}.`, globalOffers[idx].status === 'active' ? 'success' : 'warning');
+    const newStatus = globalOffers[idx].status === 'active' ? 'inactive' : 'active';
+
+    try {
+        const res = await fetch('/api/offers', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, status: newStatus })
+        });
+        if (res.ok) {
+            globalOffers[idx] = await res.json();
+            lsSet(LS_KEY.offers, globalOffers);
+            showToast(`Offer is now ${newStatus} globally!`, 'success');
+        } else throw new Error();
+    } catch {
+        globalOffers[idx].status = newStatus;
+        lsSet(LS_KEY.offers, globalOffers);
+        showToast('Sync failed. Offer updated locally.', 'warning');
+    }
     renderOffersTable();
 }
 
-function deleteOffer(id) {
-    const off = globalOffers.find(o => o.id === id);
-    globalOffers = globalOffers.filter(o => o.id !== id);
-    saveOffers();
-    showToast(`Offer "${off?.title || id}" deleted.`, 'warning');
+async function deleteOffer(id) {
+    try {
+        const res = await fetch(`/api/offers?id=${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            globalOffers = globalOffers.filter(o => o.id !== id);
+            lsSet(LS_KEY.offers, globalOffers);
+            showToast('Offer deleted globally!', 'success');
+        } else throw new Error();
+    } catch {
+        globalOffers = globalOffers.filter(o => o.id !== id);
+        lsSet(LS_KEY.offers, globalOffers);
+        showToast('Sync failed. Offer removed locally.', 'warning');
+    }
     renderOffersTable();
 }
 
@@ -755,19 +848,40 @@ const boot = () => {
         const loginForm = document.getElementById('login-form');
         if (!loginForm) return;
 
-        loginForm.onsubmit = (e) => {
+        loginForm.onsubmit = async (e) => {
             e.preventDefault();
             const u = document.getElementById('l-user')?.value.trim();
             const p = document.getElementById('l-pass')?.value.trim();
             const err = document.getElementById('login-err');
-            const creds = getCreds();
+            const submitBtn = loginForm.querySelector('button');
 
-            if (u === creds.username && p === creds.password) {
-                if (err) { err.textContent = '✅ Login successful! Redirecting...'; err.style.color = '#10B981'; }
-                sessionStorage.setItem(LS_KEY.session, 'true');
-                setTimeout(() => redirectTo('admin-dashboard'), 500);
-            } else {
-                if (err) { err.textContent = '❌ Invalid username or password.'; err.style.color = '#F87171'; }
+            if (!u || !p) { if (err) err.textContent = '❌ Credentials are required.'; return; }
+
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Authenticating...'; }
+
+            try {
+                const res = await fetch('/api/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (err) { err.textContent = '✅ Success! Redirecting...'; err.style.color = '#10B981'; }
+                    sessionStorage.setItem(LS_KEY.session, 'true');
+                    sessionStorage.setItem('ak_admin_token', data.token);
+                    setTimeout(() => redirectTo('admin-dashboard'), 800);
+                } else {
+                    const data = await res.json();
+                    throw new Error(data.error || 'Invalid credentials');
+                }
+            } catch (error) {
+                if (err) {
+                    err.textContent = `❌ ${error.message}`;
+                    err.style.color = '#F87171';
+                }
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Login to Admin'; }
             }
         };
 

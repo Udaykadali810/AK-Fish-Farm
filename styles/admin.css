@@ -1817,7 +1817,7 @@ select.form-input option {
 
     .adm-main-area {
         margin-left: 0;
-        padding-bottom: 72px;
+        padding-bottom: 0px;
     }
 
     .hamburger-btn {
@@ -1829,7 +1829,7 @@ select.form-input option {
     }
 
     .bottom-nav {
-        display: flex;
+        display: none;
     }
 
     .add-prod-grid {

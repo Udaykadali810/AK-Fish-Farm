@@ -1,83 +1,85 @@
+import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
-// This is a "lightweight storage layer" using JSON files.
-// Note: On Vercel (Production), the filesystem is read-only.
-// For true global persistence without an external DB, Vercel KV is recommended.
-// This implementation works for Local Development and as a template.
+/**
+ * GLOBAL STORAGE LAYER (Vercel KV + JSON Fallback)
+ * This layer ensures data is synchronized across all users globally on Vercel.
+ * If KV_URL is not set, it falls back to local JSON files (for local dev).
+ **/
 
-const PRODUCTS_PATH = path.join(process.cwd(), 'api/data/products.json');
-const ORDERS_PATH = path.join(process.cwd(), 'api/data/orders.json');
+const IS_KV_ENABLED = !!process.env.KV_URL;
 
-export function getProducts() {
-    try {
-        const data = fs.readFileSync(PRODUCTS_PATH, 'utf8');
-        return JSON.parse(data);
-    } catch (err) {
-        console.error('Error reading products:', err);
-        return [];
+// Local file paths
+const DATA_DIR = path.join(process.cwd(), 'api/data');
+const FILE_PATHS = {
+    products: path.join(DATA_DIR, 'products.json'),
+    orders: path.join(DATA_DIR, 'orders.json'),
+    offers: path.join(DATA_DIR, 'offers.json'),
+    coupons: path.join(DATA_DIR, 'coupons.json')
+};
+
+/** Generic Read **/
+async function getData(key) {
+    if (IS_KV_ENABLED) {
+        try {
+            const data = await kv.get(key);
+            return data || [];
+        } catch (err) {
+            console.error(`KV Read Error [${key}]:`, err);
+        }
     }
+
+    // Local Fallback
+    try {
+        const filePath = FILE_PATHS[key.replace('akf_', '')];
+        if (fs.existsSync(filePath)) {
+            return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        }
+    } catch (err) {
+        console.error(`Local Read Error [${key}]:`, err);
+    }
+    return [];
 }
 
-export function saveProducts(products) {
+/** Generic Write **/
+async function setData(key, data) {
+    if (IS_KV_ENABLED) {
+        try {
+            await kv.set(key, data);
+            return true;
+        } catch (err) {
+            console.error(`KV Write Error [${key}]:`, err);
+        }
+    }
+
+    // Local Fallback (only works on local machine, not Vercel prod)
     try {
-        fs.writeFileSync(PRODUCTS_PATH, JSON.stringify(products, null, 2));
+        const filePath = FILE_PATHS[key.replace('akf_', '')];
+        if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
         return true;
     } catch (err) {
-        console.error('Error saving products:', err);
+        console.error(`Local Write Error [${key}]:`, err);
         return false;
     }
 }
 
-export function getOrders() {
-    try {
-        const data = fs.readFileSync(ORDERS_PATH, 'utf8');
-        return JSON.parse(data);
-    } catch (err) {
-        console.error('Error reading orders:', err);
-        return [];
-    }
-}
+/* --- API Facades --- */
 
-export function saveOrder(order) {
-    try {
-        const orders = getOrders();
-        orders.push(order);
-        fs.writeFileSync(ORDERS_PATH, JSON.stringify(orders, null, 2));
-        return true;
-    } catch (err) {
-        console.error('Error saving order:', err);
-        return false;
-    }
-}
-export function saveOrders(orders) {
-    try {
-        fs.writeFileSync(ORDERS_PATH, JSON.stringify(orders, null, 2));
-        return true;
-    } catch (err) {
-        console.error('Error saving orders:', err);
-        return false;
-    }
-}
-const OFFERS_PATH = path.join(process.cwd(), 'api/data/offers.json');
+export const getProducts = () => getData('akf_products');
+export const saveProducts = (data) => setData('akf_products', data);
 
-export function getOffers() {
-    try {
-        if (!fs.existsSync(OFFERS_PATH)) return [];
-        const data = fs.readFileSync(OFFERS_PATH, 'utf8');
-        return JSON.parse(data);
-    } catch (err) {
-        console.error('Error reading offers:', err);
-        return [];
-    }
-}
+export const getOrders = () => getData('akf_orders');
+export const saveOrders = (data) => setData('akf_orders', data);
+export const saveOrder = async (order) => {
+    const orders = await getOrders();
+    orders.push(order);
+    return saveOrders(orders);
+};
 
-export function saveOffers(offers) {
-    try {
-        fs.writeFileSync(OFFERS_PATH, JSON.stringify(offers, null, 2));
-        return true;
-    } catch (err) {
-        console.error('Error saving offers:', err);
-        return false;
-    }
-}
+export const getOffers = () => getData('akf_offers');
+export const saveOffers = (data) => setData('akf_offers', data);
+
+export const getCoupons = () => getData('akf_coupons');
+export const saveCoupons = (data) => setData('akf_coupons', data);

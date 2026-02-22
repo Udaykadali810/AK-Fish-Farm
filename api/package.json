@@ -3,5 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
-    "dependencies": {}
+    "dependencies": {
+        "@vercel/kv": "^1.0.1"
+    }
 }

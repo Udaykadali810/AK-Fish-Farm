@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     switch (method) {
         case 'GET':
             try {
-                const products = getProducts();
+                const products = await getProducts();
                 res.status(200).json(products);
             } catch (error) {
                 res.status(500).json({ error: 'Failed to fetch products' });
@@ -15,14 +15,14 @@ export default async function handler(req, res) {
 
         case 'POST':
             try {
-                const products = getProducts();
+                const products = await getProducts();
                 const newProduct = {
                     ...req.body,
                     id: Date.now(),
                     updatedAt: new Date().toISOString()
                 };
                 products.push(newProduct);
-                if (saveProducts(products)) {
+                if (await saveProducts(products)) {
                     res.status(201).json(newProduct);
                 } else {
                     res.status(500).json({ error: 'Failed to save product' });
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
         case 'PUT':
             try {
-                const products = getProducts();
+                const products = await getProducts();
                 const { id, ...updates } = req.body;
                 const index = products.findIndex(p => p.id === parseInt(id));
 
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
                         ...updates,
                         updatedAt: new Date().toISOString()
                     };
-                    if (saveProducts(products)) {
+                    if (await saveProducts(products)) {
                         res.status(200).json(products[index]);
                     } else {
                         res.status(500).json({ error: 'Failed to update product' });
@@ -59,12 +59,12 @@ export default async function handler(req, res) {
 
         case 'DELETE':
             try {
-                const products = getProducts();
+                const products = await getProducts();
                 const { id } = req.query;
                 const filteredProducts = products.filter(p => p.id !== parseInt(id));
 
                 if (products.length !== filteredProducts.length) {
-                    if (saveProducts(filteredProducts)) {
+                    if (await saveProducts(filteredProducts)) {
                         res.status(200).json({ message: 'Product deleted' });
                     } else {
                         res.status(500).json({ error: 'Failed to delete product' });

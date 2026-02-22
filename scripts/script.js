@@ -7,8 +7,8 @@
 
 /* ── Constants ── */
 const WA_NUMBER = '919492045766';
-const LS_CART = 'akf_cart';
-const LS_COUPON = 'akf_coupon';
+const LS_CART = 'ak_cart';
+const LS_COUPON = 'ak_coupon';
 const LS_PRODUCTS = 'ak_products';
 const LS_OFFERS = 'ak_offers';
 const LS_ORDERS = 'ak_orders';
@@ -42,35 +42,41 @@ function lsSet(key, val) {
 }
 
 async function fetchData() {
+    console.log('[API] Fetching global data...');
+    const grid = document.getElementById('product-grid');
+    const banner = document.getElementById('live-banner-root');
+
+    if (grid) grid.classList.add('pulse-loading');
+    if (banner) banner.classList.add('pulse-loading');
+
     /* Products */
-    const lsProds = lsGet(LS_PRODUCTS, null);
-    if (lsProds && lsProds.length > 0) {
-        globalProducts = lsProds;
-    } else if (!IS_LOCAL) {
-        try {
-            const r = await fetch('/api/products');
-            if (r.ok) { globalProducts = await r.json(); lsSet(LS_PRODUCTS, globalProducts); }
-        } catch { }
-        if (!globalProducts.length) { globalProducts = DEFAULT_PRODUCTS; lsSet(LS_PRODUCTS, globalProducts); }
-    } else {
-        globalProducts = DEFAULT_PRODUCTS;
-        lsSet(LS_PRODUCTS, globalProducts);
+    try {
+        const r = await fetch('/api/products');
+        if (r.ok) {
+            globalProducts = await r.json();
+            lsSet(LS_PRODUCTS, globalProducts);
+            console.log('[API] Products synced.');
+        } else throw new Error();
+    } catch (e) {
+        console.warn('[API] Product fetch failed, using fallback.');
+        globalProducts = lsGet(LS_PRODUCTS, DEFAULT_PRODUCTS);
     }
 
     /* Offers */
-    const lsOffs = lsGet(LS_OFFERS, null);
-    if (lsOffs && lsOffs.length > 0) {
-        globalOffers = lsOffs;
-    } else if (!IS_LOCAL) {
-        try {
-            const r = await fetch('/api/offers');
-            if (r.ok) { globalOffers = await r.json(); lsSet(LS_OFFERS, globalOffers); }
-        } catch { }
-        if (!globalOffers.length) { globalOffers = DEFAULT_OFFERS; lsSet(LS_OFFERS, globalOffers); }
-    } else {
-        globalOffers = DEFAULT_OFFERS;
-        lsSet(LS_OFFERS, globalOffers);
+    try {
+        const r = await fetch('/api/offers');
+        if (r.ok) {
+            globalOffers = await r.json();
+            lsSet(LS_OFFERS, globalOffers);
+            console.log('[API] Offers synced.');
+        } else throw new Error();
+    } catch (e) {
+        console.warn('[API] Offers fetch failed, using fallback.');
+        globalOffers = lsGet(LS_OFFERS, DEFAULT_OFFERS);
     }
+
+    if (grid) grid.classList.remove('pulse-loading');
+    if (banner) banner.classList.remove('pulse-loading');
 }
 
 /* ════════════════════════════════════════
@@ -442,7 +448,13 @@ function getDiscount() {
         : Math.min(coupon.discountValue, total);
 }
 
-function submitWhatsAppOrder({ name, phone, city }) {
+async function submitWhatsAppOrder({ name, phone, city }) {
+    const submitBtn = document.getElementById('ofm-submit-btn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loader-spinning" style="margin-right:8px;"></span> Saving Order...';
+    }
+
     const cart = getCart();
     const coupon = lsGet(LS_COUPON, null);
     const subtotal = getCartTotal();
@@ -450,7 +462,6 @@ function submitWhatsAppOrder({ name, phone, city }) {
     const total = subtotal - discount;
 
     const itemLines = cart.map(i => `• ${i.name} × ${i.qty} — ₹${(i.price * i.qty).toLocaleString('en-IN')}`).join('\n');
-
     const msg = [
         `🐟 *New Order — AK Fish Farms*`,
         ``,
@@ -467,31 +478,55 @@ function submitWhatsAppOrder({ name, phone, city }) {
         `Thank you for shopping at AK Fish Farms! 🐟`
     ].filter(l => l !== null).join('\n');
 
-    /* Save order to LocalStorage */
-    const orderId = 'AKF-' + Date.now().toString(36).toUpperCase();
-    const orders = lsGet(LS_ORDERS, []);
-    orders.push({
-        id: orderId,
-        customerName: name,
-        phone,
-        city,
-        items: cart,
-        total,
-        coupon: coupon?.couponCode || '',
-        status: 'Pending',
-        timestamp: new Date().toISOString()
-    });
-    lsSet(LS_ORDERS, orders);
+    /* 1. Global Sync — Save to API */
+    let orderId = 'AKF-' + Date.now().toString(36).toUpperCase();
+    try {
+        const orderPayload = {
+            id: orderId,
+            customerName: name,
+            phone,
+            city,
+            items: cart,
+            total: total,
+            coupon: coupon?.couponCode || '',
+            status: 'New',
+            timestamp: new Date().toISOString()
+        };
 
-    /* Open WhatsApp */
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderPayload)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            orderId = data.id || orderId;
+            console.log('[API] Order recorded globally:', orderId);
+        } else throw new Error();
+    } catch (e) {
+        console.error('[API] Global sync failed, saving locally:', e);
+        const orders = lsGet(LS_ORDERS, []);
+        orders.push({ id: orderId, customerName: name, phone, city, items: cart, total, status: 'New', timestamp: new Date().toISOString() });
+        lsSet(LS_ORDERS, orders);
+    }
+
+    /* 2. Update local order history for user visibility */
+    const myOrders = lsGet(LS_ORDERS, []);
+    if (!myOrders.find(o => o.id === orderId)) {
+        myOrders.push({ id: orderId, status: 'New', timestamp: new Date().toISOString() });
+        lsSet(LS_ORDERS, myOrders);
+    }
+
+    /* 2. Open WhatsApp */
     window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 
-    /* Clear cart */
+    /* 3. Cleanup */
     lsSet(LS_CART, []);
     localStorage.removeItem(LS_COUPON);
     updateCartBadge();
 
-    /* Thank you popup */
+    /* 4. Thank you popup */
     showThankYouPopup(name, orderId);
 }
 
@@ -575,11 +610,6 @@ document.addEventListener('DOMContentLoaded', () => {
             /* Home/Shop — matches /, /index.html, or any non-.html path */
             initShopPage();
         }
-
-        /* Hamburger — works on all pages */
-        document.getElementById('hamburger')?.addEventListener('click', () => {
-            document.getElementById('mobile-menu')?.classList.toggle('open');
-        });
 
         /* Navbar scroll glow */
         window.addEventListener('scroll', () => {

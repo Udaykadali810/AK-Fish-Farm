@@ -7,23 +7,25 @@ export default async function handler(req, res) {
         try {
             const orderData = {
                 ...req.body,
-                id: `AKF-${Date.now().toString(36).toUpperCase()}`,
-                status: 'Pending',
+                id: req.body.id || `AKF-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`,
+                status: 'New',
                 timestamp: new Date().toISOString()
             };
 
-            if (saveOrder(orderData)) {
+            const success = await saveOrder(orderData);
+            if (success) {
                 res.status(201).json(orderData);
             } else {
                 res.status(500).json({ error: 'Failed to record order' });
             }
         } catch (error) {
+            console.error('Order POST error:', error);
             res.status(500).json({ error: 'Internal Server Error' });
         }
     } else if (method === 'GET') {
         try {
             const { id } = req.query;
-            const orders = getOrders();
+            const orders = await getOrders();
             if (id) {
                 const order = orders.find(o => o.id === id);
                 if (order) res.status(200).json(order);
@@ -37,11 +39,11 @@ export default async function handler(req, res) {
     } else if (method === 'PUT') {
         try {
             const { id, status } = req.body;
-            const orders = getOrders();
+            const orders = await getOrders();
             const index = orders.findIndex(o => o.id === id);
             if (index !== -1) {
                 orders[index].status = status;
-                saveOrders(orders);
+                await saveOrders(orders);
                 res.status(200).json(orders[index]);
             } else {
                 res.status(404).json({ error: 'Order not found' });
