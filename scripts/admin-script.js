@@ -914,14 +914,22 @@ const boot = () => {
                     body: JSON.stringify({ username: u, password: p })
                 });
 
+                const contentType = res.headers.get('content-type');
+                let data;
+                if (contentType && contentType.includes('application/json')) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    console.error('Non-JSON Response:', text);
+                    throw new Error('Server returned a non-JSON error. Check Vercel logs.');
+                }
+
                 if (res.ok) {
-                    const data = await res.json();
                     if (err) { err.textContent = '✅ Success! Redirecting...'; err.style.color = '#10B981'; }
                     sessionStorage.setItem(LS_KEY.session, 'true');
                     sessionStorage.setItem('ak_admin_token', data.token);
                     setTimeout(() => redirectTo('admin-dashboard'), 800);
                 } else {
-                    const data = await res.json();
                     throw new Error(data.error || 'Invalid credentials');
                 }
             } catch (error) {
