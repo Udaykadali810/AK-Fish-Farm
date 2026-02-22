@@ -372,6 +372,15 @@ function getAppliedCoupon() {
     catch { return null; }
 }
 
-export { initShopPage, initCartPage };
+// Initialization Logic to prevent conflicts
+document.addEventListener('DOMContentLoaded', () => {
+    // Current page detection
+    const path = window.location.pathname;
+    if (path.includes('index.html') || path === '/') {
+        initShopPage();
+    } else if (path.includes('cart.html')) {
+        initCartPage();
+    }
+});
 
 export { initShopPage, initCartPage };
