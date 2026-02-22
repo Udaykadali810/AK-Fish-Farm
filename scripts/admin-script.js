@@ -63,53 +63,50 @@ function redirectTo(page) {
    DATA LOADING — LocalStorage first
 ════════════════════════════════════════ */
 async function loadAllData(isSilent = false) {
-    if (!isSilent) showToast('Syncing with global database...', 'info');
+    if (!isSilent) showToast('Connecting to Global Postgres Database...', 'info');
     const mainArea = document.querySelector('.adm-main-area');
     if (!isSilent && mainArea) mainArea.classList.add('pulse-loading');
 
-    // Products
-    try {
-        const r = await fetch('/api/products');
-        if (r.ok) {
-            globalProducts = await r.json();
-            lsSet(LS_KEY.products, globalProducts);
-        } else throw new Error();
-    } catch {
-        globalProducts = lsGet(LS_KEY.products, DEFAULT_PRODUCTS);
-    }
+    const fetchSync = async (endpoint, key, fallback) => {
+        try {
+            console.log(`📡 [PG] Fetching ${endpoint}...`);
+            const r = await fetch(endpoint);
+            if (r.ok) {
+                const data = await r.json();
+                lsSet(key, data); // Keep local cache for speed
+                console.log(`✅ [PG] ${endpoint} Synced.`);
+                return data;
+            }
+            throw new Error(`DB Error: ${r.status}`);
+        } catch (e) {
+            console.warn(`⚠️ [OFFLINE] ${endpoint} using local cache:`, e.message);
+            return lsGet(key, fallback);
+        }
+    };
 
-    // Orders
-    try {
-        const r = await fetch('/api/orders');
-        if (r.ok) {
-            globalOrders = await r.json();
-            lsSet(LS_KEY.orders, globalOrders);
-        } else throw new Error();
-    } catch {
-        globalOrders = lsGet(LS_KEY.orders, []);
-    }
+    globalProducts = await fetchSync('/api/products', LS_KEY.products, DEFAULT_PRODUCTS);
+    globalOrders = await fetchSync('/api/orders', LS_KEY.orders, []);
+    globalOffers = await fetchSync('/api/offers', LS_KEY.offers, DEFAULT_OFFERS);
 
-    // Offers
+    // Load Global Settings
     try {
-        const r = await fetch('/api/offers');
+        const r = await fetch('/api/settings');
         if (r.ok) {
-            globalOffers = await r.json();
-            lsSet(LS_KEY.offers, globalOffers);
-        } else throw new Error();
-    } catch {
-        globalOffers = lsGet(LS_KEY.offers, DEFAULT_OFFERS);
-    }
+            const settings = await r.json();
+            if (settings.heroBanner) localStorage.setItem('ak_hero_banner', settings.heroBanner);
+        }
+    } catch (e) { }
 
     if (mainArea) mainArea.classList.remove('pulse-loading');
     refreshUI();
 }
 
-// Auto-refresh every 30 seconds
+// Auto-refresh orders every 20 seconds for Live Site
 setInterval(() => {
-    if (checkAuth() && currentSection === 'dashboard' || currentSection === 'orders') {
+    if (checkAuth() && (currentSection === 'dashboard' || currentSection === 'orders')) {
         loadAllData(true);
     }
-}, 30000);
+}, 20000);
 
 /* ════════════════════════════════════════
    UI REFRESH
@@ -239,7 +236,7 @@ function triggerImgUpload(id) {
 function handleRowImgUpload(event, id) {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { showToast('Image too large. Max 5MB.', 'error'); return; }
+    if (file.size > 2 * 1024 * 1024) { showToast('Image too large. Max 2MB for Global Sync.', 'error'); return; }
     const reader = new FileReader();
     reader.onload = e => {
         const dataUrl = e.target.result;
@@ -248,8 +245,7 @@ function handleRowImgUpload(event, id) {
         const idx = globalProducts.findIndex(p => p.id == id);
         if (idx >= 0) {
             globalProducts[idx].img = dataUrl;
-            saveProducts();
-            showToast('Image updated! Click Save to confirm all changes.', 'info');
+            showToast('Ready! Click "💾 Save" to Sync Globally.', 'warning');
         }
     };
     reader.readAsDataURL(file);
@@ -268,21 +264,27 @@ async function saveProductRow(id) {
 
     const updatedProd = { ...globalProducts[idx], name, price, category: cat, status: stat };
 
+    showToast('Saving to Postgres...', 'info');
     try {
         const res = await fetch('/api/products', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedProd)
         });
+
         if (res.ok) {
-            globalProducts[idx] = await res.json();
+            const saved = await res.json();
+            globalProducts[idx] = saved;
             lsSet(LS_KEY.products, globalProducts);
-            showToast(`"${name}" updated globally!`, 'success');
-        } else throw new Error();
+            showToast(`"${name}" Saved to Global DB`, 'success');
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `Server Error ${res.status}`);
+        }
     } catch (e) {
-        showToast('Global sync failed. Saving locally...', 'warning');
-        globalProducts[idx] = updatedProd;
-        lsSet(LS_KEY.products, globalProducts);
+        console.error('❌ DB Sync Failed:', e);
+        showToast('Database Connection Error. Changes NOT saved.', 'error');
+        return;
     }
     renderProductTable(document.getElementById('prod-search')?.value || '');
 }
@@ -299,17 +301,20 @@ function confirmDeleteProduct(id, name) {
 }
 
 async function deleteProduct(id) {
+    showToast('Deleting from Global DB...', 'info');
     try {
         const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
         if (res.ok) {
             globalProducts = globalProducts.filter(p => p.id != id);
             lsSet(LS_KEY.products, globalProducts);
-            showToast('Product deleted globally!', 'success');
-        } else throw new Error();
-    } catch {
-        showToast('Global delete failed. Removing locally...', 'warning');
-        globalProducts = globalProducts.filter(p => p.id != id);
-        lsSet(LS_KEY.products, globalProducts);
+            showToast('Deleted Globally from Postgres!', 'success');
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `DB Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ DB Delete Failed:', e);
+        showToast('Database Connection Error. Product not removed.', 'error');
     }
     renderProductTable();
     renderDashboard();
@@ -330,6 +335,7 @@ async function addProductFromForm() {
 
     const newProd = { name, price, category: cat, status: stat, desc, img: imgSrc };
 
+    showToast('Pushing to Postgres Database...', 'info');
     try {
         const res = await fetch('/api/products', {
             method: 'POST',
@@ -340,12 +346,15 @@ async function addProductFromForm() {
             const saved = await res.json();
             globalProducts.push(saved);
             lsSet(LS_KEY.products, globalProducts);
-            showToast(`"${name}" added globally!`, 'success');
-        } else throw new Error();
-    } catch {
-        showToast('Sync failed. Added locally.', 'warning');
-        globalProducts.push({ ...newProd, id: Date.now() });
-        lsSet(LS_KEY.products, globalProducts);
+            showToast(`"${name}" Added Globally to Neon Postgres!`, 'success');
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `DB Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ DB Save Failed:', e);
+        showToast('Database Connection Error. Product NOT added.', 'error');
+        return;
     }
 
     // Reset form
@@ -454,9 +463,7 @@ function renderOrdersTable(filter) {
 
 
 async function updateOrderStatus(orderId, newStatus) {
-    const idx = globalOrders.findIndex(o => o.id === orderId);
-    if (idx < 0) return;
-
+    showToast('Updating Order Cloud Status...', 'info');
     try {
         const res = await fetch('/api/orders', {
             method: 'PUT',
@@ -464,18 +471,26 @@ async function updateOrderStatus(orderId, newStatus) {
             body: JSON.stringify({ id: orderId, status: newStatus })
         });
         if (res.ok) {
-            const updated = await res.json();
-            globalOrders[idx] = updated;
-            lsSet(LS_KEY.orders, globalOrders);
-            showToast(`Order ${orderId} status set to "${newStatus}" globally!`, 'success');
-        } else throw new Error();
-    } catch {
-        showToast('Sync failed. Updating local state...', 'warning');
-        globalOrders[idx].status = newStatus;
-        lsSet(LS_KEY.orders, globalOrders);
+            const idx = globalOrders.findIndex(o => o.id === orderId);
+            if (idx >= 0) {
+                globalOrders[idx].status = newStatus;
+                lsSet(LS_KEY.orders, globalOrders);
+            }
+            showToast(`Order ${orderId} Updated Globally`, 'success');
+            console.log(`✅ [PG] Status Sync: ${orderId} -> ${newStatus}`);
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `DB Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ Order Sync Failed:', e);
+        showToast('Database Connection Error. Status not updated.', 'error');
+        return;
     }
+    renderOrdersTable(document.getElementById('orders-search')?.value.toLowerCase());
     renderDashboard();
-    renderOrdersTable();
+    const modal = document.getElementById('order-modal');
+    if (modal) modal.classList.remove('show');
 }
 
 function openOrderModal(orderId) {
@@ -550,19 +565,18 @@ function renderOffersTable() {
 
 async function addOfferFromForm() {
     const title = document.getElementById('off-title')?.value.trim();
-    const code = document.getElementById('off-code')?.value.trim().toUpperCase();
-    const type = document.getElementById('off-type')?.value;
-    const val = parseFloat(document.getElementById('off-val')?.value);
-    const min = parseFloat(document.getElementById('off-min')?.value) || 0;
+    const couponCode = document.getElementById('off-code')?.value.trim().toUpperCase();
+    const discountType = document.getElementById('off-type')?.value;
+    const discountValue = parseFloat(document.getElementById('off-val')?.value);
+    const minOrder = parseFloat(document.getElementById('off-min')?.value) || 0;
     const expiry = document.getElementById('off-expiry')?.value;
     const banner = document.getElementById('off-banner')?.value.trim();
 
-    if (!title) { showToast('Offer title is required.', 'error'); return; }
-    if (!code) { showToast('Coupon code is required.', 'error'); return; }
-    if (!val || val < 1) { showToast('Enter a valid discount value.', 'error'); return; }
+    if (!title || !couponCode || !discountValue) { showToast('Please fill required fields.', 'error'); return; }
 
-    const newOffer = { title, couponCode: code, discountType: type, discountValue: val, minOrder: min, expiry, status: 'active', banner };
+    const newOffer = { title, couponCode, discountType, discountValue, minOrder, expiry, banner, status: 'active' };
 
+    showToast('Pushing Offer to Postgres...', 'info');
     try {
         const res = await fetch('/api/offers', {
             method: 'POST',
@@ -573,24 +587,27 @@ async function addOfferFromForm() {
             const saved = await res.json();
             globalOffers.push(saved);
             lsSet(LS_KEY.offers, globalOffers);
-            showToast(`Offer "${title}" added globally!`, 'success');
-        } else throw new Error();
-    } catch {
-        globalOffers.push({ ...newOffer, id: genId('OFF') });
-        lsSet(LS_KEY.offers, globalOffers);
-        showToast('Sync failed. Added locally.', 'warning');
+            showToast('Offer Created Globally!', 'success');
+            toggleAddOfferCard();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `DB Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ Offer Sync Failed:', e);
+        showToast('Database Connection Error. Offer not saved.', 'error');
+        return;
     }
-
     ['off-title', 'off-code', 'off-val', 'off-min', 'off-expiry', 'off-banner'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    toggleAddOfferCard();
     renderOffersTable();
 }
 
 async function toggleOfferStatus(id) {
-    const idx = globalOffers.findIndex(o => o.id === id);
+    const idx = globalOffers.findIndex(o => o.id == id);
     if (idx < 0) return;
     const newStatus = globalOffers[idx].status === 'active' ? 'inactive' : 'active';
 
+    showToast('Syncing status with Postgres...', 'info');
     try {
         const res = await fetch('/api/offers', {
             method: 'PUT',
@@ -598,30 +615,36 @@ async function toggleOfferStatus(id) {
             body: JSON.stringify({ id, status: newStatus })
         });
         if (res.ok) {
-            globalOffers[idx] = await res.json();
+            globalOffers[idx].status = newStatus;
             lsSet(LS_KEY.offers, globalOffers);
-            showToast(`Offer is now ${newStatus} globally!`, 'success');
-        } else throw new Error();
-    } catch {
-        globalOffers[idx].status = newStatus;
-        lsSet(LS_KEY.offers, globalOffers);
-        showToast('Sync failed. Offer updated locally.', 'warning');
+            showToast(`Offer is now ${newStatus}`, 'success');
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `DB Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ Offer Toggle Sync Failed:', e);
+        showToast('Database Connection Error.', 'error');
+        return;
     }
     renderOffersTable();
 }
 
 async function deleteOffer(id) {
+    showToast('Removing from Global Database...', 'info');
     try {
         const res = await fetch(`/api/offers?id=${id}`, { method: 'DELETE' });
         if (res.ok) {
-            globalOffers = globalOffers.filter(o => o.id !== id);
+            globalOffers = globalOffers.filter(o => o.id != id);
             lsSet(LS_KEY.offers, globalOffers);
-            showToast('Offer deleted globally!', 'success');
-        } else throw new Error();
-    } catch {
-        globalOffers = globalOffers.filter(o => o.id !== id);
-        lsSet(LS_KEY.offers, globalOffers);
-        showToast('Sync failed. Offer removed locally.', 'warning');
+            showToast('Deleted Globally from Postgres!', 'success');
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `DB Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ Offer Delete Failed:', e);
+        showToast('Database Connection Error.', 'error');
     }
     renderOffersTable();
 }
@@ -781,24 +804,49 @@ ${rows.map(r => `<Row>${r.map(c => `<Cell><Data ss:Type="String">${esc(c)}</Data
 /* ════════════════════════════════════════
    HERO BANNER
 ════════════════════════════════════════ */
-function saveBanner() {
+async function saveBanner() {
     const val = document.getElementById('custom-banner-input')?.value.trim();
     if (!val) { showToast('Enter a banner URL first.', 'error'); return; }
-    localStorage.setItem('ak_hero_banner', val);
-    const prev = document.getElementById('admin-banner-preview');
-    const box = document.getElementById('banner-preview-box');
-    if (prev) prev.src = val;
-    if (box) box.style.display = 'block';
-    showToast('Banner saved! Refresh home page to see it.', 'success');
+
+    showToast('Updating Global Banner...', 'info');
+    try {
+        const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ heroBanner: val })
+        });
+        if (res.ok) {
+            localStorage.setItem('ak_hero_banner', val);
+            const prev = document.getElementById('admin-banner-preview');
+            const box = document.getElementById('banner-preview-box');
+            if (prev) prev.src = val;
+            if (box) box.style.display = 'block';
+            showToast('Global Banner Updated Successfully!', 'success');
+        } else throw new Error();
+    } catch (e) {
+        showToast('Sync Failed. Banner not updated.', 'error');
+    }
 }
 
-function resetBanner() {
-    localStorage.removeItem('ak_hero_banner');
-    const inp = document.getElementById('custom-banner-input');
-    if (inp) inp.value = '';
-    const box = document.getElementById('banner-preview-box');
-    if (box) box.style.display = 'none';
-    showToast('Banner reset to default.', 'info');
+async function resetBanner() {
+    showToast('Resetting Global Banner...', 'info');
+    try {
+        const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ heroBanner: '' })
+        });
+        if (res.ok) {
+            localStorage.removeItem('ak_hero_banner');
+            const inp = document.getElementById('custom-banner-input');
+            if (inp) inp.value = '';
+            const box = document.getElementById('banner-preview-box');
+            if (box) box.style.display = 'none';
+            showToast('Global Banner Reset!', 'success');
+        } else throw new Error();
+    } catch (e) {
+        showToast('Reset Failed.', 'error');
+    }
 }
 
 /* ════════════════════════════════════════

@@ -42,43 +42,56 @@ function lsSet(key, val) {
 }
 
 async function fetchData() {
-    console.log('[API] Fetching global data...');
+    console.log('[API] Syncing with Global Database...');
     const grid = document.getElementById('product-grid');
     const banner = document.getElementById('live-banner-root');
 
     if (grid) grid.classList.add('pulse-loading');
     if (banner) banner.classList.add('pulse-loading');
 
-    /* Products */
-    try {
-        const r = await fetch('/api/products');
-        if (r.ok) {
-            globalProducts = await r.json();
-            lsSet(LS_PRODUCTS, globalProducts);
-            console.log('[API] Products synced.');
-        } else throw new Error();
-    } catch (e) {
-        console.warn('[API] Product fetch failed, using fallback.');
-        globalProducts = lsGet(LS_PRODUCTS, DEFAULT_PRODUCTS);
-    }
+    const sync = async (endpoint, storageKey, setter) => {
+        try {
+            const r = await fetch(endpoint);
+            if (r.ok) {
+                const data = await r.json();
+                lsSet(storageKey, data);
+                setter(data);
+                console.log(`[API] ${endpoint} Synced.`);
+                return true;
+            }
+        } catch (e) {
+            console.warn(`[API] ${endpoint} Offline Fallback.`);
+        }
+        return false;
+    };
 
-    /* Offers */
+    // Products
+    await sync('/api/products', LS_PRODUCTS, (d) => globalProducts = d);
+
+    // Offers
+    await sync('/api/offers', LS_OFFERS, (d) => {
+        globalOffers = d;
+        renderOffersCarousel();
+    });
+
+    // Settings (Banner)
     try {
-        const r = await fetch('/api/offers');
+        const r = await fetch('/api/settings');
         if (r.ok) {
-            globalOffers = await r.json();
-            lsSet(LS_OFFERS, globalOffers);
-            console.log('[API] Offers synced.');
-        } else throw new Error();
-    } catch (e) {
-        console.warn('[API] Offers fetch failed, using fallback.');
-        globalOffers = lsGet(LS_OFFERS, DEFAULT_OFFERS);
-    }
+            const settings = await r.json();
+            if (settings.heroBanner !== undefined) {
+                lsSet('ak_hero_banner', settings.heroBanner);
+                console.log('[API] Settings Synced.');
+            }
+        }
+    } catch (e) { }
 
     if (grid) grid.classList.remove('pulse-loading');
     if (banner) banner.classList.remove('pulse-loading');
-}
 
+    renderProductGrid();
+    renderTrackOrder();
+}
 /* ════════════════════════════════════════
    CART HELPERS
 ════════════════════════════════════════ */
@@ -452,7 +465,7 @@ async function submitWhatsAppOrder({ name, phone, city }) {
     const submitBtn = document.getElementById('ofm-submit-btn');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loader-spinning" style="margin-right:8px;"></span> Saving Order...';
+        submitBtn.innerHTML = '<span class="loader-spinning" style="margin-right:8px;"></span> Syncing with Global Database...';
     }
 
     const cart = getCart();
@@ -478,7 +491,7 @@ async function submitWhatsAppOrder({ name, phone, city }) {
         `Thank you for shopping at AK Fish Farms! 🐟`
     ].filter(l => l !== null).join('\n');
 
-    /* 1. Global Sync — Save to API */
+    /* MANDATORY GLOBAL SYNC — Save to Postgres */
     let orderId = 'AKF-' + Date.now().toString(36).toUpperCase();
     try {
         const orderPayload = {
@@ -489,8 +502,7 @@ async function submitWhatsAppOrder({ name, phone, city }) {
             items: cart,
             total: total,
             coupon: coupon?.couponCode || '',
-            status: 'New',
-            timestamp: new Date().toISOString()
+            status: 'New'
         };
 
         const response = await fetch('/api/orders', {
@@ -502,32 +514,27 @@ async function submitWhatsAppOrder({ name, phone, city }) {
         if (response.ok) {
             const data = await response.json();
             orderId = data.id || orderId;
-            console.log('[API] Order recorded globally:', orderId);
-        } else throw new Error();
+            console.log('🐘 Order Saved to Postgres Database:', orderId);
+
+            // Redirect to WhatsApp ONLY after successful DB save
+            window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
+            // Cleanup
+            lsSet(LS_CART, []);
+            localStorage.removeItem(LS_COUPON);
+            updateCartBadge();
+            showThankYouPopup(name, orderId);
+        } else {
+            throw new Error('Database Sync Failed');
+        }
     } catch (e) {
-        console.error('[API] Global sync failed, saving locally:', e);
-        const orders = lsGet(LS_ORDERS, []);
-        orders.push({ id: orderId, customerName: name, phone, city, items: cart, total, status: 'New', timestamp: new Date().toISOString() });
-        lsSet(LS_ORDERS, orders);
+        console.error('❌ Database Connection Error:', e);
+        showToast('Database Connection Error. Order not saved. Please check your internet.', 'error');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Retry Order Confirmation';
+        }
     }
-
-    /* 2. Update local order history for user visibility */
-    const myOrders = lsGet(LS_ORDERS, []);
-    if (!myOrders.find(o => o.id === orderId)) {
-        myOrders.push({ id: orderId, status: 'New', timestamp: new Date().toISOString() });
-        lsSet(LS_ORDERS, myOrders);
-    }
-
-    /* 2. Open WhatsApp */
-    window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-
-    /* 3. Cleanup */
-    lsSet(LS_CART, []);
-    localStorage.removeItem(LS_COUPON);
-    updateCartBadge();
-
-    /* 4. Thank you popup */
-    showThankYouPopup(name, orderId);
 }
 
 function showThankYouPopup(name, orderId) {
