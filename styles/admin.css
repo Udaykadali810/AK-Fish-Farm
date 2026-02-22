@@ -1796,3 +1796,38 @@ select.form-input option {
         padding: 36px 24px 30px;
     }
 }
+
+/* OFFERS STYLES */
+.code-badge {
+    background: rgba(0, 212, 255, 0.1);
+    color: var(--aqua);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.status-toggle-btn {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.status-toggle-btn.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.status-toggle-btn.inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+}
+
+.status-toggle-btn:hover {
+    transform: scale(1.05);
+}

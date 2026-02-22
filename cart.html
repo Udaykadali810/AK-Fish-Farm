@@ -22,7 +22,7 @@
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
                 <a href="index.html" class="nav-logo">
-                    AK Fish<span>Farms</span>
+                    AK Fish Farms
                 </a>
                 <div class="nav-links">
                     <a href="index.html">Home</a>
@@ -111,23 +111,29 @@
 
                     <div class="summary-rows">
                         <div class="summary-row">
-                            <span>Items</span>
-                            <span id="item-count-2"></span>
+                            <span>Subtotal</span>
+                            <span id="cart-subtotal">₹0</span>
                         </div>
                         <div class="summary-row">
                             <span>Delivery</span>
-                            <span class="free-tag">FREE </span>
+                            <span class="free-tag">FREE</span>
                         </div>
-                        <!-- Discount Row (Hidden initially) -->
-                        <div class="summary-row discount-row" id="discount-row" style="display:none;">
-                            <span>Discount</span>
-                            <span id="discount-amount" class="discount-val">-0</span>
+                        <!-- Discount Row -->
+                        <div class="summary-row discount-row" id="discount-row"
+                            style="display:none; color: #10B981; font-weight: 700;">
+                            <span>Discount (<span id="applied-coupon-tag"></span>)</span>
+                            <span id="discount-amount">-₹0</span>
                         </div>
                         <div class="summary-divider"></div>
                         <div class="summary-row total">
                             <span>Final Total</span>
-                            <span id="cart-total">0</span>
+                            <span id="cart-total">₹0</span>
                         </div>
+                    </div>
+
+                    <!-- Smart Suggestion -->
+                    <div id="smart-suggestion" class="smart-suggestion"
+                        style="display:none; background: rgba(0, 212, 255, 0.08); border-radius: 10px; padding: 10px; font-size: 0.75rem; margin-top: 15px; border-left: 3px solid var(--aqua); color: var(--aqua);">
                     </div>
 
                     <!-- Coupon Feature -->
@@ -174,44 +180,7 @@
 
     </a>
 
-    <!-- Delivery Details Modal -->
-    <div id="delivery-modal" class="modal-bg">
-        <div class="modal-box" style="max-width: 450px;">
-            <div class="modal-hd">
-                <div class="modal-title">Delivery Details</div>
-                <button class="modal-close"
-                    onclick="document.getElementById('delivery-modal').classList.remove('show')">✕</button>
-            </div>
-            <div class="modal-body" style="padding: 24px;">
-                <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 20px;">Please provide your delivery info to
-                    proceed to WhatsApp.</p>
-
-                <div class="form-field" style="margin-bottom: 16px;">
-                    <label class="form-label"
-                        style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #f1f5f9;">Full
-                        Name</label>
-                    <input type="text" id="cust-name" class="form-input" placeholder="Your Name" style="width: 100%;" />
-                </div>
-
-                <div class="form-field" style="margin-bottom: 16px;">
-                    <label class="form-label"
-                        style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #f1f5f9;">Phone
-                        Number</label>
-                    <input type="tel" id="cust-phone" class="form-input" placeholder="10-digit Mobile Number"
-                        style="width: 100%;" />
-                </div>
-
-                <div class="form-field" style="margin-bottom: 24px;">
-                    <label class="form-label"
-                        style="display: block; margin-bottom: 6px; font-size: 0.85rem; font-weight: 600; color: #f1f5f9;">City
-                        / Locality</label>
-                    <input type="text" id="cust-city" class="form-input" placeholder="Your City" style="width: 100%;" />
-                </div>
-
-                <button id="confirm-delivery-btn" class="btn btn-primary btn-full">Submit & Chat on WhatsApp</button>
-            </div>
-        </div>
-    </div>
+    <!-- Delivery Details Modal Removed for Direct Flow -->
 
     <!-- Mobile Bottom Nav -->
     <nav class="bottom-nav">
@@ -255,25 +224,10 @@
         </svg>
     </a>
 
-    <!-- Firebase SDK (Modular) -->
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-      }
-    }
-    </script>
-    <script type="module" src="firebase.js"></script>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="scripts/script.js"></script>
     <script type="module">
-        import { initCartPage } from './script.js';
-        document.addEventListener('DOMContentLoaded', () => {
-            initCartPage();
-            const c2 = document.getElementById('item-count-2');
-            const c1 = document.getElementById('item-count');
-            if (c2 && c1) c2.textContent = c1.textContent;
-        });
+        import { initCartPage } from './scripts/script.js';
+        document.addEventListener('DOMContentLoaded', initCartPage);
     </script>
 
 </body>

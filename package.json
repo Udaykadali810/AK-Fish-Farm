@@ -1,5 +1,16 @@
 {
-    "name": "ak-fish-farms-monorepo",
-    "version": "1.0.0",
-    "private": true
+    "name": "ak-fish-farms",
+    "version": "2.0.0",
+    "private": true,
+    "description": "AK Fish Farms - Pure Serverless Static Site",
+    "scripts": {
+        "build": "echo 'Building static site...'",
+        "install": "echo 'Installing...'",
+        "dev": "vercel dev",
+        "start": "serve ."
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "vercel": "latest"
+    }
 }

@@ -276,19 +276,9 @@
         </svg>
     </a>
 
-    <!-- Firebase SDK (Modular) -->
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-      }
-    }
-    </script>
-    <script type="module" src="firebase.js"></script>
-    <script type="module" src="script.js"></script>
+    <script type="module" src="scripts/script.js"></script>
     <script type="module">
-        import { initCheckoutPage } from './script.js';
+        import { initCheckoutPage } from './scripts/script.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             initCheckoutPage();

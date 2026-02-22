@@ -1,0 +1,24 @@
+[
+    {
+        "id": "OFF-DEFAULT-1",
+        "title": "Welcome Discount",
+        "couponCode": "AK10",
+        "discountType": "percentage",
+        "discountValue": 10,
+        "minOrder": 0,
+        "expiryDate": "2026-12-31",
+        "status": "active",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "OFF-DEFAULT-2",
+        "title": "Big Fish Savings",
+        "couponCode": "FISH50",
+        "discountType": "flat",
+        "discountValue": 50,
+        "minOrder": 500,
+        "expiryDate": "2026-12-31",
+        "status": "active",
+        "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+]

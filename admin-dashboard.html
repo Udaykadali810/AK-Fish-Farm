@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Admin Panel AK FishFarms </title>
+    <title>Admin Dashboard - AK Fish Farms</title>
     <meta name="robots" content="noindex,nofollow" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
@@ -24,10 +24,9 @@
         <!-- SIDEBAR -->
         <aside class="adm-sidebar" id="adm-sidebar">
             <div class="sidebar-brand">
-                <span class="sb-emoji"></span>
                 <div>
-                    <div class="sb-name">AK FishFarms</div>
-                    <div class="sb-role">Admin Panel</div>
+                    <div class="sb-name">AK Fish Farms</div>
+                    <div class="sb-role">Admin Control Panel</div>
                 </div>
             </div>
             <nav class="sidebar-nav">
@@ -43,6 +42,9 @@
                 <button class="nav-item" data-section="products">
                     <span class="nav-ico"></span> Products
                 </button>
+                <button class="nav-item" data-section="offers">
+                    <span class="nav-ico"></span> Offers & Coupons
+                </button>
                 <button class="nav-item" data-section="security">
                     <span class="nav-ico"></span> Security
                 </button>
@@ -54,7 +56,7 @@
                 <button class="nav-item nav-logout" id="logout-btn">
                     <span class="nav-ico"></span> Logout
                 </button>
-                <div class="sb-version">v3.5 Cloud Sync</div>
+                <div class="sb-version">Cloud Sync v3.5</div>
             </div>
         </aside>
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -109,14 +111,14 @@
                             <div class="stat-ico ico-green"></div>
                             <div>
                                 <div class="stat-val" id="ds-products">0</div>
-                                <div class="stat-lbl">Products</div>
+                                <div class="stat-lbl">Products Available</div>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-ico ico-yellow"></div>
                             <div>
                                 <div class="stat-val" id="ds-pending">0</div>
-                                <div class="stat-lbl">Pending Orders</div>
+                                <div class="stat-lbl">Pending Shipments</div>
                             </div>
                         </div>
                     </div>
@@ -378,7 +380,7 @@
                                     <tr>
                                         <th>Image</th>
                                         <th>Name</th>
-                                        <th>Price ()</th>
+                                        <th>Price (₹)</th>
                                         <th>Category</th>
                                         <th>Status</th>
                                         <th>Upload</th>
@@ -389,6 +391,114 @@
                                 <tbody id="prod-tbody">
                                     <tr>
                                         <td colspan="8" class="tbl-empty">Loading</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!--  SECTION: OFFERS & COUPONS  -->
+                <section id="sec-offers" class="adm-sec">
+                    <div class="page-hd">
+                        <h1> Offers & Coupons</h1>
+                        <p>Manage discounts, special deals and coupon codes</p>
+                    </div>
+
+                    <!-- Add New Offer -->
+                    <div class="adm-card" id="add-offer-card">
+                        <div class="card-hd" onclick="window.toggleAddOfferCard()" style="cursor:pointer;">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap"></div>
+                                <div>
+                                    <div class="card-title">Add New Offer</div>
+                                    <div class="card-sub">Create a new discount campaign</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-ghost btn-sm" id="offer-toggle-btn" type="button"> Expand</button>
+                        </div>
+                        <div id="add-offer-body" style="padding:22px; display:none;">
+                            <div class="add-prod-grid">
+                                <div class="fields-col" style="grid-column: 1 / -1;">
+                                    <div class="form-row-2">
+                                        <div class="form-field">
+                                            <label class="form-label">Offer Title <span class="req">*</span></label>
+                                            <input type="text" class="form-input" id="off-title"
+                                                placeholder="e.g. Weekend Fish Sale" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="form-label">Coupon Code <span class="req">*</span></label>
+                                            <input type="text" class="form-input" id="off-code"
+                                                placeholder="e.g. FISH20" style="text-transform:uppercase;" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-field">
+                                            <label class="form-label">Discount Type <span class="req">*</span></label>
+                                            <select class="form-input" id="off-type">
+                                                <option value="percentage">Percentage (%)</option>
+                                                <option value="flat">Flat Discount (₹)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="form-label">Discount Value <span class="req">*</span></label>
+                                            <input type="number" class="form-input" id="off-val" placeholder="20"
+                                                min="1" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-field">
+                                            <label class="form-label">Min. Order (₹)</label>
+                                            <input type="number" class="form-input" id="off-min" placeholder="0"
+                                                min="0" />
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="form-label">Expiry Date</label>
+                                            <input type="date" class="form-input" id="off-expiry" />
+                                        </div>
+                                    </div>
+                                    <div class="form-field">
+                                        <label class="form-label">Banner Text (Optional)</label>
+                                        <input type="text" class="form-input" id="off-banner"
+                                            placeholder="e.g. Get 20% OFF on all fish this weekend!" />
+                                    </div>
+                                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+                                        <button class="btn btn-aqua" id="save-offer-btn">Add Offer</button>
+                                        <button class="btn btn-ghost" id="cancel-offer-btn">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Offers Table -->
+                    <div class="adm-card">
+                        <div class="card-hd">
+                            <div class="card-hd-l">
+                                <div class="card-ico-wrap"></div>
+                                <div>
+                                    <div class="card-title">Active Offers <span class="count-badge"
+                                            id="off-count">0</span></div>
+                                    <div class="card-sub">Manage your marketing campaigns</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tbl-wrap">
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Code</th>
+                                        <th>Discount</th>
+                                        <th>Min Order</th>
+                                        <th>Expiry</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="offers-tbody">
+                                    <tr>
+                                        <td colspan="7" class="tbl-empty">Loading offers...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -551,16 +661,6 @@
     <!-- TOAST -->
     <div id="toast-root"></div>
 
-    <!-- Firebase SDK (Modular) -->
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-      }
-    }
-    </script>
-    <script type="module" src="scripts/firebase.js"></script>
     <script type="module" src="scripts/admin-script.js"></script>
 
 </body>

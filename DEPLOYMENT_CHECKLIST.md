@@ -56,9 +56,9 @@ npm run seed-admin
 ## 🔍 Verify Deployment
 
 Test these URLs after deployment:
-- `https://your-app.vercel.app/health` → Should return `{"status":"OK"}`
-- `https://your-app.vercel.app/api` → Should return API message
-- `https://your-app.vercel.app/` → Should load frontend
+- `https://ak-fish-farm-lu3i.vercel.app/health` → Should return `{"status":"OK"}`
+- `https://ak-fish-farm-lu3i.vercel.app/api` → Should return API message
+- `https://ak-fish-farm-lu3i.vercel.app/` → Should load frontend
 
 ---
 

@@ -17,15 +17,14 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background: #0F172A;
+            background: #080C18;
             margin: 0;
         }
 
         #login-screen {
-            display: block !important;
             position: relative;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             padding: 20px;
         }
     </style>
@@ -34,8 +33,7 @@
 <body>
     <div id="login-screen">
         <div class="login-card">
-            <span class="login-logo"></span>
-            <div class="login-brand">AK FishFarms</div>
+            <div class="login-brand">AK Fish Farms</div>
             <p class="login-sub">Admin Control Panel</p>
             <div id="login-err" class="login-err"></div>
             <form id="login-form" novalidate>
@@ -46,27 +44,17 @@
                 <div class="lf-group">
                     <label class="lf-label" for="l-pass">Password</label>
                     <div class="lf-input-wrap">
-                        <input type="password" id="l-pass" class="lf-input has-toggle" placeholder=""
+                        <input type="password" id="l-pass" class="lf-input has-toggle" placeholder="Password"
                             autocomplete="current-password" />
-                        <button type="button" class="lf-eye" id="login-eye" title="Show/hide"></button>
                     </div>
                 </div>
-                <button type="submit" class="login-btn"> Login to Admin</button>
+                <button type="submit" class="login-btn">Login to Admin</button>
             </form>
             <p class="login-hint">Secure your credentials. Do not share with anyone.</p>
         </div>
     </div>
 
-    <!-- Firebase SDK (Modular) -->
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-      }
-    }
-    </script>
-    <script type="module" src="scripts/firebase.js"></script>
+    <div id="toast-root"></div>
     <script type="module" src="scripts/admin-script.js"></script>
 </body>
 

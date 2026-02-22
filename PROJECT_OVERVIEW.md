@@ -9,22 +9,21 @@ A high-performance, premium e-commerce platform built for **AK Fish Farms**, des
 The project utilizes a modern **MERN-inspired architecture** optimized for high-fidelity animations and serverless performance.
 
 ### **Frontend (The Client Side)**
-- **React 19 (Vite)**: The core engine, chosen for its extreme speed, Hot Module Replacement (HMR), and efficient rendering.
-- **Tailwind CSS (PostCSS)**: A utility-first CSS framework used to build our custom **"Aquatic Design System"** without writing bloated CSS.
-- **Framer Motion**: Powering our high-end 3D effects, spring animations, and smooth page transitions.
-- **Lucide React**: A collection of beautiful, lightweight vector icons used across the navigation and UI.
-- **React Router Dom (v7)**: Handling lightning-fast, zero-refresh client-side routing.
+- **Vanilla JS (ES6+)**: Core logic refactored for performance and simplicity.
+- **Tailwind CSS / Vanilla CSS**: Powering the custom **"Aquatic Design System"**.
+- **Responsive Layout**: Optimized for mobile and desktop with immersive animations.
 
 ### **Backend & Infrastructure**
-- **Vercel Serverless Functions**: Our API (`/api/index.js`) runs on the edge, ensuring zero cold starts and global low latency.
-- **Node.js**: The runtime environment for our server-side protocol logic.
-- **Global Hosting**: Full CI/CD integration with **GitHub & Vercel**, enabling automatic deployments on every update.
+- **Vercel Serverless Functions**: Our API (`/api/*.js`) handles all logic, ensuring global low latency.
+- **Node.js**: The runtime for our server-side data management.
+- **No-DB JSON Storage**: Leveraging a lightweight JSON-based storage for high-speed local and edge performance.
 
 ### **Data & Utilities**
-- **React Context API**: Managing global state for the Shopping Cart, User Authentication, and Real-time Notifications.
-- **Persistence Layer**: Utilizing Browser `localStorage` for cross-session cart persistence and order record keeping.
+- **Serverless API Integration**: Fetching products and posting orders via secure API routes.
+- **Persistence Layer**: Browser `localStorage` for client-side cart states.
 - **External Integrations**:
-  - **Firebase**: Integrated for high-priority data collection and AI agent inquiries.
+  - **WhatsApp API**: Direct communication bridge for order fulfillment.
+  - **QR Server API**: Dynamic generation of location-based QR codes.
   - **QR Server API**: Dynamic generation of location-based QR codes for the contact section.
   - **XLSX**: Library used for exporting institutional order data into Excel formats.
 

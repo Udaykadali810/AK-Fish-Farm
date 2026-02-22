@@ -24,7 +24,7 @@
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
                 <a href="/" class="nav-logo">
-                    AK Fish<span>Farms</span>
+                    AK Fish Farms
                 </a>
                 <div class="nav-links">
                     <a href="index.html" class="active">Home</a>
@@ -91,6 +91,19 @@
             <div class="trust-item">Certified Healthy</div>
         </div>
     </div>
+
+    <!--  Special Offers Section  -->
+    <section class="section offers-display" id="special-offers" style="display:none; padding-bottom: 20px;">
+        <div class="container">
+            <div class="section-header fiu">
+                <div class="section-tag-pill">Limited Time</div>
+                <h2 class="section-title">Special Offers</h2>
+            </div>
+            <div class="offers-grid" id="offers-display-grid">
+                <!-- Offers rendered by JS -->
+            </div>
+        </div>
+    </section>
 
     <!--  Products Section  -->
     <section class="section" id="products">
@@ -181,7 +194,7 @@
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-brand">
-                <div class="footer-logo">AK FishFarms</div>
+                <div class="footer-logo">AK Fish Farms</div>
                 <p class="footer-desc">India's most trusted premium aquarium fish farm. We breed, raise and deliver
                     world-class tropical and fancy fish to hobbyists across the country.</p>
                 <ul class="footer-contact">
@@ -267,16 +280,6 @@
         </svg>
     </a>
 
-    <!-- Firebase SDK (Modular) -->
-    <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
-      }
-    }
-    </script>
-    <script type="module" src="scripts/firebase.js"></script>
     <script type="module" src="scripts/script.js"></script>
     <script type="module">
         import { initShopPage } from './scripts/script.js';

@@ -78,7 +78,7 @@ AK Fish Farms is a full-stack e-commerce platform designed for selling premium a
 ### **Deployment & Hosting**
 | Service | Purpose | URL |
 |---------|---------|-----|
-| **Vercel** | Frontend & Backend hosting | [ak-fish-farm.vercel.app](https://ak-fish-farm.vercel.app) |
+| **Vercel** | Frontend & Backend hosting | [ak-fish-farm-lu3i.vercel.app](https://ak-fish-farm-lu3i.vercel.app) |
 | **GitHub** | Version control & CI/CD | [Udaykadali810/AK-Fish-Farm](https://github.com/Udaykadali810/AK-Fish-Farm) |
 | **Neon Database** | PostgreSQL hosting | Cloud |
 
@@ -416,7 +416,7 @@ CREATE TABLE Inquiries (
 
 ### **Base URL**
 ```
-Production: https://ak-fish-farm.vercel.app/api
+Production: https://ak-fish-farm-lu3i.vercel.app/api
 Local: http://localhost:5000/api
 ```
 
@@ -676,7 +676,7 @@ NODE_ENV=development
 2. **Vercel Auto-Deploy**: Detects changes
 3. **Build**: Runs frontend build + backend setup
 4. **Deploy**: Live in ~60 seconds
-5. **URL**: https://ak-fish-farm.vercel.app
+5. **URL**: https://ak-fish-farm-lu3i.vercel.app
 
 ---
 
@@ -771,7 +771,7 @@ AK-Fish-Farm/
 
 ## 🔑 ADMIN CREDENTIALS
 
-**Admin Panel URL**: https://ak-fish-farm.vercel.app/admin
+**Admin Panel URL**: https://ak-fish-farm-lu3i.vercel.app/admin
 
 **Login Credentials**:
 - **Email**: `admin@akfishfarms.com`
@@ -913,7 +913,7 @@ All environment variables are configured in Vercel dashboard:
 - Phone 1: +91 94920 45766
 - Phone 2: +91 97053 53646
 - Instagram: @AKFISHFARMS
-- Website: ak-fish-farm.vercel.app
+- Website: ak-fish-farm-lu3i.vercel.app
 
 **Developer**:
 - Name: Uday Kadali

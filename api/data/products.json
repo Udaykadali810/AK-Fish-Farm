@@ -1,0 +1,92 @@
+[
+    {
+        "id": 1,
+        "name": "Flowerhorn (S)",
+        "category": "special",
+        "price": 500,
+        "description": "Baby Flowerhorn  premium hump.",
+        "img": "https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 2,
+        "name": "Flowerhorn (B)",
+        "category": "special",
+        "price": 1500,
+        "description": "Adult Flowerhorn  vibrant colours.",
+        "img": "https://images.unsplash.com/photo-1534043464124-3be32fe000c9?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 3,
+        "name": "Arowana (S)",
+        "category": "special",
+        "price": 2000,
+        "description": "Silver Arowana  planted tank gem.",
+        "img": "https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 4,
+        "name": "Arowana (B)",
+        "category": "special",
+        "price": 6000,
+        "description": "Silver Arowana  black background beauty.",
+        "img": "https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 5,
+        "name": "Oscar Fish",
+        "category": "special",
+        "price": 300,
+        "description": "Tiger Oscar  energetic & bold.",
+        "img": "https://images.unsplash.com/photo-1592419186946-e81df7d4dd5a?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 6,
+        "name": "Parrot Fish",
+        "category": "special",
+        "price": 250,
+        "description": "Blood Parrot  peaceful cichlid.",
+        "img": "https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 7,
+        "name": "Betta Fish",
+        "category": "special",
+        "price": 200,
+        "description": "Halfmoon Betta  stunning fins.",
+        "img": "https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 8,
+        "name": "Goldfish",
+        "category": "special",
+        "price": 150,
+        "description": "Fancy Goldfish  classic beauty.",
+        "img": "https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    },
+    {
+        "id": 9,
+        "name": "Koi",
+        "category": "special",
+        "price": 800,
+        "description": "Japanese Koi  pond royalty.",
+        "img": "https://images.unsplash.com/photo-1578507065211-1c4e99a5fd24?auto=format&fit=crop&w=400&q=80",
+        "status": "in_stock",
+        "updatedAt": "2026-02-21T23:02:10Z"
+    }
+]
