@@ -15,9 +15,9 @@ async function handler(req, res) {
     res.setHeader('Content-Type', 'application/json');
     await initDb();
 
-    /* ─── GET ─────────────────────────────────────────────── */
+    /* ─── GET ────────────────────────────────────────────── */
     if (method === 'GET') {
-        const { id } = req.query;
+        const { id, phone } = req.query;
 
         if (id) {
             console.log(`🔍 Tracking Order: ${id}`);
@@ -33,6 +33,23 @@ async function handler(req, res) {
                 items: o.items_json,
                 timestamp: o.created_at
             });
+        }
+
+        if (phone) {
+            // Strip non-digits and search last 10 digits
+            const digits = phone.replace(/\D/g, '').slice(-10);
+            console.log(`📱 Fetching orders for phone ending: ${digits}`);
+            const result = await query(
+                "SELECT * FROM orders WHERE REGEXP_REPLACE(phone, '[^0-9]', '', 'g') LIKE $1 ORDER BY created_at DESC",
+                [`%${digits}`]
+            );
+            const orders = result.rows.map(o => ({
+                ...o,
+                customerName: o.customer_name,
+                items: o.items_json,
+                timestamp: o.created_at
+            }));
+            return res.status(200).json(orders);
         }
 
         console.log('📋 Fetching ALL orders...');

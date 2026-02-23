@@ -4,15 +4,373 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Orders - AK Fish Farms</title>
+    <title>My Orders & Track Order - AK Fish Farms</title>
     <meta name="description" content="Track your aquarium fish orders at AK Fish Farms." />
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>" />
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐟</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="styles/style.css" />
+    <style>
+        /* ── Orders Page Styles ──────────────────────────────── */
+        .orders-page {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 20px 16px 120px;
+        }
+
+        .orders-hero {
+            text-align: center;
+            padding: 36px 20px 28px;
+        }
+
+        .orders-hero-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .orders-hero h1 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .orders-hero p {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        /* ── Search Box ──────────────────────────────────────── */
+        .search-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 28px;
+        }
+
+        .search-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--white);
+            font-size: .95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--yellow);
+        }
+
+        .search-input::placeholder {
+            color: var(--muted);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #FFD84D, #F59E0B);
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: .9rem;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity .2s, transform .15s;
+        }
+
+        .search-btn:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .search-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* ── Tabs ────────────────────────────────────────────── */
+        .orders-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 5px;
+        }
+
+        .orders-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: .85rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: transparent;
+            color: var(--muted);
+            transition: all .2s;
+            font-family: inherit;
+        }
+
+        .orders-tab.active {
+            background: var(--yellow);
+            color: #111;
+        }
+
+        /* ── Track Input ─────────────────────────────────────── */
+        .track-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+        }
+
+        .track-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        /* ── Order Card ──────────────────────────────────────── */
+        .order-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 14px;
+            animation: slideUp .3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            gap: 8px;
+        }
+
+        .order-id-label {
+            font-weight: 800;
+            font-size: .8rem;
+            color: var(--yellow);
+            letter-spacing: .5px;
+        }
+
+        .order-name {
+            font-size: .75rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* ── Order Timeline ──────────────────────────────────── */
+        .order-timeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 14px 0;
+            position: relative;
+        }
+
+        .order-timeline::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 8%;
+            right: 8%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        .tl-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .tl-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: var(--card-bg);
+            transition: all .3s;
+        }
+
+        .tl-dot.done {
+            border-color: #10B981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .tl-dot.current {
+            border-color: var(--yellow);
+            background: rgba(255, 216, 77, 0.15);
+            box-shadow: 0 0 12px rgba(255, 216, 77, 0.4);
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 12px rgba(255, 216, 77, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 24px rgba(255, 216, 77, 0.7);
+            }
+        }
+
+        .tl-label {
+            font-size: .6rem;
+            color: var(--muted);
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .tl-label.done {
+            color: #10B981;
+        }
+
+        .tl-label.current {
+            color: var(--yellow);
+        }
+
+        /* ── Order Items ─────────────────────────────────────── */
+        .order-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 14px 0;
+        }
+
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .87rem;
+            color: var(--text);
+        }
+
+        .order-item-name {
+            color: var(--text);
+        }
+
+        .order-item-price {
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 12px;
+            margin-top: 4px;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .order-meta {
+            font-size: .77rem;
+            color: var(--muted);
+            margin-top: 10px;
+        }
+
+        /* ── States ──────────────────────────────────────────── */
+        .state-box {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+        }
+
+        .state-box .state-icon {
+            font-size: 3.5rem;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .state-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .state-box p {
+            font-size: .875rem;
+            margin-bottom: 24px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--yellow);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin-bottom: 14px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -20,6 +378,7 @@
     <header>
         <nav class="navbar" id="navbar">
             <div class="nav-inner">
+                <a href="index.html" class="nav-logo">AK Fish Farms</a>
                 <div class="nav-right">
                     <a href="https://wa.me/919492045766" target="_blank" class="nav-wa-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
@@ -34,32 +393,57 @@
         </nav>
     </header>
 
-    <main class="page-container" style="padding-top: 30px;">
-        <div class="orders-list-container">
-            <h1 style="margin-bottom: 24px; font-weight: 900; text-align: center;">My Order History</h1>
-            <div id="orders-list">
-                <!-- Loaded via JS -->
-                <div class="empty-state">
-                    <div class="es-icon">📦</div>
-                    <p>Loading your orders...</p>
+    <main class="orders-page">
+
+        <!-- Hero -->
+        <div class="orders-hero">
+            <span class="orders-hero-icon">📦</span>
+            <h1>My Orders</h1>
+            <p>View order history or track any order by ID</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="orders-tabs">
+            <button class="orders-tab active" id="tab-my" onclick="switchTab('my')">📱 My Orders</button>
+            <button class="orders-tab" id="tab-track" onclick="switchTab('track')">🔍 Track Order</button>
+        </div>
+
+        <!-- MY ORDERS PANEL -->
+        <div id="panel-my">
+            <div class="search-card">
+                <h3>🔎 Find Your Orders</h3>
+                <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px;">Enter your phone number to load all
+                    your orders from our database</p>
+                <div class="search-row">
+                    <input type="tel" id="phone-input" class="search-input" placeholder="e.g. 9492045766" maxlength="10"
+                        inputmode="numeric" autocomplete="tel" />
+                    <button class="search-btn" id="search-btn" onclick="searchByPhone()">Find Orders</button>
                 </div>
             </div>
+            <div id="my-orders-result"></div>
         </div>
+
+        <!-- TRACK ORDER PANEL -->
+        <div id="panel-track" style="display:none;">
+            <div class="track-card">
+                <h3>🔍 Track by Order ID</h3>
+                <p style="color:var(--muted);font-size:.82rem;margin-bottom:14px;">Enter your Order ID (e.g. AKF-M3K2X)
+                    to get real-time status</p>
+                <div class="search-row">
+                    <input type="text" id="track-input" class="search-input" placeholder="e.g. AKF-M3K2X"
+                        style="text-transform:uppercase" autocomplete="off" />
+                    <button class="search-btn" id="track-btn" onclick="trackOrder()">Track</button>
+                </div>
+            </div>
+            <div id="track-result"></div>
+        </div>
+
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="footer-bottom">
             <span>2026 AK Fish Farms - All rights reserved</span>
-            <div style="display: flex; gap: 15px; margin: 10px 0;">
-                <a href="https://youtube.com/@akfishfarms?si=8FoPOkGh0cQvcIj0" target="_blank"
-                    style="color: #FF0000; font-weight: 700; display: flex; align-items: center; gap: 5px;">
-                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                        <path
-                            d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                    </svg>
-                    YouTube
-                </a>
-            </div>
             <span>Made with Care in Andhra Pradesh</span>
         </div>
     </footer>
@@ -89,97 +473,249 @@
             </svg>
             <span>Shop</span>
         </a>
-        <a href="admin-login.html" class="bn-item">
+        <a href="cart.html" class="bn-item">
             <svg viewBox="0 0 24 24">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
-            <span>Admin</span>
+            <span>Cart</span>
         </a>
     </nav>
+
     <div id="toast-root"></div>
-    <script src="scripts/script.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const list = document.getElementById('orders-list');
-            const LS_ORDERS = 'ak_orders'; // Standardized
-            const localOrders = JSON.parse(localStorage.getItem(LS_ORDERS) || '[]');
+        /* ══════════════════════════════════════════════════════
+           AK Fish Farms — Orders & Tracking Page Logic
+        ══════════════════════════════════════════════════════ */
 
-            if (localOrders.length === 0) {
-                list.innerHTML = `<div class="empty-state">
-                    <div class="es-icon" style="font-size: 4rem; margin-bottom: 20px;">📭</div>
-                    <h2 style="color: var(--white); margin-bottom: 10px;">No Orders Yet</h2>
-                    <p style="color: var(--muted); margin-bottom: 24px;">Start your aquarium journey today!</p>
-                    <a href="index.html#products" class="btn btn-primary">Start Shopping</a>
+        // Status config
+        const STATUS_STEPS = ['New', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+        const STATUS_ICONS = { New: '🆕', Processing: '⚙️', Shipped: '🚚', 'Out for Delivery': '🛵', Delivered: '✅', Cancelled: '❌' };
+        const STATUS_COLORS = { New: '#00D4FF', Processing: '#F59E0B', Shipped: '#3B82F6', 'Out for Delivery': '#8B5CF6', Delivered: '#10B981', Cancelled: '#EF4444' };
+
+        function getStatusColor(s) { return STATUS_COLORS[s] || '#00D4FF'; }
+        function getStatusIcon(s) { return STATUS_ICONS[s] || '📦'; }
+        function getStepIndex(s) { return STATUS_STEPS.indexOf(s); }
+
+        /* ── Tab switching ───────────────────────────────────── */
+        function switchTab(tab) {
+            document.getElementById('panel-my').style.display = tab === 'my' ? 'block' : 'none';
+            document.getElementById('panel-track').style.display = tab === 'track' ? 'block' : 'none';
+            document.getElementById('tab-my').classList.toggle('active', tab === 'my');
+            document.getElementById('tab-track').classList.toggle('active', tab === 'track');
+        }
+
+        /* ── Render order card with timeline ─────────────────── */
+        function renderOrderCard(o) {
+            const status = o.status || 'New';
+            const items = Array.isArray(o.items) ? o.items : (o.items_json || []);
+            const total = Number(o.total || 0);
+            const date = o.created_at || o.timestamp
+                ? new Date(o.created_at || o.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                : '';
+            const statusColor = getStatusColor(status);
+            const stepIdx = getStepIndex(status);
+            const isCancelled = status === 'Cancelled';
+
+            // Build timeline
+            const timelineHtml = isCancelled ? `
+                <div style="text-align:center;padding:12px;background:rgba(239,68,68,0.08);border-radius:10px;color:#EF4444;font-weight:700;font-size:.85rem;">
+                    ❌ This order was cancelled
+                </div>` : `
+                <div class="order-timeline">
+                    ${STATUS_STEPS.map((step, i) => {
+                const isDone = i <= stepIdx;
+                const isCurrent = i === stepIdx;
+                const cls = isCurrent ? 'current' : isDone ? 'done' : '';
+                return `<div class="tl-step">
+                            <div class="tl-dot ${cls}">${isCurrent ? getStatusIcon(step) : isDone ? '✓' : '○'}</div>
+                            <div class="tl-label ${cls}">${step.replace(' for ', '<br>')}</div>
+                        </div>`;
+            }).join('')}
                 </div>`;
+
+            const itemsHtml = items.length > 0
+                ? items.map(i => `
+                    <div class="order-item-row">
+                        <span class="order-item-name">🐟 ${escHtml(i.name)} × ${i.qty}</span>
+                        <span class="order-item-price">₹${(Number(i.price) * Number(i.qty)).toLocaleString('en-IN')}</span>
+                    </div>`).join('')
+                : `<div style="color:var(--muted);font-size:.85rem;">Item details loading...</div>`;
+
+            return `
+            <div class="order-card">
+                <div class="order-card-header">
+                    <div>
+                        <div class="order-id-label">🧾 ${escHtml(o.id || 'Unknown')}</div>
+                        <div class="order-name">${escHtml(o.customer_name || o.customerName || '')} · ${escHtml(o.city || '')}</div>
+                    </div>
+                    <span class="status-pill" style="background:${statusColor}22;color:${statusColor};">
+                        ${getStatusIcon(status)} ${status}
+                    </span>
+                </div>
+
+                ${timelineHtml}
+
+                <div class="order-items-list">${itemsHtml}</div>
+
+                ${total > 0 ? `
+                <div class="order-total-row">
+                    <span>Total Paid</span>
+                    <span style="color:var(--yellow);">₹${total.toLocaleString('en-IN')}</span>
+                </div>` : ''}
+
+                ${o.coupon ? `<div class="order-meta">🏷️ Coupon: ${escHtml(o.coupon)}</div>` : ''}
+                ${date ? `<div class="order-meta">🕐 Ordered: ${date}</div>` : ''}
+
+                <button onclick="copyOrderId('${escHtml(o.id || '')}')"
+                    style="margin-top:12px;width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px;color:var(--muted);font-size:.8rem;cursor:pointer;font-family:inherit;">
+                    📋 Copy Order ID
+                </button>
+            </div>`;
+        }
+
+        function escHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function copyOrderId(id) {
+            navigator.clipboard?.writeText(id).then(() => showToast('Order ID copied!', 'success')).catch(() => { });
+        }
+
+        /* ── Search orders by phone ──────────────────────────── */
+        async function searchByPhone() {
+            const input = document.getElementById('phone-input');
+            const phone = (input?.value || '').trim().replace(/\D/g, '');
+            const resultEl = document.getElementById('my-orders-result');
+            const btn = document.getElementById('search-btn');
+
+            if (!phone || phone.length < 10) {
+                resultEl.innerHTML = `<div class="state-box"><span class="state-icon">📱</span><h3>Enter Phone Number</h3><p>Please enter your 10-digit mobile number used while ordering.</p></div>`;
                 return;
             }
 
-            const orderStates = {};
-            list.classList.add('pulse-loading');
+            btn.disabled = true;
+            btn.textContent = 'Searching...';
+            resultEl.innerHTML = `<div class="state-box"><div class="spinner"></div><p>Loading your orders from database...</p></div>`;
 
-            // Sync all local IDs with API
-            const syncPromises = localOrders.map(async (order) => {
-                const orderId = typeof order === 'string' ? order : order.id;
-                try {
-                    const res = await fetch(`/api/orders?id=${orderId}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        orderStates[orderId] = data;
-                    } else if (typeof order === 'object') {
-                        // Fallback to local data if API doesn't have it yet
-                        orderStates[orderId] = order;
-                    }
-                } catch (err) {
-                    console.error('Fetch error:', err);
-                    if (typeof order === 'object') orderStates[orderId] = order;
-                }
-            });
+            try {
+                const res = await fetch(`/api/orders?phone=${encodeURIComponent(phone)}`);
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
 
-            await Promise.all(syncPromises);
-            list.classList.remove('pulse-loading');
-            renderOrders();
+                const orders = Array.isArray(data) ? data.filter(o => {
+                    const p = (o.phone || '').replace(/\D/g, '');
+                    return p.endsWith(phone) || phone.endsWith(p);
+                }) : [];
 
-            function renderOrders() {
-                const sorted = Object.values(orderStates).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                if (sorted.length === 0) {
-                    list.innerHTML = '<div class="empty-state">Unable to sync orders at this time.</div>';
+                if (orders.length === 0) {
+                    resultEl.innerHTML = `
+                        <div class="state-box">
+                            <span class="state-icon">📭</span>
+                            <h3>No Orders Found</h3>
+                            <p>No orders found for <strong>+91 ${phone}</strong>.<br>Check your number or start shopping!</p>
+                            <a href="index.html#products" class="btn btn-primary">🛒 Shop Now</a>
+                        </div>`;
                     return;
                 }
 
-                list.innerHTML = sorted.map(o => `
-                    <div class="order-history-card">
-                        <div class="order-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px;">
-                            <span class="order-id" style="font-weight: 800; color: var(--yellow);">ID: ${o.id}</span>
-                            <span class="order-status" style="padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; background:${getStatusColor(o.status)}22; color:${getStatusColor(o.status)}">${o.status || 'New'}</span>
-                        </div>
-                        <div class="order-items" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
-                            ${(o.items || []).map(i => `
-                                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text);">
-                                    <span>${i.name} (x${i.qty})</span>
-                                    <span style="font-weight: 700;">₹${(i.price * i.qty).toLocaleString('en-IN')}</span>
-                                </div>
-                            `).join('') || '<div style="color:var(--muted)">Details syncing...</div>'}
-                        </div>
-                        ${o.total ? `<div class="order-total" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; font-weight: 800; text-align: right; font-size: 1.1rem; color: var(--white);">Total: ₹${Number(o.total).toLocaleString('en-IN')}</div>` : ''}
+                const sorted = orders.sort((a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp));
+                resultEl.innerHTML = `
+                    <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;text-align:center;">
+                        Found <strong style="color:var(--white);">${orders.length} order${orders.length > 1 ? 's' : ''}</strong> for +91 ${phone}
                     </div>
-                `).join('');
+                    ${sorted.map(renderOrderCard).join('')}`;
+
+            } catch (e) {
+                console.error(e);
+                resultEl.innerHTML = `<div class="state-box"><span class="state-icon">⚠️</span><h3>Connection Error</h3><p>Could not reach the server. Please check your internet and try again.</p></div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Find Orders';
+            }
+        }
+
+        /* ── Track by Order ID ───────────────────────────────── */
+        async function trackOrder() {
+            const input = document.getElementById('track-input');
+            const rawId = (input?.value || '').trim().toUpperCase();
+            const resultEl = document.getElementById('track-result');
+            const btn = document.getElementById('track-btn');
+
+            if (!rawId) {
+                resultEl.innerHTML = `<div class="state-box"><span class="state-icon">🔍</span><h3>Enter Order ID</h3><p>Enter the Order ID from your confirmation message (e.g. AKF-M3K2X).</p></div>`;
+                return;
             }
 
-            function getStatusColor(status) {
-                switch (status) {
-                    case 'Delivered': return '#10B981';
-                    case 'Shipped': return '#3B82F6';
-                    case 'Processing': return '#F59E0B';
-                    case 'Cancelled': return '#EF4444';
-                    case 'Out for Delivery': return '#8B5CF6';
-                    default: return '#00D4FF';
+            btn.disabled = true;
+            btn.textContent = 'Tracking...';
+            resultEl.innerHTML = `<div class="state-box"><div class="spinner"></div><p>Fetching order details...</p></div>`;
+
+            try {
+                const res = await fetch(`/api/orders?id=${encodeURIComponent(rawId)}`);
+                if (res.status === 404) {
+                    resultEl.innerHTML = `<div class="state-box"><span class="state-icon">❓</span><h3>Order Not Found</h3><p>No order found with ID <strong>${escHtml(rawId)}</strong>.<br>Double-check the ID from your WhatsApp confirmation.</p></div>`;
+                    return;
                 }
+                if (!res.ok) throw new Error('API error');
+                const order = await res.json();
+                const o = order.success === false ? null : order;
+                if (!o || !o.id) {
+                    resultEl.innerHTML = `<div class="state-box"><span class="state-icon">❓</span><h3>Order Not Found</h3><p>Could not find order <strong>${escHtml(rawId)}</strong>.</p></div>`;
+                    return;
+                }
+                resultEl.innerHTML = renderOrderCard(o);
+            } catch (e) {
+                console.error(e);
+                resultEl.innerHTML = `<div class="state-box"><span class="state-icon">⚠️</span><h3>Error</h3><p>Could not fetch order. Check your internet and try again.</p></div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Track';
             }
+        }
+
+        function showToast(msg, type) {
+            const t = document.createElement('div');
+            t.className = `toast toast-${type || 'info'}`;
+            t.textContent = msg;
+            document.getElementById('toast-root')?.appendChild(t);
+            setTimeout(() => { t.classList.add('fade-out'); setTimeout(() => t.remove(), 400); }, 2500);
+        }
+
+        /* ── Auto-load on page open ──────────────────────────── */
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(location.search);
+
+            // If came from order confirmation with phone
+            const phone = params.get('phone') || localStorage.getItem('ak_last_phone') || '';
+            const orderId = params.get('id') || '';
+
+            if (orderId) {
+                // Deep link to track a specific order
+                switchTab('track');
+                document.getElementById('track-input').value = orderId;
+                trackOrder();
+            } else if (phone) {
+                // Auto-fill phone and search
+                document.getElementById('phone-input').value = phone.replace(/\D/g, '').slice(-10);
+                searchByPhone();
+            } else {
+                document.getElementById('my-orders-result').innerHTML = `
+                    <div class="state-box">
+                        <span class="state-icon">📱</span>
+                        <h3>Enter Your Phone Number</h3>
+                        <p>Use the number you provided when placing your order to see all your orders from any device.</p>
+                    </div>`;
+            }
+
+            // Enter key support
+            document.getElementById('phone-input').addEventListener('keydown', e => { if (e.key === 'Enter') searchByPhone(); });
+            document.getElementById('track-input').addEventListener('keydown', e => { if (e.key === 'Enter') trackOrder(); });
+            document.getElementById('track-input').addEventListener('input', function () { this.value = this.value.toUpperCase(); });
         });
     </script>
-
 </body>
 
 </html>

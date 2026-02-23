@@ -515,14 +515,22 @@ async function submitWhatsAppOrder({ name, phone, city }) {
             orderId = data.id || orderId;
             console.log('🐘 Order Saved to Postgres Database:', orderId);
 
-            // Redirect to WhatsApp ONLY after successful DB save
-            window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+            // 🔔 Play success sound FIRST
+            playSuccessSound();
+
+            // Open WhatsApp after short delay so sound plays first
+            setTimeout(() => {
+                window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+            }, 400);
 
             // Cleanup
             lsSet(LS_CART, []);
             localStorage.removeItem(LS_COUPON);
+            // Save phone for order lookup
+            localStorage.setItem('ak_last_phone', phone);
+            localStorage.setItem('ak_last_order_id', orderId);
             updateCartBadge();
-            showThankYouPopup(name, orderId);
+            showThankYouPopup(name, orderId, phone);
         } else {
             throw new Error('Database Sync Failed');
         }
@@ -536,20 +544,56 @@ async function submitWhatsAppOrder({ name, phone, city }) {
     }
 }
 
-function showThankYouPopup(name, orderId) {
+/* ════════════════════════════════════════
+   SUCCESS SOUND — Web Audio API (no file needed)
+════════════════════════════════════════ */
+function playSuccessSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // 3-note cheerful chime: C5 → E5 → G5
+        const notes = [523.25, 659.25, 783.99];
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            const start = ctx.currentTime + i * 0.18;
+            const end = start + 0.35;
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.45, start + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, end);
+            osc.start(start);
+            osc.stop(end);
+        });
+    } catch (e) {
+        console.warn('Audio not available:', e.message);
+    }
+}
+
+function showThankYouPopup(name, orderId, phone) {
     const pop = document.createElement('div');
     pop.className = 'ofm-overlay';
+    pop.style.zIndex = '99999';
     pop.innerHTML = `
-    <div class="ofm-box thankyou-box">
-        <div style="font-size:3rem;margin-bottom:12px;">🎉</div>
-        <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:8px;">Thank You, ${escHtml(name)}!</h2>
-        <p style="color:#9CA3AF;margin-bottom:16px;font-size:.9rem;">Your order <strong style="color:#FFD84D;">${orderId}</strong> has been sent via WhatsApp. We'll confirm shortly!</p>
-        <p style="color:#10B981;font-size:.85rem;margin-bottom:24px;">🐟 Thanks for shopping with AK Fish Farms!</p>
-        <a href="index.html" class="occ-btn" style="display:inline-block;text-decoration:none;">Back to Home</a>
+    <div class="ofm-box thankyou-box" style="text-align:center;max-width:400px;">
+        <div style="font-size:3.5rem;margin-bottom:12px;animation:bounceIn .5s ease;">🎉</div>
+        <h2 style="font-size:1.5rem;font-weight:900;margin-bottom:8px;color:#fff;">Order Confirmed!</h2>
+        <p style="color:#9CA3AF;margin-bottom:6px;font-size:.9rem;">Thank you, <strong style="color:#fff;">${escHtml(name)}</strong>!</p>
+        <div style="background:rgba(255,216,77,0.12);border:1px solid rgba(255,216,77,0.3);border-radius:12px;padding:12px 16px;margin:16px 0;">
+            <div style="font-size:.75rem;color:#9CA3AF;margin-bottom:4px;">YOUR ORDER ID</div>
+            <div style="font-size:1.1rem;font-weight:900;color:#FFD84D;letter-spacing:1px;">${orderId}</div>
+        </div>
+        <p style="color:#10B981;font-size:.85rem;margin-bottom:24px;">📲 WhatsApp confirmation sent! We'll confirm your order shortly.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+            <a href="orders.html?phone=${encodeURIComponent(phone || '')}" class="occ-btn" style="display:block;text-decoration:none;background:linear-gradient(135deg,#00D4FF,#0099BB);">📦 Track My Order</a>
+            <a href="index.html" style="display:block;color:#9CA3AF;font-size:.85rem;text-decoration:none;padding:8px;">← Back to Home</a>
+        </div>
     </div>`;
     document.body.appendChild(pop);
     pop.onclick = e => { if (e.target === pop) { pop.remove(); window.location.href = 'index.html'; } };
-    setTimeout(() => { pop.remove(); window.location.href = 'index.html'; }, 7000);
+    setTimeout(() => { pop.remove(); window.location.href = 'index.html'; }, 12000);
 }
 
 /* ════════════════════════════════════════
