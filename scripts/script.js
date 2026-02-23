@@ -571,26 +571,62 @@ window.UI = {
             updateCartBadge();
         }
     },
-    applyCoupon: (code) => {
-        /* Always read fresh from LocalStorage so admin changes are reflected */
-        const offers = lsGet(LS_OFFERS, []);
-        const offer = offers.find(o => o.couponCode === code && o.status === 'active');
-        const total = getCartTotal();
+    applyCoupon: async (code) => {
         const msgEl = document.getElementById('coupon-msg');
+        const applyBtn = document.getElementById('apply-coupon-btn');
+        if (applyBtn) { applyBtn.disabled = true; applyBtn.textContent = 'Checking...'; }
+
+        code = code.trim().toUpperCase();
+
+        // Try global DB (Postgres) first
+        let offer = null;
+        try {
+            const r = await fetch('/api/offers');
+            if (r.ok) {
+                const allOffers = await r.json();
+                lsSet(LS_OFFERS, allOffers); // Update local cache
+                offer = allOffers.find(o => (o.couponCode || o.coupon_code) === code && o.status === 'active');
+            }
+        } catch (e) {
+            console.warn('[Coupon] API fetch failed, using local cache:', e.message);
+        }
+
+        // Fallback: LocalStorage cache
+        if (!offer) {
+            const localOffers = lsGet(LS_OFFERS, []);
+            offer = localOffers.find(o => (o.couponCode || o.coupon_code) === code && o.status === 'active');
+        }
+
+        if (applyBtn) { applyBtn.disabled = false; applyBtn.textContent = 'Apply'; }
 
         if (!offer) {
             showToast('Invalid or expired coupon code.', 'error');
             if (msgEl) { msgEl.textContent = '❌ Invalid coupon code.'; msgEl.style.color = '#F87171'; }
             return;
         }
-        if (offer.minOrder && total < offer.minOrder) {
-            showToast(`Minimum order ₹${offer.minOrder} required.`, 'error');
-            if (msgEl) { msgEl.textContent = `❌ Min order ₹${offer.minOrder} required.`; msgEl.style.color = '#F87171'; }
+
+        const total = getCartTotal();
+        const minOrder = Number(offer.minOrder || offer.min_order) || 0;
+        if (minOrder && total < minOrder) {
+            showToast(`Minimum order ₹${minOrder} required.`, 'error');
+            if (msgEl) { msgEl.textContent = `❌ Min order ₹${minOrder} required.`; msgEl.style.color = '#F87171'; }
             return;
         }
-        lsSet(LS_COUPON, offer);
+
+        // Normalize the offer object
+        const normalizedOffer = {
+            ...offer,
+            couponCode: offer.couponCode || offer.coupon_code || code,
+            discountType: offer.discountType || offer.discount_type,
+            discountValue: Number(offer.discountValue || offer.discount_value)
+        };
+
+        lsSet(LS_COUPON, normalizedOffer);
         showToast(`Coupon "${code}" applied! 🎉`, 'success');
-        if (msgEl) { msgEl.textContent = `✅ Coupon applied! Saving ${offer.discountValue}${offer.discountType === 'percentage' ? '%' : '₹'} on your order.`; msgEl.style.color = '#10B981'; }
+        const discText = normalizedOffer.discountType === 'percentage'
+            ? `${normalizedOffer.discountValue}%`
+            : `₹${normalizedOffer.discountValue}`;
+        if (msgEl) { msgEl.textContent = `✅ Coupon applied! Saving ${discText} on your order.`; msgEl.style.color = '#10B981'; }
         renderCart();
     },
     openOrderForm: openOrderFormModal,

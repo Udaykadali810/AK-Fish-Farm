@@ -1,27 +1,62 @@
-import { sql } from '@vercel/postgres';
+/* ============================================================
+   AK Fish Farms — Centralized Database Connection
+   Uses @vercel/postgres (Neon PostgreSQL)
+   Compatible with Vercel Serverless Functions
+   ============================================================ */
 
-export const db = sql;
+const { createPool } = require('@vercel/postgres');
 
-let isDbInitialized = false;
+// ─── Determine Database URL ───────────────────────────────────
+const DB_URL = process.env.POSTGRES_URL || process.env.DATABASE_URL;
 
-/**
- * Ensures the database schema is initialized and environment variables are present.
- * Throws a JSON-friendly error if configuration is missing.
- */
-export async function initDb() {
-    if (!process.env.POSTGRES_URL && !process.env.DATABASE_URL) {
-        console.error('❌ Database Error: POSTGRES_URL or DATABASE_URL missing.');
-        throw new Error('Database not configured in Vercel. Please add POSTGRES_URL/DATABASE_URL in settings.');
+if (!DB_URL) {
+    console.error('❌ FATAL: Neither POSTGRES_URL nor DATABASE_URL is set in environment variables.');
+}
+
+// ─── Create a pool connection ─────────────────────────────────
+let pool = null;
+
+function getPool() {
+    if (!pool) {
+        if (!DB_URL) {
+            throw new Error('Database not configured. Add POSTGRES_URL to Vercel Environment Variables.');
+        }
+        console.log('🐘 Connecting to Neon Postgres...');
+        pool = createPool({ connectionString: DB_URL });
+        console.log('✅ Database Pool Created Successfully');
+    }
+    return pool;
+}
+
+// ─── Execute a query safely ───────────────────────────────────
+async function query(text, params = []) {
+    const p = getPool();
+    try {
+        const result = await p.query(text, params);
+        return result;
+    } catch (err) {
+        console.error('❌ DB Query Error:', err.message);
+        throw err;
+    }
+}
+
+// ─── Schema Initialization ────────────────────────────────────
+let schemaInitialized = false;
+
+async function initDb() {
+    if (!DB_URL) {
+        throw new Error('Database not configured. Please add POSTGRES_URL in Vercel settings.');
     }
 
-    if (isDbInitialized) return;
+    if (schemaInitialized) return;
 
-    console.log('🐘 Connecting to Postgres...');
-    console.log('📡 POSTGRES_URL found. Initializing Schema...');
+    console.log('📡 Neon Postgres URL found. Initializing schema...');
 
     try {
-        await Promise.all([
-            sql`CREATE TABLE IF NOT EXISTS products (
+        const p = getPool();
+
+        await p.query(`
+            CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 price DECIMAL(10, 2) NOT NULL,
@@ -30,8 +65,11 @@ export async function initDb() {
                 status VARCHAR(50) DEFAULT 'in_stock',
                 description TEXT,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );`,
-            sql`CREATE TABLE IF NOT EXISTS orders (
+            )
+        `);
+
+        await p.query(`
+            CREATE TABLE IF NOT EXISTS orders (
                 id VARCHAR(100) PRIMARY KEY,
                 customer_name VARCHAR(255) NOT NULL,
                 phone VARCHAR(50) NOT NULL,
@@ -42,8 +80,11 @@ export async function initDb() {
                 coupon VARCHAR(50),
                 note TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );`,
-            sql`CREATE TABLE IF NOT EXISTS offers (
+            )
+        `);
+
+        await p.query(`
+            CREATE TABLE IF NOT EXISTS offers (
                 id SERIAL PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
                 coupon_code VARCHAR(50) UNIQUE NOT NULL,
@@ -54,50 +95,64 @@ export async function initDb() {
                 expiry VARCHAR(50),
                 banner TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );`,
-            sql`CREATE TABLE IF NOT EXISTS coupons (
+            )
+        `);
+
+        await p.query(`
+            CREATE TABLE IF NOT EXISTS coupons (
                 id SERIAL PRIMARY KEY,
                 code VARCHAR(50) UNIQUE NOT NULL,
                 discount_type VARCHAR(20) NOT NULL,
                 discount_value DECIMAL(10, 2) NOT NULL,
                 status VARCHAR(20) DEFAULT 'active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );`,
-            sql`CREATE TABLE IF NOT EXISTS admin_users (
+            )
+        `);
+
+        await p.query(`
+            CREATE TABLE IF NOT EXISTS admin_users (
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(50) UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );`,
-            sql`CREATE TABLE IF NOT EXISTS settings (
+            )
+        `);
+
+        await p.query(`
+            CREATE TABLE IF NOT EXISTS settings (
                 key VARCHAR(100) PRIMARY KEY,
                 value TEXT NOT NULL,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );`
-        ]);
+            )
+        `);
 
-        isDbInitialized = true;
-        console.log('✅ Postgres Connected Successfully. Schema Verified.');
+        schemaInitialized = true;
+        console.log('✅ Database Connected Successfully. Schema Verified.');
     } catch (err) {
-        console.error('❌ Database Initialization Error:', err);
-        throw new Error('Database connection failed during initialization: ' + err.message);
+        console.error('❌ Database Initialization Error:', err.message);
+        throw new Error('Database connection failed: ' + err.message);
     }
 }
 
-/**
- * Wrapper to ensure every API response is valid JSON.
- */
-export function withJson(handler) {
+// ─── JSON Error Wrapper ───────────────────────────────────────
+function withJson(handler) {
     return async (req, res) => {
+        // Always set JSON content-type header FIRST
+        res.setHeader('Content-Type', 'application/json');
+
         try {
             return await handler(req, res);
         } catch (error) {
             console.error(`🚨 API Error [${req.url}]:`, error.message);
-            return res.status(500).json({
-                success: false,
-                error: 'Server Error',
-                message: error.message
-            });
+            // Ensure we always respond with JSON, never HTML
+            if (!res.headersSent) {
+                return res.status(500).json({
+                    success: false,
+                    error: error.message || 'Internal Server Error'
+                });
+            }
         }
     };
 }
+
+module.exports = { query, initDb, withJson, getPool };

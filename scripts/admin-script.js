@@ -707,9 +707,9 @@ function renderTrackList(query) {
 }
 
 /* ════════════════════════════════════════
-   SECURITY — Real password change
+   SECURITY — Real password change via API
 ════════════════════════════════════════ */
-function changePassword() {
+async function changePassword() {
     const curIn = document.getElementById('sec-cur')?.value;
     const newIn = document.getElementById('sec-new')?.value;
     const confIn = document.getElementById('sec-confirm')?.value;
@@ -719,17 +719,33 @@ function changePassword() {
     const clearErr = () => { if (errEl) errEl.textContent = ''; };
     clearErr();
 
-    const creds = getCreds();
-
     if (!curIn) { showErr('Enter your current password.'); return; }
-    if (curIn !== creds.password) { showErr('Current password is incorrect.'); return; }
     if (!newIn || newIn.length < 6) { showErr('New password must be at least 6 characters.'); return; }
     if (newIn !== confIn) { showErr('New passwords do not match.'); return; }
 
-    lsSet(LS_KEY.creds, { username: creds.username, password: newIn });
-    showToast('✅ Password Updated Successfully!', 'success');
-    clearErr();
-    ['sec-cur', 'sec-new', 'sec-confirm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const changeBtn = document.getElementById('change-pw-btn');
+    if (changeBtn) { changeBtn.disabled = true; changeBtn.textContent = 'Updating...'; }
+
+    try {
+        const res = await fetch('/api/admin', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: 'admin', oldPassword: curIn, newPassword: newIn })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+            showToast('✅ Password Updated Successfully in Database!', 'success');
+            clearErr();
+            ['sec-cur', 'sec-new', 'sec-confirm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        } else {
+            showErr(data.error || 'Password update failed. Check current password.');
+        }
+    } catch (e) {
+        console.error('Password change error:', e);
+        showErr('Network error. Please try again.');
+    } finally {
+        if (changeBtn) { changeBtn.disabled = false; changeBtn.textContent = 'Update Password'; }
+    }
 }
 
 /* ════════════════════════════════════════

@@ -3,6 +3,12 @@
     "outputDirectory": ".",
     "cleanUrls": true,
     "trailingSlash": false,
+    "functions": {
+        "api/**/*.js": {
+            "runtime": "nodejs18.x",
+            "maxDuration": 10
+        }
+    },
     "rewrites": [
         {
             "source": "/",
@@ -10,7 +16,7 @@
         },
         {
             "source": "/shop",
-            "destination": "/index.html#products"
+            "destination": "/index.html"
         },
         {
             "source": "/cart",
@@ -38,6 +44,19 @@
         }
     ],
     "headers": [
+        {
+            "source": "/api/(.*)",
+            "headers": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "Cache-Control",
+                    "value": "no-store"
+                }
+            ]
+        },
         {
             "source": "/(.*)",
             "headers": [
