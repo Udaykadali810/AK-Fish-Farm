@@ -426,13 +426,33 @@ function openOrderFormModal() {
             <label class="ofm-label">Your Name <span class="ofm-req">*</span></label>
             <input type="text" id="ofm-name" class="ofm-input" placeholder="e.g. Ravi Kumar" autocomplete="name">
         </div>
-        <div class="ofm-field">
-            <label class="ofm-label">Phone Number <span class="ofm-req">*</span></label>
-            <input type="tel" id="ofm-phone" class="ofm-input" placeholder="e.g. 9876543210" maxlength="15" autocomplete="tel">
+        <div class="ofm-grid-2">
+            <div class="ofm-field">
+                <label class="ofm-label">Phone Number <span class="ofm-req">*</span></label>
+                <input type="tel" id="ofm-phone" class="ofm-input" placeholder="9876543210" maxlength="15" autocomplete="tel">
+            </div>
+            <div class="ofm-field">
+                <label class="ofm-label">Pincode <span class="ofm-req">*</span></label>
+                <input type="text" id="ofm-pincode" class="ofm-input" placeholder="500001" maxlength="6">
+            </div>
+        </div>
+        <div class="ofm-grid-2">
+            <div class="ofm-field">
+                <label class="ofm-label">City <span class="ofm-req">*</span></label>
+                <input type="text" id="ofm-city" class="ofm-input" placeholder="Hyderabad" autocomplete="address-level2">
+            </div>
+            <div class="ofm-field">
+                <label class="ofm-label">State <span class="ofm-req">*</span></label>
+                <input type="text" id="ofm-state" class="ofm-input" placeholder="Telangana" autocomplete="address-level1">
+            </div>
         </div>
         <div class="ofm-field">
-            <label class="ofm-label">City / Town <span class="ofm-req">*</span></label>
-            <input type="text" id="ofm-city" class="ofm-input" placeholder="e.g. Hyderabad" autocomplete="address-level2">
+            <label class="ofm-label">Street / Colony <span class="ofm-req">*</span></label>
+            <input type="text" id="ofm-street" class="ofm-input" placeholder="e.g. 123 Main St, Ameerpet">
+        </div>
+        <div class="ofm-field">
+            <label class="ofm-label">Full Address / Landmark</label>
+            <textarea id="ofm-address" class="ofm-input" style="height:60px;resize:none;" placeholder="House No, Floor, Landmark details..."></textarea>
         </div>
 
         <div class="ofm-order-preview">
@@ -460,17 +480,27 @@ function openOrderFormModal() {
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 
     document.getElementById('ofm-submit-btn').onclick = () => {
-        const name = document.getElementById('ofm-name').value.trim();
-        const phone = document.getElementById('ofm-phone').value.trim();
-        const city = document.getElementById('ofm-city').value.trim();
+        const getVal = (id) => document.getElementById(id)?.value.trim();
+        const data = {
+            name: getVal('ofm-name'),
+            phone: getVal('ofm-phone'),
+            pincode: getVal('ofm-pincode'),
+            city: getVal('ofm-city'),
+            state: getVal('ofm-state'),
+            street: getVal('ofm-street'),
+            address: getVal('ofm-address')
+        };
         const errEl = document.getElementById('ofm-err');
 
-        if (!name) { errEl.textContent = 'Please enter your name.'; return; }
-        if (!phone || phone.length < 10) { errEl.textContent = 'Please enter a valid 10-digit number.'; return; }
-        if (!city) { errEl.textContent = 'Please enter your city.'; return; }
-        errEl.textContent = '';
+        if (!data.name) { errEl.textContent = 'Name is required.'; return; }
+        if (!data.phone || data.phone.length < 10) { errEl.textContent = 'Valid phone is required.'; return; }
+        if (!data.pincode) { errEl.textContent = 'Pincode is required.'; return; }
+        if (!data.city) { errEl.textContent = 'City is required.'; return; }
+        if (!data.state) { errEl.textContent = 'State is required.'; return; }
+        if (!data.street) { errEl.textContent = 'Street is required.'; return; }
 
-        submitWhatsAppOrder({ name, phone, city });
+        errEl.textContent = '';
+        submitWhatsAppOrder(data);
     };
 }
 
@@ -483,7 +513,7 @@ function getDiscount() {
         : Math.min(coupon.discountValue, total);
 }
 
-async function submitWhatsAppOrder({ name, phone, city }) {
+async function submitWhatsAppOrder({ name, phone, city, state, pincode, street, address }) {
     const submitBtn = document.getElementById('ofm-submit-btn');
     if (submitBtn) {
         submitBtn.disabled = true;
@@ -500,9 +530,11 @@ async function submitWhatsAppOrder({ name, phone, city }) {
     const msg = [
         `🐟 *New Order — AK Fish Farms*`,
         ``,
-        `👤 *Name:* ${name}`,
+        `👤 *Customer:* ${name}`,
         `📞 *Phone:* ${phone}`,
-        `📍 *City:* ${city}`,
+        `📍 *Location:* ${city}, ${state} - ${pincode}`,
+        `🏠 *Street:* ${street}`,
+        address ? `📝 *Address:* ${address}` : null,
         ``,
         `*Items Ordered:*`,
         itemLines,
@@ -524,7 +556,11 @@ async function submitWhatsAppOrder({ name, phone, city }) {
         const response = await fetch('/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderPayload)
+            body: JSON.stringify({
+                customerName: name, phone, city,
+                items: cart, total, coupon: coupon?.couponCode || '',
+                status: 'New', note: `Address: ${street}, ${city}, ${state} - ${pincode}`
+            })
         });
 
         if (response.ok) {
@@ -611,23 +647,33 @@ function showThankYouPopup(name, orderId, phone) {
     pop.className = 'ofm-overlay';
     pop.style.zIndex = '99999';
     pop.innerHTML = `
-    <div class="ofm-box thankyou-box" style="text-align:center;max-width:400px;animation:zoomIn 0.4s ease;">
-        <div style="font-size:3.5rem;margin-bottom:12px;">🎉</div>
-        <h2 style="font-size:1.5rem;font-weight:900;margin-bottom:8px;color:#fff;">Order Placed!</h2>
-        <p style="color:#9CA3AF;margin-bottom:6px;font-size:.9rem;">Thank you, <strong style="color:#fff;">${escHtml(name)}</strong>!</p>
-        <div style="background:rgba(255,216,77,0.12);border:1px solid rgba(255,216,77,0.3);border-radius:12px;padding:12px 16px;margin:16px 0;">
-            <div style="font-size:.75rem;color:#9CA3AF;margin-bottom:4px;">YOUR ORDER ID</div>
-            <div style="font-size:1.1rem;font-weight:900;color:#FFD84D;letter-spacing:1px;">${orderId}</div>
+    <div class="ofm-box thankyou-box" style="text-align:center; max-width:440px; animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);">
+        <div class="success-check-mark" style="font-size:4rem; margin-bottom:15px; animation: scaleUp 0.5s 0.3s ease both;">✅</div>
+        <h2 style="font-size:2rem; font-weight:900; margin-bottom:10px; background:linear-gradient(135deg,#00D4FF,#0099BB); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Order Placed!</h2>
+        <p style="color:#9CA3AF; margin-bottom:10px; font-size:1rem;">We've received your order, <strong>${escHtml(name)}</strong>!</p>
+        
+        <div style="background:rgba(255,216,77,0.08); border:1px dashed rgba(255,216,77,0.4); border-radius:16px; padding:20px; margin:20px 0; position:relative; overflow:hidden;">
+            <div style="font-size:0.75rem; color:#9CA3AF; margin-bottom:5px; text-transform:uppercase; letter-spacing:1px;">ORDER REFERENCE</div>
+            <div style="font-size:1.4rem; font-weight:900; color:#FFD84D; letter-spacing:2px;">${orderId}</div>
+            <div style="position:absolute; top:-10px; right:-10px; font-size:4rem; opacity:0.1; transform:rotate(15deg);">🐟</div>
         </div>
-        <p style="color:#10B981;font-size:.85rem;margin-bottom:24px;">📲 WhatsApp opened. Just hit Send!</p>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-            <a href="orders.html?phone=${encodeURIComponent(phone || '')}" class="occ-btn" style="display:block;text-decoration:none;background:linear-gradient(135deg,#00D4FF,#0099BB);">📦 Track My Order</a>
-            <a href="index.html" style="display:block;color:#9CA3AF;font-size:.85rem;text-decoration:none;padding:8px;">← Back to Home</a>
+
+        <div style="display:flex; align-items:center; gap:12px; justify-content:center; color:#10B981; font-size:0.95rem; margin-bottom:30px; background:rgba(16,185,129,0.1); padding:10px 20px; border-radius:50px;">
+            <span class="loader-spinning" style="border-top-color:#10B981; width:14px; height:14px;"></span>
+            WhatsApp Redirection in progress...
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <a href="orders.html?phone=${encodeURIComponent(phone || '')}" class="occ-btn" style="display:flex; justify-content:center; text-decoration:none; background:linear-gradient(135deg,#00D4FF,#0099BB); padding:14px; border-radius:12px;">Track Status</a>
+            <a href="index.html" class="occ-btn" style="display:flex; justify-content:center; text-decoration:none; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:14px; border-radius:12px;">Back to Shop</a>
         </div>
     </div>`;
     document.body.appendChild(pop);
-    pop.onclick = e => { if (e.target === pop) { pop.remove(); window.location.href = 'index.html'; } };
-    setTimeout(() => { if (document.body.contains(pop)) { pop.remove(); window.location.href = 'index.html'; } }, 15000);
+
+    // Auto-remove and redirect after 15s
+    const cleanup = () => { if (document.body.contains(pop)) { pop.remove(); window.location.href = 'index.html'; } };
+    pop.onclick = e => { if (e.target === pop) cleanup(); };
+    setTimeout(cleanup, 15000);
 }
 
 /* ════════════════════════════════════════

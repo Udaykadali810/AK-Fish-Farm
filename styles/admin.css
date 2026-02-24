@@ -101,7 +101,7 @@ textarea {
 
 .login-card {
     background: rgba(20, 28, 46, 0.92);
-    backdrop-filter: blur(24px);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 212, 255, 0.2);
     border-radius: 28px;
     padding: 48px 40px 40px;
@@ -1732,7 +1732,7 @@ select.form-input option {
     left: 0;
     right: 0;
     background: rgba(13, 17, 33, 0.97);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(8px);
     border-top: 1px solid var(--border);
     z-index: 400;
     padding: 8px 0 max(8px, env(safe-area-inset-bottom));
@@ -1759,7 +1759,7 @@ select.form-input option {
     left: 0;
     right: 0;
     background: rgba(13, 17, 33, 0.97);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(8px);
     border-top: 1px solid var(--border);
     z-index: 400;
     padding: 6px 0 max(6px, env(safe-area-inset-bottom));
@@ -2074,6 +2074,7 @@ select.form-input option {
     font-size: .9rem;
     line-height: 2;
 }
+
 /* ----------------------------------------
    MODERN UI UTILITIES & ANIMATIONS
 ---------------------------------------- */
@@ -2084,26 +2085,43 @@ select.form-input option {
 }
 
 @keyframes pulseGlow {
-    0%, 100% { opacity: 0.6; filter: brightness(0.9); }
-    50% { opacity: 0.9; filter: brightness(1.1); }
+
+    0%,
+    100% {
+        opacity: 0.6;
+        filter: brightness(0.9);
+    }
+
+    50% {
+        opacity: 0.9;
+        filter: brightness(1.1);
+    }
 }
 
 @keyframes zoomIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .loader-spinning {
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: #fff;
     animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
-

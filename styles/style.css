@@ -40,6 +40,8 @@
     --r-lg: 24px;
     --ease: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --font: 'Inter', sans-serif;
+    --max-w: 1320px;
+    --section-gap: 80px;
     /* Legacy aliases for admin panel */
     --off-white: #FFF9ED;
 }
@@ -200,8 +202,8 @@ textarea {
     max-width: 800px;
     margin: 0 auto;
     background: rgba(13, 18, 36, 0.9);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1.5px solid rgba(255, 216, 77, 0.25);
     border-radius: 18px;
     padding: 14px 28px;
@@ -323,7 +325,7 @@ textarea {
     display: inline-flex;
     align-items: center;
     background: rgba(255, 255, 255, .25);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     padding: 4px 12px;
     border-radius: 50px;
     font-size: .7rem;
@@ -441,7 +443,7 @@ textarea {
    LAYOUT
     */
 .container {
-    max-width: 1200px;
+    max-width: var(--max-w);
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -460,8 +462,8 @@ header {
 
 .navbar {
     background: rgba(10, 14, 26, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: all var(--ease);
     width: 100%;
@@ -812,7 +814,7 @@ header {
 }
 
 .trust-inner {
-    max-width: 1200px;
+    max-width: var(--max-w);
     margin: 0 auto;
     padding: 0 24px;
     display: flex;
@@ -847,7 +849,7 @@ header {
    SECTION COMMONS
     */
 .section {
-    padding: 50px 0;
+    padding: var(--section-gap) 0;
 }
 
 .section-header {
@@ -1023,14 +1025,17 @@ header {
     */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
 }
 
 .prod-card {
     background: var(--card);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: var(--r-lg);
+    background: linear-gradient(135deg, rgba(20, 28, 46, 0.6), rgba(13, 18, 36, 0.8));
+    backdrop-filter: blur(4px);
     overflow: hidden;
     transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
     display: flex;
@@ -1039,9 +1044,9 @@ header {
 }
 
 .prod-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 107, 0, 0.3);
-    border-color: rgba(255, 107, 0, 0.3);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 107, 0, 0.4);
+    border-color: rgba(255, 107, 0, 0.4);
 }
 
 .prod-card-img-wrap {
@@ -1471,7 +1476,7 @@ header {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.78);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     z-index: 1100;
     display: none;
     align-items: center;
@@ -1886,6 +1891,8 @@ select.form-input option {
     background: var(--card);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--r-lg);
+    background: linear-gradient(135deg, rgba(20, 28, 46, 0.6), rgba(13, 18, 36, 0.8));
+    backdrop-filter: blur(4px);
     padding: 26px;
     box-shadow: var(--sh-md);
     position: sticky;
@@ -2096,6 +2103,8 @@ select.form-input option {
     background: var(--card);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--r-lg);
+    background: linear-gradient(135deg, rgba(20, 28, 46, 0.6), rgba(13, 18, 36, 0.8));
+    backdrop-filter: blur(4px);
     padding: 32px;
     box-shadow: var(--sh-md);
 }
@@ -2152,6 +2161,8 @@ select.form-input option {
     background: var(--card);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--r-lg);
+    background: linear-gradient(135deg, rgba(20, 28, 46, 0.6), rgba(13, 18, 36, 0.8));
+    backdrop-filter: blur(4px);
     padding: 24px;
     box-shadow: var(--sh-md);
     position: sticky;
@@ -2360,6 +2371,8 @@ select.form-input option {
     background: var(--card);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: var(--r-lg);
+    background: linear-gradient(135deg, rgba(20, 28, 46, 0.6), rgba(13, 18, 36, 0.8));
+    backdrop-filter: blur(4px);
     overflow: hidden;
     transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
     display: flex;
@@ -2425,7 +2438,7 @@ select.form-input option {
     border-radius: 50px;
     background: rgba(0, 0, 0, 0.6);
     color: var(--yellow);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 216, 77, 0.2);
 }
 
@@ -3866,7 +3879,7 @@ td.col-status {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     z-index: 1200;
     display: none;
     align-items: center;
@@ -4509,8 +4522,8 @@ td.col-status {
     left: 0;
     right: 0;
     background: rgba(10, 14, 26, 0.95);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px 20px 0 0;
     padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
@@ -4981,6 +4994,7 @@ td.col-status {
     margin-top: 6px;
     min-height: 16px;
 }
+
 /* ----------------------------------------
    MODERN UI UTILITIES & ANIMATIONS
 ---------------------------------------- */
@@ -4991,8 +5005,17 @@ td.col-status {
 }
 
 @keyframes pulseGlow {
-    0%, 100% { opacity: 0.6; filter: brightness(0.9); }
-    50% { opacity: 0.9; filter: brightness(1.1); }
+
+    0%,
+    100% {
+        opacity: 0.6;
+        filter: brightness(0.9);
+    }
+
+    50% {
+        opacity: 0.9;
+        filter: brightness(1.1);
+    }
 }
 
 .modal-bg.show {
@@ -5008,21 +5031,83 @@ td.col-status {
 }
 
 @keyframes zoomIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-check-mark {
+    background: rgba(16, 185, 129, 0.1);
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.ofm-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (min-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 35px;
+    }
 }
 
 .loader-spinning {
     display: inline-block;
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     border-top-color: #fff;
     animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
-
