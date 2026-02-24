@@ -4981,3 +4981,48 @@ td.col-status {
     margin-top: 6px;
     min-height: 16px;
 }
+/* ----------------------------------------
+   MODERN UI UTILITIES & ANIMATIONS
+---------------------------------------- */
+.pulse-loading {
+    opacity: 0.7;
+    pointer-events: none;
+    animation: pulseGlow 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; filter: brightness(0.9); }
+    50% { opacity: 0.9; filter: brightness(1.1); }
+}
+
+.modal-bg.show {
+    opacity: 1;
+    visibility: visible !important;
+    pointer-events: auto;
+    display: flex !important;
+}
+
+.modal-bg.show .modal-box {
+    transform: scale(1);
+    opacity: 1;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.loader-spinning {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
