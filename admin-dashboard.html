@@ -591,15 +591,28 @@
                             <p class="report-desc">Export your full product catalog as a CSV file including names,
                                 prices, categories, and stock status.</p>
                         </div>
-                        <div style="flex-shrink:0;">
-                            <button class="btn btn-orange" id="dl-prod-btn" style="min-width:160px;"> Export
-                                Products</button>
-                        </div>
+                        <button class="btn btn-orange" id="dl-prod-btn" style="min-width:160px;"> Export
+                            Products</button>
                     </div>
-                </section>
+        </div>
 
-            </main><!-- end adm-content -->
-        </div><!-- end adm-main-area -->
+        <!-- Reset Data Area -->
+        <div class="report-card" style="border: 1px dashed #F87171; background: rgba(248, 113, 113, 0.05);">
+            <div class="report-icon" style="color: #F87171;">⚠️</div>
+            <div class="report-info">
+                <div class="report-title" style="color: #F87171;">Reset Database Records</div>
+                <p class="report-desc">Permanently delete all orders and offers from the global database.
+                    This action cannot be undone. Always download an Excel report first.</p>
+            </div>
+            <div style="flex-shrink:0;">
+                <button class="btn btn-red" id="reset-db-btn" style="min-width:160px; font-weight:700;"> Reset
+                    Data</button>
+            </div>
+        </div>
+        </section>
+
+        </main><!-- end adm-content -->
+    </div><!-- end adm-main-area -->
 
 
     </div><!-- end dashboard-screen -->
@@ -630,7 +643,45 @@
         </div>
     </div>
 
-    <!-- TOAST -->
+    <!-- RESET DATA MODAL -->
+    <div class="modal-bg" id="reset-modal">
+        <div class="modal-box" style="max-width: 450px;">
+            <div class="modal-hd">
+                <div class="modal-title">⚠️ Reset Global Database?</div>
+                <button type="button" class="modal-close" id="reset-close-btn"></button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <p style="margin-bottom: 20px; line-height: 1.6;">Are you sure you want to <strong>delete all stored
+                        admin data</strong> (Orders & Offers)? This action is permanent and cannot be reversed.</p>
+                <div
+                    style="background: rgba(248, 113, 113, 0.1); border: 1px solid #F87171; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="color: #F87171; font-weight: 600; font-size: 0.85rem;">TIP: Please ensure you have
+                        downloaded the Excel report before proceeding.</p>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-red" id="confirm-reset-btn" style="flex:1; font-weight:700;">YES, RESET
+                        DATA</button>
+                    <button class="btn btn-ghost" id="cancel-reset-btn" style="flex:1;">CANCEL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPORT SUCCESS MODAL -->
+    <div class="modal-bg" id="export-success-modal">
+        <div class="modal-box" style="max-width: 400px; text-align: center;">
+            <div class="modal-body" style="padding: 30px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">✅</div>
+                <h2 style="margin-bottom: 10px;">Export Successful!</h2>
+                <p style="margin-bottom: 25px; color: #9CA3AF;">Data exported successfully. Do you want to clear old
+                    records to save storage?</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-red" id="export-reset-btn" style="font-weight:600;">Yes (Reset Data)</button>
+                    <button class="btn btn-ghost" id="export-keep-btn">No (Keep Data)</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="toast-root"></div>
 
     <script src="scripts/admin-script.js"></script>

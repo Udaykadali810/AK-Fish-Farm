@@ -1,7 +1,8 @@
 /* ============================================================
-   AK FishFarms  Main UI Engine  |  script.js  v7.0
+   AK FishFarms  Main UI Engine  |  script.js  v8.0
    LocalStorage-first sync  •  Real Coupon Validation
    WhatsApp Order Form  •  Offers Carousel  •  No simulation
+   Performance Optimized • High Volume Audio Feedback
    ============================================================ */
 'use strict';
 
@@ -31,6 +32,13 @@ const DEFAULT_OFFERS = [
 let globalProducts = [];
 let globalOffers = [];
 
+/* ── API Cache ── */
+const API_CACHE = {
+    data: {},
+    ttl: 60000, // 60 seconds cache
+    lastFetch: 0
+};
+
 /* ════════════════════════════════════════
    DATA SYNC — LocalStorage is master store
 ════════════════════════════════════════ */
@@ -42,6 +50,16 @@ function lsSet(key, val) {
 }
 
 async function fetchData() {
+    const now = Date.now();
+    // Performance: Avoid repeated heavy fetches if data is fresh
+    if (now - API_CACHE.lastFetch < API_CACHE.ttl && Object.keys(API_CACHE.data).length > 0) {
+        console.log('[API] Using Cached Data...');
+        globalProducts = API_CACHE.data.products || [];
+        globalOffers = API_CACHE.data.offers || [];
+        renderOffersCarousel();
+        return;
+    }
+
     console.log('[API] Syncing with Global Database...');
     const grid = document.getElementById('product-grid');
     const banner = document.getElementById('live-banner-root');
@@ -56,6 +74,7 @@ async function fetchData() {
                 const data = await r.json();
                 lsSet(storageKey, data);
                 setter(data);
+                API_CACHE.data[endpoint.replace('/api/', '')] = data;
                 console.log(`[API] ${endpoint} Synced.`);
                 return true;
             }
@@ -81,16 +100,17 @@ async function fetchData() {
             const settings = await r.json();
             if (settings.heroBanner !== undefined) {
                 lsSet('ak_hero_banner', settings.heroBanner);
+                API_CACHE.data.settings = settings;
                 console.log('[API] Settings Synced.');
             }
         }
     } catch (e) { }
 
+    API_CACHE.lastFetch = now;
     if (grid) grid.classList.remove('pulse-loading');
     if (banner) banner.classList.remove('pulse-loading');
-
-    // Rendering is handled by page-specific init functions
 }
+
 /* ════════════════════════════════════════
    CART HELPERS
 ════════════════════════════════════════ */
@@ -164,19 +184,21 @@ function renderOffersCarousel() {
     ];
 
     const cards = activeOffers.map((o, i) => {
-        const discText = o.discountType === 'percentage'
-            ? `${o.discountValue}% OFF`
-            : `₹${o.discountValue} OFF`;
-        const minText = o.minOrder > 0 ? ` on orders above ₹${o.minOrder}` : '';
-        const expiryText = o.expiry ? `Expires: ${o.expiry}` : '';
+        const discType = o.discountType || o.discount_type;
+        const discVal = o.discountValue || o.discount_value;
+        const discText = discType === 'percentage' ? `${discVal}% OFF` : `₹${discVal} OFF`;
+        const minVal = o.minOrder || o.min_order || 0;
+        const minText = minVal > 0 ? ` on orders above ₹${minVal}` : '';
+        const expiryVal = o.expiry || o.expiry_date;
+        const expiryText = expiryVal ? `Expires: ${expiryVal}` : '';
         const grad = GRADIENTS[i % GRADIENTS.length];
         return `
-        <div class="offer-carousel-card" style="background:${grad};" onclick="UI.copyCode('${o.couponCode}')">
+        <div class="offer-carousel-card" style="background:${grad};" onclick="UI.copyCode('${o.couponCode || o.coupon_code}')">
             <div class="occ-badge">${discText}</div>
             <div class="occ-title">${escHtml(o.title)}</div>
             <div class="occ-desc">${escHtml(o.banner || `Get ${discText}${minText}`)}</div>
             <div class="occ-code-row">
-                <span class="occ-code">${o.couponCode}</span>
+                <span class="occ-code">${o.couponCode || o.coupon_code}</span>
                 <span class="occ-copy-hint">Tap to copy</span>
             </div>
             ${expiryText ? `<div class="occ-expiry">${expiryText}</div>` : ''}
@@ -195,15 +217,14 @@ function renderOffersCarousel() {
         </div>` : ''}
     </div>`;
 
-    /* Touch swipe support */
     enableCarouselSwipe();
 }
 
 function scrollCarouselTo(idx) {
     const c = document.getElementById('offers-carousel');
     if (!c) return;
-    const card = c.querySelectorAll('.offer-carousel-card')[idx];
-    if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    const cards = c.querySelectorAll('.offer-carousel-card');
+    if (cards[idx]) cards[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     document.querySelectorAll('.c-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
 }
 
@@ -217,6 +238,7 @@ function enableCarouselSwipe() {
         if (Math.abs(diff) > 40) {
             const dots = document.querySelectorAll('.c-dot');
             let active = [...dots].findIndex(d => d.classList.contains('active'));
+            if (active === -1) active = 0;
             if (diff > 0) active = Math.min(active + 1, dots.length - 1);
             else active = Math.max(active - 1, 0);
             scrollCarouselTo(active);
@@ -240,10 +262,16 @@ async function initShopPage() {
     const tabs = document.querySelectorAll('.tab');
     if (!grid) return;
 
+    // Optimization: Debounce or single render
+    let currentCat = 'all';
     const render = (cat) => {
+        currentCat = cat;
         const list = cat === 'all'
             ? globalProducts.filter(p => p.status !== 'out_stock')
             : globalProducts.filter(p => p.category === cat && p.status !== 'out_stock');
+
+        // Use document fragment for better performance if list is huge, 
+        // but for now innerHTML is okay given typical catalog size
         grid.innerHTML = list.map(p => `
             <div class="product-card">
                 <img src="${p.img || PLACEHOLDER_IMG}" loading="lazy"
@@ -254,6 +282,7 @@ async function initShopPage() {
                     <button class="atc-btn" onclick="UI.addToCart('${p.id}')">Add to Cart 🛒</button>
                 </div>
             </div>`).join('') || '<div class="empty-state">No products in this category right now.</div>';
+
         const countEl = document.getElementById('product-count');
         if (countEl) countEl.textContent = list.length + ' products · ';
     };
@@ -265,12 +294,10 @@ async function initShopPage() {
     });
     render('all');
 
-    /* Navbar scroll */
     window.addEventListener('scroll', () => {
         document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
     }, { passive: true });
 
-    /* Hamburger */
     document.getElementById('hamburger')?.addEventListener('click', () => {
         document.getElementById('mobile-menu')?.classList.toggle('open');
     });
@@ -307,12 +334,10 @@ async function initCartPage() {
         showToast('Cart cleared', 'info');
     });
 
-    /* Navbar scroll */
     window.addEventListener('scroll', () => {
         document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
     }, { passive: true });
 
-    /* Hamburger */
     document.getElementById('hamburger')?.addEventListener('click', () => {
         document.getElementById('mobile-menu')?.classList.toggle('open');
     });
@@ -384,7 +409,6 @@ function openOrderFormModal() {
     const cart = getCart();
     if (!cart.length) { showToast('Your cart is empty!', 'error'); return; }
 
-    // Remove existing modal if any
     document.getElementById('order-form-modal')?.remove();
 
     const modal = document.createElement('div');
@@ -442,12 +466,11 @@ function openOrderFormModal() {
         const errEl = document.getElementById('ofm-err');
 
         if (!name) { errEl.textContent = 'Please enter your name.'; return; }
-        if (!phone || phone.length < 7) { errEl.textContent = 'Please enter a valid phone number.'; return; }
+        if (!phone || phone.length < 10) { errEl.textContent = 'Please enter a valid 10-digit number.'; return; }
         if (!city) { errEl.textContent = 'Please enter your city.'; return; }
         errEl.textContent = '';
 
         submitWhatsAppOrder({ name, phone, city });
-        modal.remove();
     };
 }
 
@@ -464,7 +487,7 @@ async function submitWhatsAppOrder({ name, phone, city }) {
     const submitBtn = document.getElementById('ofm-submit-btn');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loader-spinning" style="margin-right:8px;"></span> Syncing with Global Database...';
+        submitBtn.innerHTML = '<span class="loader-spinning" style="margin-right:8px;"></span> Sending Order...';
     }
 
     const cart = getCart();
@@ -490,18 +513,12 @@ async function submitWhatsAppOrder({ name, phone, city }) {
         `Thank you for shopping at AK Fish Farms! 🐟`
     ].filter(l => l !== null).join('\n');
 
-    /* MANDATORY GLOBAL SYNC — Save to Postgres */
-    let orderId = 'AKF-' + Date.now().toString(36).toUpperCase();
+    const whatsappURL = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+
     try {
         const orderPayload = {
-            id: orderId,
-            customerName: name,
-            phone,
-            city,
-            items: cart,
-            total: total,
-            coupon: coupon?.couponCode || '',
-            status: 'New'
+            customerName: name, phone, city, items: cart, total,
+            coupon: coupon?.couponCode || '', status: 'New'
         };
 
         const response = await fetch('/api/orders', {
@@ -512,31 +529,35 @@ async function submitWhatsAppOrder({ name, phone, city }) {
 
         if (response.ok) {
             const data = await response.json();
-            orderId = data.id || orderId;
-            console.log('🐘 Order Saved to Postgres Database:', orderId);
+            const orderId = data.id || 'N/A';
 
-            // 🔔 Play success sound FIRST
+            // 🔔 Play loud success sound
             playSuccessSound();
 
-            // Open WhatsApp after short delay so sound plays first
-            setTimeout(() => {
-                window.open(`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-            }, 400);
+            // REDIRECTION (Immediate window.open before state reset to avoid block)
+            window.open(whatsappURL, '_blank');
 
             // Cleanup
             lsSet(LS_CART, []);
             localStorage.removeItem(LS_COUPON);
-            // Save phone for order lookup
             localStorage.setItem('ak_last_phone', phone);
             localStorage.setItem('ak_last_order_id', orderId);
             updateCartBadge();
-            showThankYouPopup(name, orderId, phone);
+
+            // Show Success Notification
+            showToast('Order Sent Successfully! Redirecting to WhatsApp...', 'success');
+
+            // Hide form modal
+            document.getElementById('order-form-modal')?.remove();
+
+            // Small delay for UI feedback before showing thank you
+            setTimeout(() => showThankYouPopup(name, orderId, phone), 500);
         } else {
             throw new Error('Database Sync Failed');
         }
     } catch (e) {
-        console.error('❌ Database Connection Error:', e);
-        showToast('Database Connection Error. Order not saved. Please check your internet.', 'error');
+        console.error('❌ Order Error:', e);
+        showToast('Database Connection Error. Please verify internet.', 'error');
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Retry Order Confirmation';
@@ -545,30 +566,43 @@ async function submitWhatsAppOrder({ name, phone, city }) {
 }
 
 /* ════════════════════════════════════════
-   SUCCESS SOUND — Web Audio API (no file needed)
+   LOUD ORDER CONFIRMATION SOUND
 ════════════════════════════════════════ */
 function playSuccessSound() {
     try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        // 3-note cheerful chime: C5 → E5 → G5
-        const notes = [523.25, 659.25, 783.99];
-        notes.forEach((freq, i) => {
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(1.0, ctx.currentTime); // LOUD VOLUME
+        masterGain.connect(ctx.destination);
+
+        const notes = [
+            { f: 523.25, d: 0.15, s: 0 },   // C5
+            { f: 659.25, d: 0.15, s: 0.12 }, // E5
+            { f: 783.99, d: 0.35, s: 0.24 }, // G5
+            { f: 1046.50, d: 0.5, s: 0.4 }   // C6 chime
+        ];
+
+        notes.forEach(n => {
             const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+            const g = ctx.createGain();
+            osc.connect(g);
+            g.connect(masterGain);
+
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            const start = ctx.currentTime + i * 0.18;
-            const end = start + 0.35;
-            gain.gain.setValueAtTime(0, start);
-            gain.gain.linearRampToValueAtTime(0.45, start + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, end);
+            osc.frequency.setValueAtTime(n.f, ctx.currentTime + n.s);
+
+            const start = ctx.currentTime + n.s;
+            const end = start + n.d;
+
+            g.gain.setValueAtTime(0, start);
+            g.gain.linearRampToValueAtTime(0.6, start + 0.05);
+            g.gain.exponentialRampToValueAtTime(0.001, end);
+
             osc.start(start);
             osc.stop(end);
         });
     } catch (e) {
-        console.warn('Audio not available:', e.message);
+        console.warn('Audio feedback failed:', e.message);
     }
 }
 
@@ -577,15 +611,15 @@ function showThankYouPopup(name, orderId, phone) {
     pop.className = 'ofm-overlay';
     pop.style.zIndex = '99999';
     pop.innerHTML = `
-    <div class="ofm-box thankyou-box" style="text-align:center;max-width:400px;">
-        <div style="font-size:3.5rem;margin-bottom:12px;animation:bounceIn .5s ease;">🎉</div>
-        <h2 style="font-size:1.5rem;font-weight:900;margin-bottom:8px;color:#fff;">Order Confirmed!</h2>
+    <div class="ofm-box thankyou-box" style="text-align:center;max-width:400px;animation:zoomIn 0.4s ease;">
+        <div style="font-size:3.5rem;margin-bottom:12px;">🎉</div>
+        <h2 style="font-size:1.5rem;font-weight:900;margin-bottom:8px;color:#fff;">Order Placed!</h2>
         <p style="color:#9CA3AF;margin-bottom:6px;font-size:.9rem;">Thank you, <strong style="color:#fff;">${escHtml(name)}</strong>!</p>
         <div style="background:rgba(255,216,77,0.12);border:1px solid rgba(255,216,77,0.3);border-radius:12px;padding:12px 16px;margin:16px 0;">
             <div style="font-size:.75rem;color:#9CA3AF;margin-bottom:4px;">YOUR ORDER ID</div>
             <div style="font-size:1.1rem;font-weight:900;color:#FFD84D;letter-spacing:1px;">${orderId}</div>
         </div>
-        <p style="color:#10B981;font-size:.85rem;margin-bottom:24px;">📲 WhatsApp confirmation sent! We'll confirm your order shortly.</p>
+        <p style="color:#10B981;font-size:.85rem;margin-bottom:24px;">📲 WhatsApp opened. Just hit Send!</p>
         <div style="display:flex;flex-direction:column;gap:10px;">
             <a href="orders.html?phone=${encodeURIComponent(phone || '')}" class="occ-btn" style="display:block;text-decoration:none;background:linear-gradient(135deg,#00D4FF,#0099BB);">📦 Track My Order</a>
             <a href="index.html" style="display:block;color:#9CA3AF;font-size:.85rem;text-decoration:none;padding:8px;">← Back to Home</a>
@@ -593,7 +627,7 @@ function showThankYouPopup(name, orderId, phone) {
     </div>`;
     document.body.appendChild(pop);
     pop.onclick = e => { if (e.target === pop) { pop.remove(); window.location.href = 'index.html'; } };
-    setTimeout(() => { pop.remove(); window.location.href = 'index.html'; }, 12000);
+    setTimeout(() => { if (document.body.contains(pop)) { pop.remove(); window.location.href = 'index.html'; } }, 15000);
 }
 
 /* ════════════════════════════════════════
@@ -622,20 +656,18 @@ window.UI = {
 
         code = code.trim().toUpperCase();
 
-        // Try global DB (Postgres) first
         let offer = null;
         try {
             const r = await fetch('/api/offers');
             if (r.ok) {
                 const allOffers = await r.json();
-                lsSet(LS_OFFERS, allOffers); // Update local cache
+                lsSet(LS_OFFERS, allOffers);
                 offer = allOffers.find(o => (o.couponCode || o.coupon_code) === code && o.status === 'active');
             }
         } catch (e) {
-            console.warn('[Coupon] API fetch failed, using local cache:', e.message);
+            console.warn('[Coupon] API failed:', e.message);
         }
 
-        // Fallback: LocalStorage cache
         if (!offer) {
             const localOffers = lsGet(LS_OFFERS, []);
             offer = localOffers.find(o => (o.couponCode || o.coupon_code) === code && o.status === 'active');
@@ -644,7 +676,7 @@ window.UI = {
         if (applyBtn) { applyBtn.disabled = false; applyBtn.textContent = 'Apply'; }
 
         if (!offer) {
-            showToast('Invalid or expired coupon code.', 'error');
+            showToast('Invalid or expired coupon.', 'error');
             if (msgEl) { msgEl.textContent = '❌ Invalid coupon code.'; msgEl.style.color = '#F87171'; }
             return;
         }
@@ -652,12 +684,11 @@ window.UI = {
         const total = getCartTotal();
         const minOrder = Number(offer.minOrder || offer.min_order) || 0;
         if (minOrder && total < minOrder) {
-            showToast(`Minimum order ₹${minOrder} required.`, 'error');
+            showToast(`Min order ₹${minOrder} required.`, 'error');
             if (msgEl) { msgEl.textContent = `❌ Min order ₹${minOrder} required.`; msgEl.style.color = '#F87171'; }
             return;
         }
 
-        // Normalize the offer object
         const normalizedOffer = {
             ...offer,
             couponCode: offer.couponCode || offer.coupon_code || code,
@@ -666,17 +697,13 @@ window.UI = {
         };
 
         lsSet(LS_COUPON, normalizedOffer);
-        showToast(`Coupon "${code}" applied! 🎉`, 'success');
-        const discText = normalizedOffer.discountType === 'percentage'
-            ? `${normalizedOffer.discountValue}%`
-            : `₹${normalizedOffer.discountValue}`;
-        if (msgEl) { msgEl.textContent = `✅ Coupon applied! Saving ${discText} on your order.`; msgEl.style.color = '#10B981'; }
+        showToast(`Coupon applied! 🎉`, 'success');
         renderCart();
     },
     openOrderForm: openOrderFormModal,
     copyCode: (code) => {
         navigator.clipboard?.writeText(code).catch(() => { });
-        showToast(`Code "${code}" copied! Apply at checkout.`, 'success');
+        showToast(`Code "${code}" copied!`, 'success');
     }
 };
 
@@ -688,20 +715,14 @@ window.scrollCarouselTo = scrollCarouselTo;
 document.addEventListener('DOMContentLoaded', () => {
     try {
         const p = window.location.pathname.toLowerCase();
-
-        /* Check cart FIRST — before generic home check */
         if (p.includes('cart')) {
             initCartPage();
         } else {
-            /* Home/Shop — matches /, /index.html, or any non-.html path */
             initShopPage();
         }
-
-        /* Navbar scroll glow */
         window.addEventListener('scroll', () => {
             document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 20);
         }, { passive: true });
-
     } catch (e) {
         console.error('UI Boot Error:', e);
     }

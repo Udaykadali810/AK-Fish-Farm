@@ -815,6 +815,9 @@ ${rows.map(r => `<Row>${r.map(c => `<Cell><Data ss:Type="String">${esc(c)}</Data
     a.href = url; a.download = `AKFishFarms_Orders_${Date.now()}.xls`; a.click();
     URL.revokeObjectURL(url);
     showToast('Excel report downloaded!', 'success');
+
+    // Show follow-up reset popup
+    document.getElementById('export-success-modal')?.classList.add('show');
 }
 
 /* ════════════════════════════════════════
@@ -892,6 +895,35 @@ function closeSidebar() { document.getElementById('adm-sidebar')?.classList.remo
 ════════════════════════════════════════ */
 function escHtml(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ════════════════════════════════════════
+   DATABASE RESET
+════════════════════════════════════════ */
+async function resetDatabase() {
+    showToast('Cleaning Database Records...', 'info');
+    try {
+        const res = await fetch('/api/reset-data?type=all', { method: 'DELETE' });
+        if (res.ok) {
+            showToast('Cloud Database Reset Successful!', 'success');
+            // Update local state
+            globalOrders = [];
+            globalOffers = [];
+            lsSet(LS_KEY.orders, []);
+            lsSet(LS_KEY.offers, []);
+
+            // Refresh UI
+            renderDashboard();
+            renderOrdersTable();
+            renderOffersTable();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `Error ${res.status}`);
+        }
+    } catch (e) {
+        console.error('❌ Reset Failed:', e);
+        showToast('Database Connection Error. Reset failed.', 'error');
+    }
 }
 
 /* ════════════════════════════════════════
@@ -1080,6 +1112,36 @@ const boot = () => {
             if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
         });
         document.getElementById('del-modal')?.addEventListener('click', e => {
+            if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+        });
+
+        // Reset Data Listeners
+        document.getElementById('reset-db-btn')?.addEventListener('click', () => {
+            document.getElementById('reset-modal')?.classList.add('show');
+        });
+        document.getElementById('reset-close-btn')?.addEventListener('click', () => {
+            document.getElementById('reset-modal')?.classList.remove('show');
+        });
+        document.getElementById('cancel-reset-btn')?.addEventListener('click', () => {
+            document.getElementById('reset-modal')?.classList.remove('show');
+        });
+        document.getElementById('confirm-reset-btn')?.addEventListener('click', () => {
+            resetDatabase();
+            document.getElementById('reset-modal')?.classList.remove('show');
+        });
+
+        // Export Success Modal Listeners
+        document.getElementById('export-keep-btn')?.addEventListener('click', () => {
+            document.getElementById('export-success-modal')?.classList.remove('show');
+        });
+        document.getElementById('export-reset-btn')?.addEventListener('click', () => {
+            document.getElementById('export-success-modal')?.classList.remove('show');
+            document.getElementById('reset-modal')?.classList.add('show');
+        });
+        document.getElementById('export-success-modal')?.addEventListener('click', e => {
+            if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+        });
+        document.getElementById('reset-modal')?.addEventListener('click', e => {
             if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
         });
 
